@@ -28,12 +28,12 @@ impl PreCommit {
             if self.fix || *env::HK_FIX {
                 Some(RunType::FixAll)
             } else {
-                Some(RunType::RunAll)
+                Some(RunType::CheckAll)
             }
         } else if self.fix || *env::HK_FIX {
             Some(RunType::Fix)
         } else {
-            Some(RunType::Run)
+            Some(RunType::Check)
         };
         if !self.all {
             repo.stash_unstaged(self.stash)?;

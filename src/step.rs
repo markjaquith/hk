@@ -28,9 +28,9 @@ pub struct Step {
     pub name: String,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
-    pub run: Option<String>,
+    pub check: Option<String>,
     pub fix: Option<String>,
-    pub run_all: Option<String>,
+    pub check_all: Option<String>,
     pub fix_all: Option<String>,
     pub root: Option<PathBuf>,
     pub exclusive: bool,
@@ -58,9 +58,9 @@ pub enum FileKind {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum RunType {
-    Run,
+    Check,
     Fix,
-    RunAll,
+    CheckAll,
     FixAll,
 }
 
@@ -86,15 +86,15 @@ impl Step {
             } else {
                 RunType::Fix
             }
-        } else if self.run.is_none() || (ctx.all_files && self.run_all.is_some()) {
-            RunType::RunAll
+        } else if self.check.is_none() || (ctx.all_files && self.check_all.is_some()) {
+            RunType::CheckAll
         } else {
-            RunType::Run
+            RunType::Check
         };
         let Some(run) = (match run_type {
-            RunType::Run => self.run.as_ref(),
+            RunType::Check => self.check.as_ref(),
             RunType::Fix => self.fix.as_ref(),
-            RunType::RunAll => self.run_all.as_ref(),
+            RunType::CheckAll => self.check_all.as_ref(),
             RunType::FixAll => self.fix_all.as_ref(),
         }) else {
             warn!("{}: no run command", self);
@@ -128,7 +128,9 @@ impl Step {
                 repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())?;
             }
         }
-        if run_type == RunType::RunAll || run_type == RunType::FixAll || pathspecs_to_add.is_empty()
+        if run_type == RunType::CheckAll
+            || run_type == RunType::FixAll
+            || pathspecs_to_add.is_empty()
         {
             pr.finish_with_message("done".to_string());
         } else {

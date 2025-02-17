@@ -30,14 +30,14 @@ min_hk_version = "{version}"
 // `pre-commit` {{
 //     // "prelint" here is simply a name to define the step
 //     ["prelint"] {{
-//         // if a step has a "run" script it will execute that
-//         run = "mise run prelint"
+//         // if a step has a "check" script it will execute that
+//         check = "mise run prelint"
 //         exclusive = true // ensures that the step runs in isolation
 //     }}
 //     // everything from here to postlint is run in parallel
 //     ["pkl"] {{
 //         glob = new {{ "*.pkl" }}
-//         run = "pkl eval {{files}} >/dev/null"
+//         check = "pkl eval {{files}} >/dev/null"
 //     }}
 //     // predefined formatters+linters
 //     ["cargo-check"] = new builtins.CargoCheck {{}}
@@ -47,7 +47,7 @@ min_hk_version = "{version}"
 //         glob = new {{ "*.js"; "*.ts" }} // override the default globs
 //     }}
 //     ["postlint"] {{
-//         run = "mise run postlint"
+//         check = "mise run postlint"
 //         exclusive = true
 //     }}
 // }}

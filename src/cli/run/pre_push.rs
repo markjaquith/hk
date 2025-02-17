@@ -13,9 +13,9 @@ pub struct PrePush {
     /// This is the default behavior unless HK_FIX=0
     #[clap(short, long)]
     fix: bool,
-    /// Run run command instead of fix command
+    /// Run check command instead of fix command
     #[clap(short, long)]
-    run: bool,
+    check: bool,
     /// Remote name
     remote: String,
     /// Remote URL
@@ -34,12 +34,12 @@ impl PrePush {
             if self.fix || *env::HK_FIX {
                 Some(RunType::FixAll)
             } else {
-                Some(RunType::RunAll)
+                Some(RunType::CheckAll)
             }
         } else if self.fix || *env::HK_FIX {
             Some(RunType::Fix)
         } else {
-            Some(RunType::Run)
+            Some(RunType::Check)
         };
         let mut result = config.run_hook("pre-push", run_type, &repo).await;
 

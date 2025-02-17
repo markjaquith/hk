@@ -49,7 +49,7 @@ import "https://hk.jdx.dev/v0/builtins.pkl"
         // this will filter the staged files and return the subset matching these globs
         glob = new { "*.js"; "*.ts" }
         // a command that returns non-zero to fail the step
-        run = "eslint {{files}}"
+        check = "eslint {{files}}"
     }
     // hooks can also be specified with the builtins pkl library
     ["prettier"] = new builtins.Prettier {}

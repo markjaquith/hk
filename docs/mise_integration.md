@@ -43,7 +43,7 @@ amends "https://hk.jdx.dev/v0/hk.pkl"
 
 `pre-commit` {
     ["prelint"] {
-        run = "mise run prelint"
+        check = "mise run prelint"
         exclusive = true // ensures this completes before the next steps
     }
     // ... more steps ...

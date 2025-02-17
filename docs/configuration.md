@@ -21,7 +21,7 @@ import "https://hk.jdx.dev/v0/builtins.pkl" // optional
         // this will filter the staged files and return the subset matching these globs
         glob = new { "*.js"; "*.ts" }
         // the command to run the hook on the files that makes no changes
-        run = "eslint {{files}}"
+        check = "eslint {{files}}"
         // the command to run the hook on the files that fixes them (used by default)
         fix = "eslint --fix {{files}}"
     }
@@ -67,17 +67,17 @@ If true, this step will wait for any previous steps to finish before running. No
 `pre-commit` {
     ["prelint"] {
         exclusive = true // blocks other steps from starting until this one finishes
-        run = "mise run prelint"
+        check = "mise run prelint"
     }
     // ... other steps will run in parallel ...
     ["postlint"] {
         exclusive = true // wait for all previous steps to finish before starting
-        run = "mise run postlint"
+        check = "mise run postlint"
     }
 }
 ```
 
-### `<HOOK>.<STEP>.run: String`
+### `<HOOK>.<STEP>.check: String`
 
 A command to run for the hook that does not modify files. This typically is a "check" command like `eslint` or `prettier --check` that returns a non-zero exit code if there are errors.
 Parallelization works better with run commands than fix commands as no files are being modified.
@@ -85,7 +85,7 @@ Parallelization works better with run commands than fix commands as no files are
 ```pkl
 `pre-commit` {
     ["prettier"] {
-        run = "prettier --check {{files}}"
+        check = "prettier --check {{files}}"
     }
 }
 ```
@@ -108,14 +108,14 @@ A command to run for the hook that modifies files. This typically is a "fix" com
 
 By default, hk will use `fix` commands but this can be overridden by setting [`HK_FIX=0`](/environment_variables#hk-fix) or running `hk run <HOOK> --run`.
 
-### `<HOOK>.<STEP>.run_all: String`
+### `<HOOK>.<STEP>.check_all: String`
 
-A command to run for the hook that runs on all files. This is optional but if not specified hk will need to pass every file to the `run` command.
+A command to run for the hook that runs on all files. This is optional but if not specified hk will need to pass every file to the `check` command.
 
 ```pkl
 `pre-commit` {
     ["prettier"] {
-        run_all = "prettier --check ."
+        check_all = "prettier --check ."
     }
 }
 ```
