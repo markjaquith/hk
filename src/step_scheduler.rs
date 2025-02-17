@@ -67,7 +67,7 @@ impl StepScheduler {
             warn!("{step}: skipping step due to HK_SKIP_STEPS");
             return Ok(());
         }
-        debug!("spawning step: {:?}", step.name);
+        trace!("{step}: spawning step");
         let step = step.clone();
         set.spawn(async move {
             let _permits = permits;

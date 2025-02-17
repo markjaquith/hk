@@ -70,7 +70,7 @@ impl Step {
         let staged_files = if let Some(glob) = &self.glob {
             let matches = glob::get_matches(glob, &ctx.files)?;
             if matches.is_empty() {
-                debug!("no matches for step: {:?}", self.name);
+                debug!("{self}: no matches for step");
                 return Ok(());
             }
             matches
