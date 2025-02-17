@@ -1,4 +1,5 @@
 docs/.vitepress
+docs/cli/commands.json
 test/bats
 test/data
 test/test_helper

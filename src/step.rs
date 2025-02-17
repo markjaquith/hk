@@ -131,7 +131,7 @@ impl Step {
                     if let Err(err) =
                         repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())
                     {
-                        warn!("{self}: failed to add files to index: {err:?}");
+                        warn!("{self}: failed to add files to index: {err}");
                     }
                 }
             }
