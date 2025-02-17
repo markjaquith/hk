@@ -22,7 +22,7 @@ indexmap = { version = "2", features = ["serde"] }
 itertools = "0.14"
 log = "0.4"
 miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
-rpkl-jdx = {version="0.4", features=["indexmap"]}
+rpkl = {version="0.4", features=["indexmap"]}
 serde = { version = "1", features = ["derive"] }
 serde_with = "3"
 serde_yaml = "0.9"

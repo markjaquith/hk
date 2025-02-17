@@ -47,7 +47,7 @@ impl Config {
                 let raw = xx::file::read_to_string(path)?;
                 serde_json::from_str(&raw).into_diagnostic()?
             }
-            "pkl" => rpkl_jdx::from_config(path).into_diagnostic()?,
+            "pkl" => rpkl::from_config(path).into_diagnostic()?,
             _ => {
                 bail!("Unsupported file extension: {}", ext);
             }

@@ -809,7 +809,7 @@ dependencies = [
  "itertools 0.14.0",
  "log",
  "miette",
- "rpkl-jdx",
+ "rpkl",
  "semver",
  "serde",
  "serde_json",
@@ -2082,10 +2082,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rpkl-jdx"
-version = "0.4.0"
+name = "rpkl"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8900b7d49f6fe888776f30a3cdbac9ab185cbc489ba62fdf03e881d9195b31ab"
+checksum = "8d5f7dd71c04c859ec93c77267f5f39885fd020ed75ca7934f1f9943899d2602"
 dependencies = [
  "dunce",
  "indexmap 2.7.1",
