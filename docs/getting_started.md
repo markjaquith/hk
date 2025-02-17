@@ -40,7 +40,7 @@ This will generate a `hk.pkl` file in the root of the repository, here's an exam
 
 ```pkl
 amends "https://hk.jdx.dev/v0/hk.pkl"
-import "https://hk.jdx.dev/v0/builtins.pkl"
+import "https://hk.jdx.dev/v0/builtins/prettier.pkl"
 
 `pre-commit` {
     // hooks can be manually defined
@@ -52,7 +52,7 @@ import "https://hk.jdx.dev/v0/builtins.pkl"
         check = "eslint {{files}}"
     }
     // hooks can also be specified with the builtins pkl library
-    ["prettier"] = new builtins.Prettier {}
+    ["prettier"] = new prettier.Prettier {}
 }
 ```
 

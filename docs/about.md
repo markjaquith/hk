@@ -13,7 +13,7 @@ with mise, but hk certainly doesn't require mise at all.
 Once I started looking into this problem more I had quite a bit of ideas on how pre-commit hooks could run faster. These ideas are very
 experimental right now so I won't be documenting them until 1.0 but to my knowledge these are things no other git hook manager has.
 
-hk also has a ton of [builtins](https://github.com/jdx/hk/tree/main/pkl/builtins.pkl) for common linters and formatters. Expect this list to grow
+hk also has a ton of [builtins](https://github.com/jdx/hk/tree/main/pkl/builtins) for common linters and formatters. Expect this list to grow
 significantly as we approach 1.0. (Also consider contributing to them!)
 
 ### Comparison to lefthook

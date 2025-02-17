@@ -19,9 +19,8 @@ impl Generate {
         let version = version::version();
         let hook_content = format!(
             r#"
-// amends "package://hk.jdx.dev/hk@0.1.0#/hk.pkl"
-amends "pkl/hk.pkl"
-import "pkl/builtins.pkl"
+amends "https://hk.jdx.dev/v0/hk.pkl"
+// import "https://hk.jdx.dev/v0/builtins/prettier.pkl"
 
 min_hk_version = "{version}"
 
@@ -40,10 +39,10 @@ min_hk_version = "{version}"
 //         check = "pkl eval {{files}} >/dev/null"
 //     }}
 //     // predefined formatters+linters
-//     ["cargo-check"] = new builtins.CargoCheck {{}}
-//     ["cargo-fmt"] = new builtins.CargoFmt {{}}
-//     ["eslint"] = new builtins.Eslint {{}}
-//     ["prettier"] = new builtins.Prettier {{
+//     ["cargo-check"] = new cargo_check.CargoCheck {{}}
+//     ["cargo-fmt"] = new cargo_fmt.CargoFmt {{}}
+//     ["eslint"] = new eslint.Eslint {{}}
+//     ["prettier"] = new prettier.Prettier {{
 //         glob = new {{ "*.js"; "*.ts" }} // override the default globs
 //     }}
 //     ["postlint"] {{

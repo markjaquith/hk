@@ -1,0 +1,7 @@
+import "../hk.pkl"
+
+class Yq extends hk.Step {
+    glob = new { "**/*.yaml" }
+    check = "yq {{ files }}"
+    fix = "yq -iP {{ files }}"
+} 

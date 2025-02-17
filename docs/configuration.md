@@ -12,7 +12,7 @@ Here's a basic `hk.pkl` file:
 
 ```pkl
 amends "https://hk.jdx.dev/v0/hk.pkl"
-import "https://hk.jdx.dev/v0/builtins.pkl" // optional
+import "https://hk.jdx.dev/v0/builtins/prettier.pkl"
 
 `pre-commit` {
     // hooks can be manually defined
@@ -26,12 +26,11 @@ import "https://hk.jdx.dev/v0/builtins.pkl" // optional
         fix = "eslint --fix {{files}}"
     }
     // hooks can also be specified with the builtins pkl library
-    ["prettier"] = new builtins.Prettier {}
+    ["prettier"] = new prettier.Prettier {}
 }
 ```
 
-The first line (`amends`) is critical because that imports the base configuration pkl for extending. The second line (`import`) imports
-the builtins, so it's only necessary if actually using builtins.
+The first line (`amends`) is critical because that imports the base configuration pkl for extending.
 
 ### `min_hk_version: String`
 

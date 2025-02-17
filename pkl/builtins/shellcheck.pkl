@@ -1,0 +1,7 @@
+import "../hk.pkl"
+
+class Shellcheck extends hk.Step {
+    glob = new { "**/*.{sh,bash}" }
+    check = "shellcheck {{ files }}"
+    check_all = "shellcheck ."
+} 

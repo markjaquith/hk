@@ -1,0 +1,7 @@
+import "../hk.pkl"
+
+class GoSec extends hk.Step {
+    glob = new { "**/*.go" }
+    check = "gosec {{ files }}"
+    check_all = "gosec ./..."
+} 

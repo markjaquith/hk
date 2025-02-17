@@ -1,0 +1,9 @@
+import "../hk.pkl"
+
+class Stylua extends hk.Step {
+    glob = new { "**/*.lua" }
+    check = "stylua --check {{ files }}"
+    fix = "stylua {{ files }}"
+    check_all = "stylua --check ."
+    fix_all = "stylua ."
+} 

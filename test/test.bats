@@ -43,10 +43,10 @@ teardown() {
 @test "hk install creates git hooks" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
-    ["prettier"] = new builtins.Prettier {}
+    ["prettier"] = new prettier.Prettier {}
 }
 EOF
     hk install
@@ -60,10 +60,10 @@ EOF
     run git add test.js
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
-    ["prettier"] = new builtins.Prettier {}
+    ["prettier"] = new prettier.Prettier {}
 }
 EOF
     hk install
@@ -82,10 +82,10 @@ EOF
     git commit -m init
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
-    ["prettier"] = new builtins.Prettier {}
+    ["prettier"] = new prettier.Prettier {}
 }
 EOF
     hk run pre-commit -a
@@ -96,10 +96,10 @@ EOF
 @test "builtin: json" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/jq.pkl"
 
 \`pre-commit\` {
-    ["json"] = new builtins.Jq {}
+    ["json"] = new jq.Jq {}
 }
 EOF
     cat <<EOF > test.json
@@ -114,10 +114,10 @@ EOF
 @test "builtin: json format" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/jq.pkl"
 
 \`pre-commit\` {
-    ["jq"] = new builtins.Jq {}
+    ["jq"] = new jq.Jq {}
 }
 EOF
     cat <<EOF > test.json
@@ -133,10 +133,10 @@ EOF
 @test "builtin: yaml" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/yq.pkl"
 
 \`pre-commit\` {
-    ["yq"] = new builtins.Yq {}
+    ["yq"] = new yq.Yq {}
 }
 EOF
     cat <<EOF > test.yaml
@@ -151,10 +151,10 @@ EOF
 @test "builtin: yaml format" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/yq.pkl"
 
 \`pre-commit\` {
-    ["yq"] = new builtins.Yq {}
+    ["yq"] = new yq.Yq {}
 }
 EOF
     cat <<EOF > test.yaml
@@ -169,10 +169,10 @@ EOF
 @test "builtin: shellcheck" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/shellcheck.pkl"
 
 \`pre-commit\` {
-    ["shellcheck"] = new builtins.Shellcheck {}
+    ["shellcheck"] = new shellcheck.Shellcheck {}
 }
 EOF
     cat <<EOF > test.sh
@@ -188,11 +188,12 @@ EOF
 @test "HK_SKIP_STEPS skips specified steps" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/prettier.pkl"
+import "$PKL_PATH/builtins/shellcheck.pkl"
 
 \`pre-commit\` {
-    ["prettier"] = new builtins.Prettier {}
-    ["shellcheck"] = new builtins.Shellcheck {}
+    ["prettier"] = new prettier.Prettier {}
+    ["shellcheck"] = new shellcheck.Shellcheck {}
 }
 EOF
     touch test.sh
@@ -208,11 +209,12 @@ EOF
 @test "HK_SKIP_HOOK skips entire hooks" {
     cat <<EOF > hk.pkl
 amends "$PKL_PATH/hk.pkl"
-import "$PKL_PATH/builtins.pkl"
+import "$PKL_PATH/builtins/prettier.pkl"
+import "$PKL_PATH/builtins/shellcheck.pkl"
 
 \`pre-commit\` {
-    ["prettier"] = new builtins.Prettier {}
-    ["shellcheck"] = new builtins.Shellcheck {}
+    ["prettier"] = new prettier.Prettier {}
+    ["shellcheck"] = new shellcheck.Shellcheck {}
 }
 EOF
     touch test.sh
