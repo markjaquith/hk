@@ -1,3 +1,6 @@
+---
+outline: 'deep'
+---
 # Configuration
 
 hk is configured via `hk.pkl` which is written in [pkl-lang](https://pkl-lang.org/) from Apple.
