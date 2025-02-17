@@ -4,6 +4,13 @@
 
 ### 🚀 Features
 
+- HK_SKIP_HOOKS by [@jdx](https://github.com/jdx) in [5a07907](https://github.com/jdx/hk/commit/5a079075b6c841269ed3c12821eee545a5911849)
+- added a bunch of AI barf by [@jdx](https://github.com/jdx) in [bdac3cd](https://github.com/jdx/hk/commit/bdac3cdb7af01efbdd158e522c7692a563249cac)
+
+## [0.2.1](https://github.com/jdx/hk/compare/v0.2.0..v0.2.1) - 2025-02-17
+
+### 🚀 Features
+
 - grouping steps by [@jdx](https://github.com/jdx) in [a0dda64](https://github.com/jdx/hk/commit/a0dda64c057a37bf66c64e2f0ff6613248786247)
 - init alias by [@jdx](https://github.com/jdx) in [6cd7390](https://github.com/jdx/hk/commit/6cd7390d3106e1aac904c5c89a14faf11f798de5)
 

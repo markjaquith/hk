@@ -469,7 +469,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
