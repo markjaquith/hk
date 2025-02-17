@@ -130,7 +130,7 @@ impl Step {
         };
 
         if ctx.run_type == RunType::CheckAll
-                || ctx.run_type == RunType::FixAll
+            || ctx.run_type == RunType::FixAll
             || pathspecs_to_add.is_empty()
         {
             pr.finish_with_message("done".to_string());
@@ -161,13 +161,15 @@ impl Step {
                     .available_run_type(RunType::Fix)
                     .or(self.available_run_type(RunType::CheckAll)),
             },
-            RunType::Check => match self.check.is_some() {
-                true => Some(RunType::Check),
-                false => None,
+            RunType::Check => match (self.check.is_some(), self.check_all.is_some()) {
+                (true, _) => Some(RunType::Check),
+                (_, true) => Some(RunType::CheckAll),
+                _ => None,
             },
-            RunType::Fix => match self.fix.is_some() {
-                true => Some(RunType::Fix),
-                false => self.available_run_type(RunType::Check),
+            RunType::Fix => match (self.fix.is_some(), self.fix_all.is_some()) {
+                (true, _) => Some(RunType::Fix),
+                (_, true) => Some(RunType::FixAll),
+                _ => self.available_run_type(RunType::Check),
             },
         }
     }
@@ -175,6 +177,5 @@ impl Step {
 
 pub struct StepContext {
     pub run_type: RunType,
-    pub all_files: bool,
     pub files: Vec<PathBuf>,
 }

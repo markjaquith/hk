@@ -54,7 +54,6 @@ impl StepScheduler {
         };
         let ctx = Arc::new(StepContext {
             run_type,
-            all_files: self.all_files,
             files: self.files.clone(),
         });
 
