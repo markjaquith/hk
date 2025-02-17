@@ -128,7 +128,11 @@ impl Step {
                 pr.set_message(format!("staging {}", pathspecs_to_add.join(" ")));
                 let mut repo = Git::new()?;
                 if !pathspecs_to_add.is_empty() {
-                    repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())?;
+                    if let Err(err) =
+                        repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())
+                    {
+                        warn!("{self}: failed to add files to index: {err:?}");
+                    }
                 }
             }
             pathspecs_to_add
