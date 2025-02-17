@@ -47,7 +47,7 @@ run = "echo prelint"
 run = "echo postlint"
 [tasks.pre-release]
 depends = ["render"]
-run = "git cliff -o CHANGELOG.md"
+run = "git cliff -o CHANGELOG.md --tag {{option(name='version')}}"
 [tasks.lint]
 depends = ["build"]
 run = [
