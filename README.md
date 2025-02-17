@@ -8,3 +8,7 @@ The fastest git hook manager on the planet.
 > This is a work in progress.
 
 See docs: https://hk.jdx.dev/
+
+## Benchmarks
+
+![benchmarks](/docs/public/benchmark.png)
