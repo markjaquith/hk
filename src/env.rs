@@ -15,6 +15,7 @@ pub static HK_STATE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
             .join("hk"),
     )
 });
+pub static HK_FILE: LazyLock<Option<String>> = LazyLock::new(|| var("HK_FILE").ok());
 pub static HK_CACHE_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     var_path("HK_CACHE_DIR").unwrap_or(
         dirs::cache_dir()

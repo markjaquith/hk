@@ -27,6 +27,13 @@ Type: `string[]` (comma-separated list)
 
 The profile(s) to use.
 
+## `HK_FILE`
+
+Type: `string`
+Default: `hk.pkl` | `hk.toml` | `hk.yaml` | `hk.yml` | `hk.json`
+
+The file to use for the configuration.
+
 ## `HK_FIX`
 
 Type: `bool`

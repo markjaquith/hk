@@ -1,0 +1,15 @@
+amends "https://hk.jdx.dev/v0/hk.pkl"
+import "https://hk.jdx.dev/v0/builtins/prettier.pkl"
+
+`pre-commit` {
+    // hooks can be manually defined
+    ["eslint"] {
+        // the files to run the hook on, if no files are matched, the hook will be skipped
+        // this will filter the staged files and return the subset matching these globs
+        glob = new { "*.js"; "*.ts" }
+        // a command that returns non-zero to fail the step
+        check = "eslint {{files}}"
+    }
+    // hooks can also be specified with the builtins pkl library
+    ["prettier"] = new prettier.Prettier {}
+}

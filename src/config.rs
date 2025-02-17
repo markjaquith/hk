@@ -13,12 +13,11 @@ use miette::{bail, IntoDiagnostic};
 
 impl Config {
     pub fn get() -> Result<Self> {
-        let paths = vec![
-            Path::new("hk.pkl"),
-            Path::new("hk.toml"),
-            Path::new("hk.yaml"),
-            Path::new("hk.json"),
-        ];
+        let paths = if let Some(file) = env::HK_FILE.as_ref() {
+            vec![file.as_str()]
+        } else {
+            vec!["hk.pkl", "hk.toml", "hk.yaml", "hk.yml", "hk.json"]
+        };
         let mut cwd = std::env::current_dir().into_diagnostic()?;
         while cwd != Path::new("/") {
             for path in &paths {
