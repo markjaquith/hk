@@ -4,7 +4,7 @@ use crate::{env, version, Result};
 
 /// Generates a new hk.pkl file for a project
 #[derive(Debug, clap::Args)]
-#[clap(visible_alias = "g")]
+#[clap(visible_alias = "g", alias = "init")]
 pub struct Generate {
     /// Generate a mise.toml file with hk configured
     ///
