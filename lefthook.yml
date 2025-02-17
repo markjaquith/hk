@@ -1,4 +1,5 @@
 pre-commit:
+  parallel: true
   jobs:
   - run: actionlint {staged_files}
     glob: ".github/workflows/*.{yml,yaml}"
