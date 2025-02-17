@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 import spec from "../cli/commands.json";
+import pklLang from '../pkl.tmLanguage.json'
 
 interface Command {
   subcommands: Record<string, Command & { hide?: boolean; full_cmd: string[] }>;
@@ -58,6 +59,15 @@ export default defineConfig({
         'Licensed under the MIT License. Maintained by <a href="https://github.com/jdx">@jdx</a> and <a href="https://github.com/jdx/hk/graphs/contributors">friends</a>.',
       copyright: `Copyright © ${new Date().getFullYear()} <a href="https://github.com/jdx">@jdx</a>`,
     },
+  },
+  markdown: {
+    languages: [{
+      name: 'pkl',
+      displayName: 'pkl',
+      scopeName: 'source.pkl',
+      repository: {},
+      patterns: pklLang.patterns,
+    }]
   },
   head: [
     [

@@ -3,6 +3,7 @@
   "workspaces": {
     "": {
       "dependencies": {
+        "pkl.tmbundle": "^0.0.1-security",
         "vitepress": "^1.6.3",
       },
     },
@@ -283,6 +284,8 @@
     "perfect-debounce": ["perfect-debounce@1.0.0", "", {}, "sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA=="],
 
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
+
+    "pkl.tmbundle": ["pkl.tmbundle@0.0.1-security", "", {}, "sha512-fsAPpEblJ6Zfb//mI2zjyi0ZtQXqy/6f+b5FeglZWp9Bfgc20/Du4sYWMg+dPzSMmfGxzYOp0BdG/HGBcKOk0Q=="],
 
     "postcss": ["postcss@8.5.1", "", { "dependencies": { "nanoid": "^3.3.8", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ=="],
 
