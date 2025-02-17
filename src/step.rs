@@ -109,25 +109,33 @@ impl Step {
             .execute()
             .await
             .into_diagnostic()?;
-        let pathspecs_to_add = if let Some(stage) = &self.stage {
-            let stage = stage
-                .iter()
-                .map(|s| tera::render(s, &tctx).unwrap())
-                .collect_vec();
-            glob::get_matches(&stage, &staged_files)?
-        } else {
-            staged_files
-        }
-        .iter()
-        .map(|f| f.to_string_lossy().to_string())
-        .collect_vec();
-        if !pathspecs_to_add.is_empty() {
-            pr.set_message(format!("staging {}", pathspecs_to_add.join(" ")));
-            let mut repo = Git::new()?;
-            if !pathspecs_to_add.is_empty() {
-                repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())?;
+        let pathspecs_to_add = if matches!(run_type, RunType::Fix | RunType::FixAll) {
+            let pathspecs_to_add = if let Some(stage) = &self.stage {
+                let stage = stage
+                    .iter()
+                    .map(|s| tera::render(s, &tctx).unwrap())
+                    .collect_vec();
+                glob::get_matches(&stage, &staged_files)?
+            } else if self.glob.is_some() {
+                staged_files
+            } else {
+                vec![]
             }
-        }
+            .iter()
+            .map(|f| f.to_string_lossy().to_string())
+            .collect_vec();
+            if !pathspecs_to_add.is_empty() {
+                pr.set_message(format!("staging {}", pathspecs_to_add.join(" ")));
+                let mut repo = Git::new()?;
+                if !pathspecs_to_add.is_empty() {
+                    repo.add(&pathspecs_to_add.iter().map(|f| f.as_str()).collect_vec())?;
+                }
+            }
+            pathspecs_to_add
+        } else {
+            vec![]
+        };
+
         if run_type == RunType::CheckAll
             || run_type == RunType::FixAll
             || pathspecs_to_add.is_empty()
