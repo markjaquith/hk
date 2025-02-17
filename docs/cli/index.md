@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.2.0
+**Version**: 0.2.1
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -11,6 +11,10 @@
 ### `-j --jobs <JOBS>`
 
 Number of jobs to run in parallel
+
+### `-p --profile... <PROFILE>`
+
+Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast
 
 ### `-v --verbose...`
 

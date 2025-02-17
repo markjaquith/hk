@@ -1,10 +1,13 @@
 name hk
 bin hk
-version "0.2.0"
+version "0.2.1"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
     arg <JOBS>
+}
+flag "-p --profile" help="Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast" var=#true global=#true {
+    arg <PROFILE>
 }
 flag "-v --verbose" help="Enables verbose output" var=#true global=#true count=#true
 flag "-q --quiet" help="Suppresses output" global=#true
@@ -20,6 +23,7 @@ cmd config help="Generate a default hk.toml configuration file" {
 }
 cmd generate help="Generates a new hk.pkl file for a project" {
     alias g
+    alias init hide=#true
     flag --mise help="Generate a mise.toml file with hk configured" {
         long_help "Generate a mise.toml file with hk configured\n\nSet HK_MISE=1 to make this default behavior."
     }
@@ -36,7 +40,7 @@ cmd run subcommand_required=#true help="Run a hook" {
         alias co
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
-        flag "-r --run" help="Run run command instead of fix command"
+        flag "-c --check" help="Run run command instead of fix command"
         flag --stash help="Force stashing even if it's disabled via HK_STASH"
     }
     cmd pre-push help="Sets up git hooks to run hk" {
@@ -44,6 +48,7 @@ cmd run subcommand_required=#true help="Run a hook" {
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
         flag "-c --check" help="Run check command instead of fix command"
+        flag --stash help="Force stashing even if it's disabled via HK_STASH"
         arg <REMOTE> help="Remote name"
         arg <URL> help="Remote URL"
     }

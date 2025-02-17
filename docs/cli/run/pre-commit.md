@@ -15,7 +15,7 @@ Run on all files instead of just staged files
 
 Run fix command instead of run command This is the default behavior unless HK_FIX=0
 
-### `-r --run`
+### `-c --check`
 
 Run run command instead of fix command
 

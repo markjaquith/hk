@@ -4,6 +4,33 @@
 
 ### 🚀 Features
 
+- grouping steps by [@jdx](https://github.com/jdx) in [a0dda64](https://github.com/jdx/hk/commit/a0dda64c057a37bf66c64e2f0ff6613248786247)
+- init alias by [@jdx](https://github.com/jdx) in [6cd7390](https://github.com/jdx/hk/commit/6cd7390d3106e1aac904c5c89a14faf11f798de5)
+
+### 🐛 Bug Fixes
+
+- --check logic by [@jdx](https://github.com/jdx) in [0a0f66c](https://github.com/jdx/hk/commit/0a0f66c1f1278222551bed72765a41b6cd7ac26b)
+- --check logic by [@jdx](https://github.com/jdx) in [e204037](https://github.com/jdx/hk/commit/e204037c5cd73485e2809aceee7904d9186e6803)
+
+### 📚 Documentation
+
+- docs: by [@jdx](https://github.com/jdx) in [25af7d8](https://github.com/jdx/hk/commit/25af7d8cd9838fced725914f6061f8740d944094)
+- added pkl syntax by [@jdx](https://github.com/jdx) in [a71f3ab](https://github.com/jdx/hk/commit/a71f3abb4b98427d03a3e2ee037d876e7ce9def1)
+
+### 🔍 Other Changes
+
+- do not prettify commands.json by [@jdx](https://github.com/jdx) in [a0d2d0e](https://github.com/jdx/hk/commit/a0d2d0e82897a72956f7dbd6f244eb3e290e52e2)
+- added actionlint to CI by [@jdx](https://github.com/jdx) in [3f42d91](https://github.com/jdx/hk/commit/3f42d91c6fe6e79e296d5a2014368e7bb4e4b0e8)
+- wip by [@jdx](https://github.com/jdx) in [7e3bf67](https://github.com/jdx/hk/commit/7e3bf67c748f0d956f63e3048ee8c7603acf42a6)
+- goat counter by [@jdx](https://github.com/jdx) in [d47a456](https://github.com/jdx/hk/commit/d47a456ab8a2e549a61964e152116fe74d333952)
+- GA by [@jdx](https://github.com/jdx) in [035b1d8](https://github.com/jdx/hk/commit/035b1d869fdaf59e1b313dde0e6b5c628f4d0583)
+- created flocks by [@jdx](https://github.com/jdx) in [343ab06](https://github.com/jdx/hk/commit/343ab06baebb3d1b580d1281045edbcfb1f6a913)
+- disabled beta toolchain on CI by [@jdx](https://github.com/jdx) in [41e2028](https://github.com/jdx/hk/commit/41e20288d5c1b8f06183b7622ef01f1f3d99ea29)
+
+## [0.2.0](https://github.com/jdx/hk/compare/v0.1.8..v0.2.0) - 2025-02-17
+
+### 🚀 Features
+
 - **breaking** use check/check_all instead of run/run_all by [@jdx](https://github.com/jdx) in [5a6555c](https://github.com/jdx/hk/commit/5a6555ce015d19083b2fdb526875b7133583efd4)
 
 ### 🐛 Bug Fixes

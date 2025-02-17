@@ -113,7 +113,9 @@
         "aliases": [
           "g"
         ],
-        "hidden_aliases": [],
+        "hidden_aliases": [
+          "init"
+        ],
         "examples": []
       },
       "install": {
@@ -192,15 +194,15 @@
                 "global": false
               },
               {
-                "name": "run",
-                "usage": "-r --run",
+                "name": "check",
+                "usage": "-c --check",
                 "help": "Run run command instead of fix command",
                 "help_first_line": "Run run command instead of fix command",
                 "short": [
-                  "r"
+                  "c"
                 ],
                 "long": [
-                  "run"
+                  "check"
                 ],
                 "hide": false,
                 "global": false
@@ -297,6 +299,18 @@
                 ],
                 "hide": false,
                 "global": false
+              },
+              {
+                "name": "stash",
+                "usage": "--stash",
+                "help": "Force stashing even if it's disabled via HK_STASH",
+                "help_first_line": "Force stashing even if it's disabled via HK_STASH",
+                "short": [],
+                "long": [
+                  "stash"
+                ],
+                "hide": false,
+                "global": false
               }
             ],
             "mounts": [],
@@ -381,6 +395,28 @@
         }
       },
       {
+        "name": "profile",
+        "usage": "-p --profile... <PROFILE>",
+        "help": "Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast",
+        "help_first_line": "Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast",
+        "short": [
+          "p"
+        ],
+        "long": [
+          "profile"
+        ],
+        "var": true,
+        "hide": false,
+        "global": true,
+        "arg": {
+          "name": "PROFILE",
+          "usage": "<PROFILE>",
+          "required": true,
+          "double_dash": "Optional",
+          "hide": false
+        }
+      },
+      {
         "name": "verbose",
         "usage": "-v --verbose...",
         "help": "Enables verbose output",
@@ -433,7 +469,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

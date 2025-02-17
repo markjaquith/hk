@@ -28,3 +28,7 @@ Run fix command instead of run command This is the default behavior unless HK_FI
 ### `-c --check`
 
 Run check command instead of fix command
+
+### `--stash`
+
+Force stashing even if it's disabled via HK_STASH
