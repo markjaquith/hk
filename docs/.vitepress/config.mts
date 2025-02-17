@@ -32,6 +32,7 @@ export default defineConfig({
     ],
     sidebar: [
       { text: 'Getting Started', link: '/getting_started' },
+      { text: 'Hooks', link: '/hooks' },
       { text: 'Configuration', link: '/configuration' },
       { text: 'Environment Variables', link: '/environment_variables' },
       { text: 'mise-en-place Integration', link: '/mise_integration' },
@@ -53,30 +54,30 @@ export default defineConfig({
         'Licensed under the MIT License. Maintained by <a href="https://github.com/jdx">@jdx</a> and <a href="https://github.com/jdx/hk/graphs/contributors">friends</a>.',
       copyright: `Copyright © ${new Date().getFullYear()} <a href="https://github.com/jdx">@jdx</a>`,
     },
-    head: [
-      [
-        "script",
-        {
-          async: "",
-          src: "https://www.googletagmanager.com/gtag/js?id=G-B69G389C8T",
-        },
-      ],
-      [
-        "script",
-        {},
-        `window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-B69G389C8T');`,
-      ],
-      [
-        "script",
-        {
-          "data-goatcounter": "https://jdx.goatcounter.com/count",
-          async: "",
-          src: "//gc.zgo.at/count.js",
-        },
-      ],
+  },
+  head: [
+    [
+      "script",
+      {
+        async: "",
+        src: "https://www.googletagmanager.com/gtag/js?id=G-B69G389C8T",
+      },
     ],
-  }
+    [
+      "script",
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-B69G389C8T');`,
+    ],
+    [
+      "script",
+      {
+        "data-goatcounter": "https://jdx.goatcounter.com/count",
+        async: "",
+        src: "//gc.zgo.at/count.js",
+      },
+    ],
+  ],
 })
