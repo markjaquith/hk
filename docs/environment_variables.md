@@ -8,6 +8,17 @@ Default: `~/.cache/hk`
 
 The cache directory to use.
 
+## `HK_CHECK_FIRST`
+
+Default: `true`
+
+If true, hk will run check on files first then run fix steps if check fails iff there are multiple fix steps with the same file in a matching glob pattern.
+
+The reason for this is to make hk able to parallelize as much as possible. We can have as many check steps running in parallel against
+the same file as we want without them interfering with each other—however we can't have 2 fix steps potentially writing to the same file. So we optimistically run the check steps in parallel, then if any fail we run their fix command potentially in series.
+
+If this is disabled hk will have simpler logic that just uses fix steps in series in this situation.
+
 ## `HK_FIX`
 
 Default: `true`

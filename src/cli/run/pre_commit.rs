@@ -14,7 +14,7 @@ pub struct PreCommit {
     fix: bool,
     /// Run run command instead of fix command
     #[clap(short, long)]
-    run: bool,
+    check: bool,
     /// Force stashing even if it's disabled via HK_STASH
     #[clap(long)]
     stash: bool,
@@ -38,7 +38,11 @@ impl PreCommit {
         if !self.all {
             repo.stash_unstaged(self.stash)?;
         }
-        let mut result = config.run_hook("pre-commit", run_type, &repo).await;
+        let mut result = if let Some(hook) = &config.pre_commit {
+            config.run_hook(hook, run_type, &repo).await
+        } else {
+            Ok(())
+        };
 
         if let Err(err) = repo.pop_stash() {
             if result.is_ok() {

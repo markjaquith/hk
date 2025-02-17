@@ -18,6 +18,9 @@ pub struct PrePush {
     check: bool,
     /// Remote name
     remote: String,
+    /// Force stashing even if it's disabled via HK_STASH
+    #[clap(long)]
+    stash: bool,
     /// Remote URL
     url: String,
 }
@@ -41,7 +44,14 @@ impl PrePush {
         } else {
             Some(RunType::Check)
         };
-        let mut result = config.run_hook("pre-push", run_type, &repo).await;
+        if !self.all {
+            repo.stash_unstaged(self.stash)?;
+        }
+        let mut result = if let Some(hook) = &config.pre_push {
+            config.run_hook(hook, run_type, &repo).await
+        } else {
+            Ok(())
+        };
 
         if let Err(err) = repo.pop_stash() {
             if result.is_ok() {

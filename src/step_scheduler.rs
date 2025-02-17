@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 use miette::IntoDiagnostic;
 use std::{path::PathBuf, sync::Arc};
-use tokio::sync::{Mutex, Semaphore};
+use tokio::sync::{Mutex, RwLock, Semaphore};
 use tokio::task::JoinSet;
 
 use crate::{settings::Settings, step::Step};
@@ -14,6 +14,7 @@ pub struct StepScheduler {
     failed: Arc<Mutex<bool>>,
     semaphore: Arc<Semaphore>,
     all_files: bool,
+    file_locks: Mutex<IndexMap<PathBuf, Arc<RwLock<()>>>>,
     jobs: u32,
 }
 
@@ -27,6 +28,7 @@ impl StepScheduler {
             semaphore: Arc::new(Semaphore::new(settings.jobs().get())),
             jobs: settings.jobs().get() as u32,
             all_files: true,
+            file_locks: Default::default(),
         }
     }
 
@@ -46,17 +48,12 @@ impl StepScheduler {
         set: &mut JoinSet<Result<()>>,
         ctx: Arc<StepContext>,
     ) -> Result<()> {
-        let semaphore = self.semaphore.clone();
-        let permits = if step.exclusive {
-            // Get all the locks because it's an exclusive step so it starts after all previous steps have finished
-            semaphore
-                .acquire_many_owned(self.jobs)
-                .await
-                .into_diagnostic()?
-        } else {
-            // Get a lock on the semaphore so we only run max jobs at a time
-            semaphore.acquire_owned().await.into_diagnostic()?
-        };
+        let permit = self
+            .semaphore
+            .clone()
+            .acquire_owned()
+            .await
+            .into_diagnostic()?;
         let failed = self.failed.clone();
         if *failed.lock().await {
             trace!("{step}: skipping step due to previous failure");
@@ -70,7 +67,7 @@ impl StepScheduler {
         trace!("{step}: spawning step");
         let step = step.clone();
         set.spawn(async move {
-            let _permits = permits;
+            let _permit = permit;
             match step.run(&ctx).await {
                 Ok(()) => Ok(()),
                 Err(e) => {
@@ -85,34 +82,46 @@ impl StepScheduler {
 
     pub async fn run(self) -> Result<()> {
         let runner = Arc::new(self);
-        let mut set = JoinSet::new();
         let ctx = Arc::new(StepContext {
             all_files: runner.all_files,
             files: runner.files.clone(),
         });
 
-        // Spawn all tasks
-        for step in &runner.steps {
-            runner.run_step(step, &mut set, ctx.clone()).await?;
-        }
+        // groups is a list of list of steps which are separated by exclusive steps
+        // any exclusive step will be in a group by itself
+        let groups = runner.steps.iter().fold(vec![], |mut groups, step| {
+            if step.exclusive || groups.is_empty() {
+                groups.push(vec![]);
+            }
+            groups.last_mut().unwrap().push(step);
+            groups
+        });
 
-        // Wait for tasks and abort on first error
-        while let Some(result) = set.join_next().await {
-            match result {
-                Ok(Ok(_)) => continue, // Step completed successfully
-                Ok(Err(e)) => {
-                    // Task failed to execute
-                    set.abort_all();
-                    return Err(e);
-                }
-                Err(e) => {
-                    // JoinError occurred
-                    set.abort_all();
-                    return Err(e).into_diagnostic();
+        for group in groups {
+            let mut set = JoinSet::new();
+
+            // Spawn all tasks
+            for step in &group {
+                runner.run_step(step, &mut set, ctx.clone()).await?;
+            }
+
+            // Wait for tasks and abort on first error
+            while let Some(result) = set.join_next().await {
+                match result {
+                    Ok(Ok(_)) => continue, // Step completed successfully
+                    Ok(Err(e)) => {
+                        // Task failed to execute
+                        set.abort_all();
+                        return Err(e);
+                    }
+                    Err(e) => {
+                        // JoinError occurred
+                        set.abort_all();
+                        return Err(e).into_diagnostic();
+                    }
                 }
             }
         }
-
         Ok(())
     }
 }

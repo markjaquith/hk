@@ -82,16 +82,14 @@ impl std::fmt::Display for Config {
 }
 
 impl Config {
-    pub async fn run_hook(&self, hook: &str, run_type: Option<RunType>, repo: &Git) -> Result<()> {
-        let hook = match hook {
-            "pre-commit" => &self.pre_commit,
-            "pre-push" => &self.pre_push,
-            _ => bail!("Invalid hook: {}", hook),
-        }
-        .clone()
-        .unwrap_or_default();
+    pub async fn run_hook(
+        &self,
+        hook: &IndexMap<String, Step>,
+        run_type: Option<RunType>,
+        repo: &Git,
+    ) -> Result<()> {
         let all_files = matches!(run_type, Some(RunType::CheckAll) | Some(RunType::FixAll));
-        let mut runner = StepScheduler::new(&hook).with_all_files(all_files);
+        let mut runner = StepScheduler::new(hook).with_all_files(all_files);
         if all_files {
             let all_files = repo.all_files()?;
             runner = runner.with_all_files(true).with_files(all_files);
