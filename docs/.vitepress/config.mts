@@ -2,8 +2,12 @@ import { defineConfig } from 'vitepress'
 
 import spec from "../cli/commands.json";
 
-function getCommands(cmd): string[][] {
-  const commands = [];
+interface Command {
+  subcommands: Record<string, Command & { hide?: boolean; full_cmd: string[] }>;
+}
+
+function getCommands(cmd: Command): string[][] {
+  const commands: string[][] = [];
   for (const [name, sub] of Object.entries(cmd.subcommands)) {
     if (sub.hide) continue;
     commands.push(sub.full_cmd);
@@ -74,7 +78,7 @@ export default defineConfig({
     [
       "script",
       {
-        "data-goatcounter": "https://jdx.goatcounter.com/count",
+        "data-goatcounter": "https://jdx-hk.goatcounter.com/count",
         async: "",
         src: "//gc.zgo.at/count.js",
       },
