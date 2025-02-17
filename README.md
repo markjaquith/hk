@@ -1,6 +1,6 @@
 # hk
 
-A tool for running hooks on files in a git repository.
+The fastest git hook manager on the planet.
 
 ![hk](/docs/public/logo.png)
 
