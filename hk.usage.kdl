@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.1.9"
+version "0.2.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -43,7 +43,7 @@ cmd run subcommand_required=#true help="Run a hook" {
         alias ph
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
-        flag "-r --run" help="Run run command instead of fix command"
+        flag "-c --check" help="Run check command instead of fix command"
         arg <REMOTE> help="Remote name"
         arg <URL> help="Remote URL"
     }

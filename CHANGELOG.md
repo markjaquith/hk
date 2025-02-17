@@ -2,10 +2,23 @@
 
 ## [unreleased]
 
+### 🚀 Features
+
+- **breaking** use check/check_all instead of run/run_all by [@jdx](https://github.com/jdx) in [5a6555c](https://github.com/jdx/hk/commit/5a6555ce015d19083b2fdb526875b7133583efd4)
+
+### 🐛 Bug Fixes
+
+- tidy up step output by [@jdx](https://github.com/jdx) in [4196721](https://github.com/jdx/hk/commit/4196721a7e7f59d61062a1b4747fcc730370fc2f)
+- recurse directories to find hk.pkl by [@jdx](https://github.com/jdx) in [d53b8f5](https://github.com/jdx/hk/commit/d53b8f56a66dad20fd15ce3a019554e13369b165)
+- only stage changes if globs are defined by [@jdx](https://github.com/jdx) in [61b3514](https://github.com/jdx/hk/commit/61b351440154c8f45dbc90b72d148d26ab2924c4)
+- only warn if failed adding staged files by [@jdx](https://github.com/jdx) in [7a2f92e](https://github.com/jdx/hk/commit/7a2f92e7287c217b086a85fd1fe501ab3edfeaf1)
+
 ### 🔍 Other Changes
 
-- init by [@jdx](https://github.com/jdx) in [7b5a817](https://github.com/jdx/hk/commit/7b5a817ded277bd0e5ee9a89b5ae00cb7c880fcc)
-- git-cliff integration by [@jdx](https://github.com/jdx) in [335bc84](https://github.com/jdx/hk/commit/335bc84b474fc24810612b38254714d132f5195e)
+- init by [@jdx](https://github.com/jdx) in [0a4e57c](https://github.com/jdx/hk/commit/0a4e57cf0f597ae8495b5ad250c9afff5948ad29)
+- remove unused black tool by [@jdx](https://github.com/jdx) in [844a0a4](https://github.com/jdx/hk/commit/844a0a424ee362e861528525c6800bdbc046dd28)
+- Update configuration.md by [@jdx](https://github.com/jdx) in [64178c6](https://github.com/jdx/hk/commit/64178c6cfe0c4820f088867e651b21ebfac5c7b6)
+- switch to rpkl upstream by [@jdx](https://github.com/jdx) in [3d7e219](https://github.com/jdx/hk/commit/3d7e219e7f8686e9c3ebe0ba64a2490a4ae235e7)
 
 ### New Contributors
 
