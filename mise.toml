@@ -5,6 +5,7 @@ _.path = [
 ]
 
 [tools]
+actionlint = "latest"
 hadolint = "latest"
 ktlint = "latest"
 "npm:prettier" = "latest"
