@@ -2,6 +2,11 @@
 
 hk is built by [@jdx](https://github.com/jdx).
 
+::: danger
+Hey HN, I just published this thing _today_ and have only spent about 3 days on it. It's about as young as a project gets. What I've wrote on this page I got about 20% done with,
+moved onto something else, and hadn't come back to it. It certainly is not HN ready.
+:::
+
 ## Why does this exist?
 
 In short: performance and [mise-en-place](https://mise.jdx.dev/). Initially mise users wanted more functionality than mise provides
