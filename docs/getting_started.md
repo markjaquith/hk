@@ -3,7 +3,7 @@
 A tool for running hooks on files in a git repository.
 
 > [!CAUTION]
-> This is a work in progress.
+> This is a work in progress. Everything about this project including the docs is probably going to change.
 
 ## Installation
 
