@@ -46,6 +46,11 @@ pub static HK_SKIP_STEPS: LazyLock<IndexSet<String>> = LazyLock::new(|| {
         .or(var_csv("HK_SKIP_STEP"))
         .unwrap_or_default()
 });
+pub static HK_SKIP_HOOK: LazyLock<IndexSet<String>> = LazyLock::new(|| {
+    var_csv("HK_SKIP_HOOK")
+        .or(var_csv("HK_SKIP_HOOKS"))
+        .unwrap_or_default()
+});
 pub static HK_JOBS: LazyLock<NonZero<usize>> = LazyLock::new(|| {
     var("HK_JOBS")
         .or(var("HK_JOB"))

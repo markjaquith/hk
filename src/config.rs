@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
 use crate::{
+    env,
     git::Git,
     step::{RunType, Step},
     step_scheduler::StepScheduler,
@@ -88,17 +89,23 @@ impl Config {
         run_type: RunType,
         repo: &Git,
     ) -> Result<()> {
-        let all_files = matches!(run_type, RunType::CheckAll | RunType::FixAll);
-        let mut runner = StepScheduler::new(hook, run_type).with_all_files(all_files);
-        if all_files {
-            let all_files = repo.all_files()?;
-            runner = runner.with_all_files(true).with_files(all_files);
-        } else {
-            let staged_files = repo.staged_files()?;
-            runner = runner.with_files(staged_files);
+        let hook_name = match run_type {
+            RunType::Check | RunType::Fix => "pre-commit",
+            RunType::CheckAll | RunType::FixAll => "pre-commit",
+        };
+        if env::HK_SKIP_HOOK.contains(hook_name) {
+            warn!("{}: skipping hook due to HK_SKIP_HOOK", hook_name);
+            return Ok(());
         }
-        runner.run().await?;
-        info!("pre-commit done");
-        Ok(())
+        let files = if matches!(run_type, RunType::CheckAll | RunType::FixAll) {
+            repo.all_files()?
+        } else {
+            repo.staged_files()?
+        };
+        StepScheduler::new(hook, run_type)
+            .with_all_files(matches!(run_type, RunType::CheckAll | RunType::FixAll))
+            .with_files(files)
+            .run()
+            .await
     }
 }

@@ -79,6 +79,17 @@ Type: `string[]` (comma-separated list)
 A comma-separated list of step names to skip when running pre-commit and pre-push hooks.
 For example: `HK_SKIP_STEPS=lint,test` would skip any steps named "lint" or "test".
 
+## `HK_SKIP_HOOK`
+
+Type: `string[]` (comma-separated list)
+Default: `(empty)`
+
+A comma-separated list of hook names to skip entirely. This allows you to disable specific git hooks from running.
+For example: `HK_SKIP_HOOK=pre-commit,pre-push` would skip running those hooks completely.
+
+This is useful when you want to temporarily disable certain hooks while still keeping them configured in your `hk.pkl` file.
+Unlike `HK_SKIP_STEPS` which skips individual steps, this skips the entire hook and all its steps.
+
 ## `HK_STASH`
 
 Type: `bool`
