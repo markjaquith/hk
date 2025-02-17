@@ -1,6 +1,30 @@
 # Changelog
 
-## [unreleased]
+## [0.2.3](https://github.com/jdx/hk/compare/v0.2.2..0.2.3) - 2025-02-17
+
+### 🚀 Features
+
+- added HK_FILE to use a different config filename by [@jdx](https://github.com/jdx) in [51f1326](https://github.com/jdx/hk/commit/51f1326494ec18abbba10e59dcf3e19f839936a8)
+
+### 🐛 Bug Fixes
+
+- show better error message if pkl is missing by [@jdx](https://github.com/jdx) in [4b71530](https://github.com/jdx/hk/commit/4b715305f7603cf57a7cc5eaa771f3fc91ad6b5c)
+
+### 📚 Documentation
+
+- stronger message about WIP by [@jdx](https://github.com/jdx) in [c650bfa](https://github.com/jdx/hk/commit/c650bfa0d9a6892b7b56726830d59c9b137fd7bb)
+- hn note by [@jdx](https://github.com/jdx) in [6143924](https://github.com/jdx/hk/commit/61439240b99d1d79a950b23d57515b1d824d2a2c)
+- hn note by [@jdx](https://github.com/jdx) in [7630bf1](https://github.com/jdx/hk/commit/7630bf1943f0c44ea3fbd11eafbbdc6fec895db4)
+- benchmark in readme by [@jdx](https://github.com/jdx) in [f75d7de](https://github.com/jdx/hk/commit/f75d7de9f1350be824251da9c78c246e039f6915)
+
+### 🔍 Other Changes
+
+- fix changelog generation version by [@jdx](https://github.com/jdx) in [18bc316](https://github.com/jdx/hk/commit/18bc3164c5f2ca3c3abc9a42eae1d93d81e79a33)
+- updated http url by [@jdx](https://github.com/jdx) in [875b25c](https://github.com/jdx/hk/commit/875b25c068492eed78829d9d1a9d0aa6b9dd9ca6)
+- benchmark by [@jdx](https://github.com/jdx) in [#6](https://github.com/jdx/hk/pull/6)
+- benchmark by [@jdx](https://github.com/jdx) in [#7](https://github.com/jdx/hk/pull/7)
+
+## [0.2.2](https://github.com/jdx/hk/compare/v0.2.1..v0.2.2) - 2025-02-17
 
 ### 🚀 Features
 
