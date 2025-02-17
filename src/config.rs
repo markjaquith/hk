@@ -47,7 +47,19 @@ impl Config {
                 let raw = xx::file::read_to_string(path)?;
                 serde_json::from_str(&raw).into_diagnostic()?
             }
-            "pkl" => rpkl::from_config(path).into_diagnostic()?,
+            "pkl" => {
+                match rpkl::from_config(path) {
+                    Ok(config) => config,
+                    Err(err) => {
+                        // if pkl bin is not installed
+                        if which::which("pkl").is_err() {
+                            bail!("install pkl cli to use pkl config files https://pkl-lang.org/");
+                        } else {
+                            return Err(err).into_diagnostic()?;
+                        }
+                    }
+                }
+            }
             _ => {
                 bail!("Unsupported file extension: {}", ext);
             }

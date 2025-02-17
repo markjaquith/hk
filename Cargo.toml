@@ -36,6 +36,7 @@ strum = { version = "0.26", features = ["derive"] }
 clx = "0.1.0"
 semver = "1.0.25"
 clap_usage = "2.0.3"
+which = "7.0.2"
 
 [profile.serious]
 inherits = "release"

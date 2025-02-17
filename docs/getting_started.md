@@ -7,10 +7,10 @@ A tool for running hooks on files in a git repository.
 
 ## Installation
 
-Use [mise-en-place](https://github.com/jdx/mise) to install hk:
+Use [mise-en-place](https://github.com/jdx/mise) to install hk (you'll also need the `pkl` cli):
 
 ```
-mise use hk
+mise use hk pkl
 hk --version
 ```
 
