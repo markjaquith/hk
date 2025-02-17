@@ -28,6 +28,9 @@ impl Install {
             };
             let hook_content = format!(
                 r#"#!/bin/sh
+if [ "$HK" = "0" ] || [ "$HK" = "false" ]; then
+    exit 0
+fi
 {command} "$@"
 "#
             );
