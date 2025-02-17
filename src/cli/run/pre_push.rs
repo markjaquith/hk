@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::{env, step::RunType};
 use crate::{git::Git, Result};
-use std::path::Path;
 
 /// Sets up git hooks to run hk
 #[derive(Debug, clap::Args)]
@@ -29,7 +28,7 @@ impl PrePush {
         unimplemented!(
             "pre-push is not yet implemented. We need support for --from-ref and --to-ref"
         );
-        let config = Config::read(Path::new("hk.pkl"))?;
+        let config = Config::get()?;
         let mut repo = Git::new()?;
         let run_type = if self.all {
             if self.fix || *env::HK_FIX {

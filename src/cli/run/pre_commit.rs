@@ -1,6 +1,5 @@
 use crate::{config::Config, env, step::RunType};
 use crate::{git::Git, Result};
-use std::path::Path;
 
 /// Sets up git hooks to run hk
 #[derive(Debug, clap::Args)]
@@ -23,7 +22,7 @@ pub struct PreCommit {
 
 impl PreCommit {
     pub async fn run(&self) -> Result<()> {
-        let config = Config::read(Path::new("hk.pkl"))?;
+        let config = Config::get()?;
         let mut repo = Git::new()?;
         let run_type = if self.all {
             if self.fix || *env::HK_FIX {

@@ -6,16 +6,11 @@
     "usage": "[FLAGS] <SUBCOMMAND>",
     "subcommands": {
       "cache": {
-        "full_cmd": [
-          "cache"
-        ],
+        "full_cmd": ["cache"],
         "usage": "cache <SUBCOMMAND>",
         "subcommands": {
           "clear": {
-            "full_cmd": [
-              "cache",
-              "clear"
-            ],
+            "full_cmd": ["cache", "clear"],
             "usage": "cache clear",
             "subcommands": {},
             "args": [],
@@ -41,9 +36,7 @@
         "examples": []
       },
       "completion": {
-        "full_cmd": [
-          "completion"
-        ],
+        "full_cmd": ["completion"],
         "usage": "completion <SHELL>",
         "subcommands": {},
         "args": [
@@ -67,9 +60,7 @@
         "examples": []
       },
       "config": {
-        "full_cmd": [
-          "config"
-        ],
+        "full_cmd": ["config"],
         "usage": "config",
         "subcommands": {},
         "args": [],
@@ -78,16 +69,12 @@
         "hide": false,
         "help": "Generate a default hk.toml configuration file",
         "name": "config",
-        "aliases": [
-          "cfg"
-        ],
+        "aliases": ["cfg"],
         "hidden_aliases": [],
         "examples": []
       },
       "generate": {
-        "full_cmd": [
-          "generate"
-        ],
+        "full_cmd": ["generate"],
         "usage": "generate [--mise]",
         "subcommands": {},
         "args": [],
@@ -99,9 +86,7 @@
             "help_long": "Generate a mise.toml file with hk configured\n\nSet HK_MISE=1 to make this default behavior.",
             "help_first_line": "Generate a mise.toml file with hk configured",
             "short": [],
-            "long": [
-              "mise"
-            ],
+            "long": ["mise"],
             "hide": false,
             "global": false
           }
@@ -110,16 +95,12 @@
         "hide": false,
         "help": "Generates a new hk.pkl file for a project",
         "name": "generate",
-        "aliases": [
-          "g"
-        ],
+        "aliases": ["g"],
         "hidden_aliases": [],
         "examples": []
       },
       "install": {
-        "full_cmd": [
-          "install"
-        ],
+        "full_cmd": ["install"],
         "usage": "install [--mise]",
         "subcommands": {},
         "args": [],
@@ -131,9 +112,7 @@
             "help_long": "Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools.\n\nSet HK_MISE=1 to make this default behavior.",
             "help_first_line": "Use `mise x` to execute hooks. With this, it won't",
             "short": [],
-            "long": [
-              "mise"
-            ],
+            "long": ["mise"],
             "hide": false,
             "global": false
           }
@@ -142,23 +121,16 @@
         "hide": false,
         "help": "Sets up git hooks to run hk",
         "name": "install",
-        "aliases": [
-          "i"
-        ],
+        "aliases": ["i"],
         "hidden_aliases": [],
         "examples": []
       },
       "run": {
-        "full_cmd": [
-          "run"
-        ],
+        "full_cmd": ["run"],
         "usage": "run <SUBCOMMAND>",
         "subcommands": {
           "pre-commit": {
-            "full_cmd": [
-              "run",
-              "pre-commit"
-            ],
+            "full_cmd": ["run", "pre-commit"],
             "usage": "run pre-commit [FLAGS]",
             "subcommands": {},
             "args": [],
@@ -168,12 +140,8 @@
                 "usage": "-a --all",
                 "help": "Run on all files instead of just staged files",
                 "help_first_line": "Run on all files instead of just staged files",
-                "short": [
-                  "a"
-                ],
-                "long": [
-                  "all"
-                ],
+                "short": ["a"],
+                "long": ["all"],
                 "hide": false,
                 "global": false
               },
@@ -182,12 +150,8 @@
                 "usage": "-f --fix",
                 "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
                 "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
-                "short": [
-                  "f"
-                ],
-                "long": [
-                  "fix"
-                ],
+                "short": ["f"],
+                "long": ["fix"],
                 "hide": false,
                 "global": false
               },
@@ -196,12 +160,8 @@
                 "usage": "-r --run",
                 "help": "Run run command instead of fix command",
                 "help_first_line": "Run run command instead of fix command",
-                "short": [
-                  "r"
-                ],
-                "long": [
-                  "run"
-                ],
+                "short": ["r"],
+                "long": ["run"],
                 "hide": false,
                 "global": false
               },
@@ -211,9 +171,7 @@
                 "help": "Force stashing even if it's disabled via HK_STASH",
                 "help_first_line": "Force stashing even if it's disabled via HK_STASH",
                 "short": [],
-                "long": [
-                  "stash"
-                ],
+                "long": ["stash"],
                 "hide": false,
                 "global": false
               }
@@ -222,17 +180,12 @@
             "hide": false,
             "help": "Sets up git hooks to run hk",
             "name": "pre-commit",
-            "aliases": [
-              "co"
-            ],
+            "aliases": ["co"],
             "hidden_aliases": [],
             "examples": []
           },
           "pre-push": {
-            "full_cmd": [
-              "run",
-              "pre-push"
-            ],
+            "full_cmd": ["run", "pre-push"],
             "usage": "run pre-push [FLAGS] <REMOTE> <URL>",
             "subcommands": {},
             "args": [
@@ -261,12 +214,8 @@
                 "usage": "-a --all",
                 "help": "Run on all files instead of just staged files",
                 "help_first_line": "Run on all files instead of just staged files",
-                "short": [
-                  "a"
-                ],
-                "long": [
-                  "all"
-                ],
+                "short": ["a"],
+                "long": ["all"],
                 "hide": false,
                 "global": false
               },
@@ -275,12 +224,8 @@
                 "usage": "-f --fix",
                 "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
                 "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
-                "short": [
-                  "f"
-                ],
-                "long": [
-                  "fix"
-                ],
+                "short": ["f"],
+                "long": ["fix"],
                 "hide": false,
                 "global": false
               },
@@ -289,12 +234,8 @@
                 "usage": "-r --run",
                 "help": "Run run command instead of fix command",
                 "help_first_line": "Run run command instead of fix command",
-                "short": [
-                  "r"
-                ],
-                "long": [
-                  "run"
-                ],
+                "short": ["r"],
+                "long": ["run"],
                 "hide": false,
                 "global": false
               }
@@ -303,9 +244,7 @@
             "hide": false,
             "help": "Sets up git hooks to run hk",
             "name": "pre-push",
-            "aliases": [
-              "ph"
-            ],
+            "aliases": ["ph"],
             "hidden_aliases": [],
             "examples": []
           }
@@ -317,16 +256,12 @@
         "subcommand_required": true,
         "help": "Run a hook",
         "name": "run",
-        "aliases": [
-          "r"
-        ],
+        "aliases": ["r"],
         "hidden_aliases": [],
         "examples": []
       },
       "usage": {
-        "full_cmd": [
-          "usage"
-        ],
+        "full_cmd": ["usage"],
         "usage": "usage",
         "subcommands": {},
         "args": [],
@@ -341,9 +276,7 @@
         "examples": []
       },
       "version": {
-        "full_cmd": [
-          "version"
-        ],
+        "full_cmd": ["version"],
         "usage": "version",
         "subcommands": {},
         "args": [],
@@ -364,12 +297,8 @@
         "usage": "-j --jobs <JOBS>",
         "help": "Number of jobs to run in parallel",
         "help_first_line": "Number of jobs to run in parallel",
-        "short": [
-          "j"
-        ],
-        "long": [
-          "jobs"
-        ],
+        "short": ["j"],
+        "long": ["jobs"],
         "hide": false,
         "global": true,
         "arg": {
@@ -385,12 +314,8 @@
         "usage": "-v --verbose...",
         "help": "Enables verbose output",
         "help_first_line": "Enables verbose output",
-        "short": [
-          "v"
-        ],
-        "long": [
-          "verbose"
-        ],
+        "short": ["v"],
+        "long": ["verbose"],
         "var": true,
         "hide": false,
         "global": true,
@@ -401,12 +326,8 @@
         "usage": "-q --quiet",
         "help": "Suppresses output",
         "help_first_line": "Suppresses output",
-        "short": [
-          "q"
-        ],
-        "long": [
-          "quiet"
-        ],
+        "short": ["q"],
+        "long": ["quiet"],
         "hide": false,
         "global": true
       },
@@ -416,9 +337,7 @@
         "help": "Suppresses all output",
         "help_first_line": "Suppresses all output",
         "short": [],
-        "long": [
-          "silent"
-        ],
+        "long": ["silent"],
         "hide": false,
         "global": true
       }

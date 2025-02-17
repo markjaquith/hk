@@ -34,7 +34,8 @@ min_hk_version = "0.1.0"
     }
 }
 
-`pre-push` {
+// TODO
+//`pre-push` {
     // ["format"] {
     //     check = true // ensures the files have no changes and fails otherwise
     //     formatter = formatters.prettier
@@ -48,7 +49,7 @@ min_hk_version = "0.1.0"
     //         ["golangci-lint"] {}
     //     }
     // }
-}
+//}
 
 // TODO
 // commit_msg {

@@ -1,6 +1,7 @@
 ---
-outline: 'deep'
+outline: "deep"
 ---
+
 # Configuration
 
 hk is configured via `hk.pkl` which is written in [pkl-lang](https://pkl-lang.org/) from Apple.
@@ -30,7 +31,7 @@ import "https://hk.jdx.dev/v0/builtins.pkl" // optional
 ```
 
 The first line (`amends`) is critical because that imports the base configuration pkl for extending. The second line (`import`) imports
-the builtins, so it's only necessary if actually using builtins. 
+the builtins, so it's only necessary if actually using builtins.
 
 ### `min_hk_version: String`
 
@@ -51,7 +52,6 @@ Hooks are made up of steps. The hook themselves can be one of the following:
 ### `<HOOK>.<STEP>`
 
 Steps are the individual commands that make up a hook. They are executed in the order they are defined in parallel up to [`HK_JOBS`](/environment_variables#hk-jobs) at a time.
-
 
 ### `<HOOK>.<STEP>.glob: Listing<String>`
 

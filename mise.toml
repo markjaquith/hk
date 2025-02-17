@@ -26,8 +26,11 @@ depends = ["init"]
 alias = "b"
 run = "cargo build"
 
+[tasks.ci]
+depends = ["test", "lint"]
+
 [tasks.test]
-alias = ["t", "ci"]
+alias = ["t"]
 depends = ["build"]
 run = [
     "cargo test",
@@ -44,6 +47,12 @@ run = "echo postlint"
 [tasks.pre-release]
 depends = ["render"]
 run = "git cliff -o CHANGELOG.md"
+[tasks.lint]
+depends = ["build"]
+run = [
+  "hk r co -a",
+  "cargo clippy --all-targets --all-features",
+]
 [tasks.lint-fix]
 run = "cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features"
 

@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::{
     git::Git,
@@ -18,10 +18,15 @@ impl Config {
             Path::new("hk.yaml"),
             Path::new("hk.json"),
         ];
-        for path in paths {
-            if path.exists() {
-                return Self::read(path);
+        let mut cwd = std::env::current_dir().into_diagnostic()?;
+        while cwd != Path::new("/") {
+            for path in &paths {
+                let path = cwd.join(path);
+                if path.exists() {
+                    return Self::read(&path);
+                }
             }
+            cwd = cwd.parent().map(PathBuf::from).unwrap_or_default();
         }
         debug!("No config file found, using default");
         Ok(Self::default())

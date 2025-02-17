@@ -1,10 +1,3 @@
-[tools.black]
-version = "25.1.0"
-backend = "aqua:psf/black"
-
-[tools.black.checksums]
-black_macos = "sha256:04e170a13804a2ab7f87f9b65c856a2afce03dc3e97f9e4959ba700064e0de38"
-
 [tools.hadolint]
 version = "2.12.0"
 backend = "ubi:hadolint/hadolint"
@@ -18,10 +11,6 @@ backend = "aqua:pinterest/ktlint"
 
 [tools.ktlint.checksums]
 "ktlint-1.5.0.zip" = "sha256:3958a51ca45a82baf3d03aefd3ea199058d1e170df022b0c47605ef0c9a048e7"
-
-[tools.markdownlint-cli2]
-version = "0.17.2"
-backend = "npm:markdownlint-cli2"
 
 [tools."npm:prettier"]
 version = "3.4.2"
