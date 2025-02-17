@@ -11,10 +11,10 @@ pub struct PrePush {
     all: bool,
     /// Run fix command instead of run command
     /// This is the default behavior unless HK_FIX=0
-    #[clap(short, long)]
+    #[clap(short, long, overrides_with = "check")]
     fix: bool,
     /// Run check command instead of fix command
-    #[clap(short, long)]
+    #[clap(short, long, overrides_with = "fix")]
     check: bool,
     /// Remote name
     remote: String,
@@ -34,15 +34,15 @@ impl PrePush {
         let config = Config::get()?;
         let mut repo = Git::new()?;
         let run_type = if self.all {
-            if self.fix || *env::HK_FIX {
-                Some(RunType::FixAll)
+            if !self.check && (self.fix || *env::HK_FIX) {
+                RunType::FixAll
             } else {
-                Some(RunType::CheckAll)
+                RunType::CheckAll
             }
-        } else if self.fix || *env::HK_FIX {
-            Some(RunType::Fix)
+        } else if !self.check && (self.fix || *env::HK_FIX) {
+            RunType::Fix
         } else {
-            Some(RunType::Check)
+            RunType::Check
         };
         if !self.all {
             repo.stash_unstaged(self.stash)?;

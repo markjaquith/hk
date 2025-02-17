@@ -56,7 +56,7 @@ pub enum FileKind {
     NotSymlink,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RunType {
     Check,
     Fix,
@@ -80,18 +80,7 @@ impl Step {
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
         tctx.with_files(staged_files.as_ref());
         let pr = self.build_pr();
-        let run_type = if *env::HK_FIX && self.fix_all.is_some() || self.fix.is_some() {
-            if self.fix.is_none() || (ctx.all_files && self.fix_all.is_some()) {
-                RunType::FixAll
-            } else {
-                RunType::Fix
-            }
-        } else if self.check.is_none() || (ctx.all_files && self.check_all.is_some()) {
-            RunType::CheckAll
-        } else {
-            RunType::Check
-        };
-        let Some(run) = (match run_type {
+        let Some(run) = (match ctx.run_type {
             RunType::Check => self.check.as_ref(),
             RunType::Fix => self.fix.as_ref(),
             RunType::CheckAll => self.check_all.as_ref(),
@@ -109,7 +98,7 @@ impl Step {
             .execute()
             .await
             .into_diagnostic()?;
-        let pathspecs_to_add = if matches!(run_type, RunType::Fix | RunType::FixAll) {
+        let pathspecs_to_add = if matches!(ctx.run_type, RunType::Fix | RunType::FixAll) {
             let pathspecs_to_add = if let Some(stage) = &self.stage {
                 let stage = stage
                     .iter()
@@ -140,8 +129,8 @@ impl Step {
             vec![]
         };
 
-        if run_type == RunType::CheckAll
-            || run_type == RunType::FixAll
+        if ctx.run_type == RunType::CheckAll
+                || ctx.run_type == RunType::FixAll
             || pathspecs_to_add.is_empty()
         {
             pr.finish_with_message("done".to_string());
@@ -159,9 +148,33 @@ impl Step {
         let mpr = clx::MultiProgressReport::get();
         mpr.add(&self.name)
     }
+
+    pub fn available_run_type(&self, run_type: RunType) -> Option<RunType> {
+        match run_type {
+            RunType::CheckAll => match self.check_all.is_some() {
+                true => Some(RunType::CheckAll),
+                false => self.available_run_type(RunType::Check),
+            },
+            RunType::FixAll => match self.fix_all.is_some() {
+                true => Some(RunType::FixAll),
+                false => self
+                    .available_run_type(RunType::Fix)
+                    .or(self.available_run_type(RunType::CheckAll)),
+            },
+            RunType::Check => match self.check.is_some() {
+                true => Some(RunType::Check),
+                false => None,
+            },
+            RunType::Fix => match self.fix.is_some() {
+                true => Some(RunType::Fix),
+                false => self.available_run_type(RunType::Check),
+            },
+        }
+    }
 }
 
 pub struct StepContext {
+    pub run_type: RunType,
     pub all_files: bool,
     pub files: Vec<PathBuf>,
 }

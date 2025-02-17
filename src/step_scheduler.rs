@@ -4,11 +4,15 @@ use std::{path::PathBuf, sync::Arc};
 use tokio::sync::{Mutex, RwLock, Semaphore};
 use tokio::task::JoinSet;
 
-use crate::{settings::Settings, step::Step};
+use crate::{
+    settings::Settings,
+    step::{RunType, Step},
+};
 use crate::{step::StepContext, Result};
 
 #[derive(Debug)]
 pub struct StepScheduler {
+    run_type: RunType,
     steps: Vec<Step>,
     files: Vec<PathBuf>,
     failed: Arc<Mutex<bool>>,
@@ -19,9 +23,10 @@ pub struct StepScheduler {
 }
 
 impl StepScheduler {
-    pub fn new(hook: &IndexMap<String, Step>) -> Self {
+    pub fn new(hook: &IndexMap<String, Step>, run_type: RunType) -> Self {
         let settings = Settings::get();
         Self {
+            run_type,
             steps: hook.values().cloned().collect(),
             files: vec![],
             failed: Arc::new(Mutex::new(false)),
@@ -42,12 +47,17 @@ impl StepScheduler {
         self
     }
 
-    async fn run_step(
-        &self,
-        step: &Step,
-        set: &mut JoinSet<Result<()>>,
-        ctx: Arc<StepContext>,
-    ) -> Result<()> {
+    async fn run_step(&self, step: &Step, set: &mut JoinSet<Result<()>>) -> Result<()> {
+        let Some(run_type) = step.available_run_type(self.run_type) else {
+            debug!("{step}: skipping step due to no available run type");
+            return Ok(());
+        };
+        let ctx = Arc::new(StepContext {
+            run_type,
+            all_files: self.all_files,
+            files: self.files.clone(),
+        });
+
         let permit = self
             .semaphore
             .clone()
@@ -82,11 +92,6 @@ impl StepScheduler {
 
     pub async fn run(self) -> Result<()> {
         let runner = Arc::new(self);
-        let ctx = Arc::new(StepContext {
-            all_files: runner.all_files,
-            files: runner.files.clone(),
-        });
-
         // groups is a list of list of steps which are separated by exclusive steps
         // any exclusive step will be in a group by itself
         let groups = runner.steps.iter().fold(vec![], |mut groups, step| {
@@ -102,7 +107,7 @@ impl StepScheduler {
 
             // Spawn all tasks
             for step in &group {
-                runner.run_step(step, &mut set, ctx.clone()).await?;
+                runner.run_step(step, &mut set).await?;
             }
 
             // Wait for tasks and abort on first error

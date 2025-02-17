@@ -85,11 +85,11 @@ impl Config {
     pub async fn run_hook(
         &self,
         hook: &IndexMap<String, Step>,
-        run_type: Option<RunType>,
+        run_type: RunType,
         repo: &Git,
     ) -> Result<()> {
-        let all_files = matches!(run_type, Some(RunType::CheckAll) | Some(RunType::FixAll));
-        let mut runner = StepScheduler::new(hook).with_all_files(all_files);
+        let all_files = matches!(run_type, RunType::CheckAll | RunType::FixAll);
+        let mut runner = StepScheduler::new(hook, run_type).with_all_files(all_files);
         if all_files {
             let all_files = repo.all_files()?;
             runner = runner.with_all_files(true).with_files(all_files);
