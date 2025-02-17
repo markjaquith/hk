@@ -1,4 +1,7 @@
 open class Step {
+    /// Which profiles (HK_PROFILES) need to be active for the step to run
+    profiles: Listing<String>?
+
     /// Which file patterns to run the step on
     glob: Listing<String>?
 

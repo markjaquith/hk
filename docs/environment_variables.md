@@ -4,12 +4,14 @@ Environment variables can be used to configure hk.
 
 ## `HK_CACHE_DIR`
 
+Type: `path`
 Default: `~/.cache/hk`
 
 The cache directory to use.
 
 ## `HK_CHECK_FIRST`
 
+Type: `bool`
 Default: `true`
 
 If true, hk will run check on files first then run fix steps if check fails iff there are multiple fix steps with the same file in a matching glob pattern.
@@ -19,38 +21,50 @@ the same file as we want without them interfering with each other—however we c
 
 If this is disabled hk will have simpler logic that just uses fix steps in series in this situation.
 
+## `HK_PROFILE`
+
+Type: `string[]` (comma-separated list)
+
+The profile(s) to use.
+
 ## `HK_FIX`
 
+Type: `bool`
 Default: `true`
 
 If set to `false`, hk will not run fix steps.
 
 ## `HK_JOBS`
 
+Type: `usize`
 Default: `(number of cores)`
 
 The number of jobs to run in parallel.
 
 ## `HK_LOG`
 
+Type: `trace` | `debug` | `info` | `warn` | `error`
 Default: `info`
 
 The log level to use.
 
 ## `HK_LOG_FILE`
 
+Type: `path`
 Default: `~/.local/state/hk/hk.log`
 
 The log file to use.
 
 ## `HK_LOG_FILE_LEVEL`
 
+Type: `trace` | `debug` | `info` | `warn` | `error`
 Default: `HK_LOG`
 
 The log level to use for the log file.
 
 ## `HK_MISE`
 
+Type: `bool`
 Default: `false`
 
 If set to `true`:
@@ -60,19 +74,21 @@ If set to `true`:
 
 ## `HK_SKIP_STEPS`
 
-Default: (empty)
+Type: `string[]` (comma-separated list)
 
 A comma-separated list of step names to skip when running pre-commit and pre-push hooks.
 For example: `HK_SKIP_STEPS=lint,test` would skip any steps named "lint" or "test".
 
 ## `HK_STASH`
 
+Type: `bool`
 Default: `true`
 
 If set to `false`, hk will not automatically stash unstaged changes before running hooks.
 
 ## `HK_STATE_DIR`
 
+Type: `path`
 Default: `~/.local/state/hk`
 
 The state directory to use.

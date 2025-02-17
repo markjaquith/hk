@@ -1,12 +1,14 @@
+use crate::tera;
 use crate::Result;
-use crate::{env, tera};
 use crate::{git::Git, glob};
 use ensembler::CmdLineRunner;
+use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use miette::IntoDiagnostic;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fmt, sync::Arc};
+use tokio::sync::RwLock;
 
 use serde_with::{serde_as, OneOrMany};
 
@@ -26,6 +28,8 @@ pub struct Step {
     pub r#type: Option<String>,
     #[serde(default)]
     pub name: String,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
+    pub profiles: Option<Vec<String>>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
     pub check: Option<String>,
@@ -65,20 +69,10 @@ pub enum RunType {
 }
 
 impl Step {
-    pub async fn run(&self, ctx: &StepContext) -> Result<()> {
+    pub async fn run(&self, ctx: StepContext) -> Result<()> {
         let mut tctx = tera::Context::default();
-        let staged_files = if let Some(glob) = &self.glob {
-            let matches = glob::get_matches(glob, &ctx.files)?;
-            if matches.is_empty() {
-                debug!("{self}: no matches for step");
-                return Ok(());
-            }
-            matches
-        } else {
-            ctx.files.clone()
-        };
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
-        tctx.with_files(staged_files.as_ref());
+        tctx.with_files(&ctx.files);
         let pr = self.build_pr();
         let Some(run) = (match ctx.run_type {
             RunType::Check => self.check.as_ref(),
@@ -104,9 +98,9 @@ impl Step {
                     .iter()
                     .map(|s| tera::render(s, &tctx).unwrap())
                     .collect_vec();
-                glob::get_matches(&stage, &staged_files)?
+                glob::get_matches(&stage, &ctx.files)?
             } else if self.glob.is_some() {
-                staged_files
+                ctx.files.clone()
             } else {
                 vec![]
             }
@@ -173,9 +167,30 @@ impl Step {
             },
         }
     }
+
+    pub fn enabled_profiles(&self) -> Option<IndexSet<String>> {
+        self.profiles.as_ref().map(|profiles| {
+            profiles
+                .iter()
+                .filter(|s| !s.starts_with('!'))
+                .map(|s| s.to_string())
+                .collect()
+        })
+    }
+
+    pub fn disabled_profiles(&self) -> Option<IndexSet<String>> {
+        self.profiles.as_ref().map(|profiles| {
+            profiles
+                .iter()
+                .filter(|s| s.starts_with('!'))
+                .map(|s| s.strip_prefix('!').unwrap().to_string())
+                .collect()
+        })
+    }
 }
 
 pub struct StepContext {
     pub run_type: RunType,
     pub files: Vec<PathBuf>,
+    pub file_locks: IndexMap<PathBuf, Arc<RwLock<()>>>,
 }

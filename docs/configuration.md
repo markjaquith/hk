@@ -53,6 +53,28 @@ Hooks are made up of steps. The hook themselves can be one of the following:
 
 Steps are the individual commands that make up a hook. They are executed in the order they are defined in parallel up to [`HK_JOBS`](/environment_variables#hk-jobs) at a time.
 
+### `<HOOK>.<STEP>.profiles: Listing<String>`
+
+Profiles are a way to enable/disable steps based on the current profile. The step will only be run the step's profile is in [`HK_PROFILE`](/environment_variables#hk-profile).
+
+```pkl
+`pre-commit` {
+    ["prettier"] {
+        profiles = new { "slow" }
+    }
+}
+```
+
+Profiles can be prefixed with `!` to disable them.
+
+```pkl
+`pre-commit` {
+    ["prettier"] {
+        profiles = new { "!slow" }
+    }
+}
+```
+
 ### `<HOOK>.<STEP>.glob: Listing<String>`
 
 Files the step should run on. By default this will only run this step if at least 1 staged file matches the glob patterns. If no patterns are provided, the step will always run.

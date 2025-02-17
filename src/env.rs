@@ -36,10 +36,19 @@ pub static HK_CHECK_FIRST: LazyLock<bool> = LazyLock::new(|| var_true("HK_CHECK_
 pub static HK_STASH: LazyLock<bool> = LazyLock::new(|| !var_false("HK_STASH"));
 pub static HK_FIX: LazyLock<bool> = LazyLock::new(|| !var_false("HK_FIX"));
 pub static HK_MISE: LazyLock<bool> = LazyLock::new(|| var_true("HK_MISE"));
-pub static HK_SKIP_STEPS: LazyLock<IndexSet<String>> =
-    LazyLock::new(|| var_csv("HK_SKIP_STEPS").unwrap_or_default());
+pub static HK_PROFILE: LazyLock<IndexSet<String>> = LazyLock::new(|| {
+    var_csv("HK_PROFILE")
+        .or(var_csv("HK_PROFILES"))
+        .unwrap_or_default()
+});
+pub static HK_SKIP_STEPS: LazyLock<IndexSet<String>> = LazyLock::new(|| {
+    var_csv("HK_SKIP_STEPS")
+        .or(var_csv("HK_SKIP_STEP"))
+        .unwrap_or_default()
+});
 pub static HK_JOBS: LazyLock<NonZero<usize>> = LazyLock::new(|| {
     var("HK_JOBS")
+        .or(var("HK_JOB"))
         .ok()
         .and_then(|val| val.parse().ok())
         .or(thread::available_parallelism().ok())

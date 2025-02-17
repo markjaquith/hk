@@ -18,8 +18,12 @@ min_hk_version = "0.1.0"
         check = "pkl eval {{files}} >/dev/null"
     }
     // predefined formatters+linters
-    // ["cargo-check"] = new builtins.CargoCheck {} // TODO: figure out why this causes recompiles
-    ["cargo-fmt"] = new builtins.CargoFmt {}
+    ["cargo-clippy"] = new builtins.CargoCheck {
+        profiles = new { "slow" }
+    }
+    ["cargo-fmt"] = new builtins.CargoFmt {
+        profiles = new { "!slow" }
+    }
     ["dbg"] {
         // ensure no dbg! macros are used
         glob = new { "**/*.rs" }
