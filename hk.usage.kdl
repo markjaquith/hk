@@ -1,0 +1,56 @@
+name hk
+bin hk
+version "0.1.9"
+about "A tool for managing git hooks"
+usage "Usage: hk [OPTIONS] <COMMAND>"
+flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
+    arg <JOBS>
+}
+flag "-v --verbose" help="Enables verbose output" var=#true global=#true count=#true
+flag "-q --quiet" help="Suppresses output" global=#true
+flag --silent help="Suppresses all output" global=#true
+cmd cache hide=#true subcommand_required=#true help="Manage hk internal cache" {
+    cmd clear help="Clear the cache directory"
+}
+cmd completion help="Generates shell completion scripts" {
+    arg <SHELL> help="The shell to generate completion for"
+}
+cmd config help="Generate a default hk.toml configuration file" {
+    alias cfg
+}
+cmd generate help="Generates a new hk.pkl file for a project" {
+    alias g
+    flag --mise help="Generate a mise.toml file with hk configured" {
+        long_help "Generate a mise.toml file with hk configured\n\nSet HK_MISE=1 to make this default behavior."
+    }
+}
+cmd install help="Sets up git hooks to run hk" {
+    alias i
+    flag --mise help="Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools." {
+        long_help "Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools.\n\nSet HK_MISE=1 to make this default behavior."
+    }
+}
+cmd run subcommand_required=#true help="Run a hook" {
+    alias r
+    cmd pre-commit help="Sets up git hooks to run hk" {
+        alias co
+        flag "-a --all" help="Run on all files instead of just staged files"
+        flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+        flag "-r --run" help="Run run command instead of fix command"
+        flag --stash help="Force stashing even if it's disabled via HK_STASH"
+    }
+    cmd pre-push help="Sets up git hooks to run hk" {
+        alias ph
+        flag "-a --all" help="Run on all files instead of just staged files"
+        flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+        flag "-r --run" help="Run run command instead of fix command"
+        arg <REMOTE> help="Remote name"
+        arg <URL> help="Remote URL"
+    }
+}
+cmd usage hide=#true help="Generates a usage spec for the CLI" {
+    long_help "Generates a usage spec for the CLI\n\nhttps://usage.jdx.dev"
+}
+cmd version help="Print the version of hk"
+
+

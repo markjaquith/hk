@@ -1,0 +1,123 @@
+import "hk.pkl"
+
+class Actionlint extends hk.Step {
+    glob = new { ".github/workflows/*.{yml,yaml}" }
+    run = "actionlint {{ files }}"
+    run_all = "actionlint ."
+}
+
+class CargoCheck extends hk.Step {
+    glob = new { "**/*.rs" }
+    run = "cargo check --all-features"
+}
+
+class CargoClippy extends hk.Step {
+    glob = new { "**/*.rs" }
+    run = "cargo clippy --all-features --allow-dirty --allow-staged"
+    fix = "cargo clippy --all-features --fix --allow-dirty --allow-staged"
+}
+
+class CargoFmt extends hk.Step {
+    glob = new { "**/*.rs" }
+    run_all = "cargo fmt --check"
+    fix_all = "cargo fmt"
+}
+
+class Eslint extends hk.Step {
+    glob = new { "**/*.{js,jsx,ts,tsx}" }
+    run = "eslint {{ files }}"
+    fix = "eslint --fix {{ files }}"
+    run_all = "eslint ."
+    fix_all = "eslint --fix ."
+}
+
+class GoVet extends hk.Step {
+    glob = new { "**/*.go" }
+    run = "go vet {{ files }}"
+    run_all = "go vet ."
+}
+
+class Jq extends hk.Step {
+    glob = new { "**/*.json" }
+    run = "jq . {{ files }}"
+    fix = "jq -S . {{ files }}"
+}
+
+class Prettier extends hk.Step {
+    glob = new { "**/*.{js,jsx,ts,tsx,css,scss,less,html,json,jsonc,yaml,markdown,markdown.mdx,graphql,handlebars,svelte,astro,htmlangular}" }
+    run = "prettier --check {{ files }}"
+    fix = "prettier --write {{ files }}"
+    run_all = "prettier --check ."
+    fix_all = "prettier --write ."
+}
+
+class Rubocop extends hk.Step {
+    glob = new { "**/*.rb" }
+    run = "rubocop {{ files }}"
+    run_all = "rubocop ."
+    fix = "rubocop --fix {{ files }}"
+    fix_all = "rubocop --fix ."
+}
+
+class Rustfmt extends hk.Step {
+    glob = new { "**/*.rs" }
+    run = "rustfmt --check --edition 2024 {{ files }}"
+    fix = "rustfmt --edition 2024 {{ files }}"
+}
+
+class Yq extends hk.Step {
+    glob = new { "**/*.yaml" }
+    run = "yq {{ files }}"
+    fix = "yq -iP {{ files }}"
+}
+
+class Black extends hk.Step {
+    glob = new { "**/*.py" }
+    run = "black --check {{ files }}"
+    fix = "black {{ files }}"
+    run_all = "black --check ."
+    fix_all = "black ."
+}
+
+class Shellcheck extends hk.Step {
+    glob = new { "**/*.{sh,bash}" }
+    run = "shellcheck {{ files }}"
+    run_all = "shellcheck ."
+}
+
+class Hadolint extends hk.Step {
+    glob = new { "**/Dockerfile*" }
+    run = "hadolint {{ files }}"
+}
+
+class Markdownlint extends hk.Step {
+    glob = new { "**/*.{md,markdown}" }
+    run = "markdownlint {{ files }}"
+    fix = "markdownlint --fix {{ files }}"
+    run_all = "markdownlint ."
+    fix_all = "markdownlint --fix ."
+}
+
+class Stylelint extends hk.Step {
+    glob = new { "**/*.{css,scss,sass,less}" }
+    run = "stylelint {{ files }}"
+    fix = "stylelint --fix {{ files }}"
+    run_all = "stylelint \"**/*.{css,scss,sass,less}\""
+    fix_all = "stylelint --fix \"**/*.{css,scss,sass,less}\""
+}
+
+class SwiftLint extends hk.Step {
+    glob = new { "**/*.swift" }
+    run = "swiftlint lint {{ files }}"
+    fix = "swiftlint --fix {{ files }}"
+    run_all = "swiftlint"
+    fix_all = "swiftlint --fix"
+}
+
+class Ktlint extends hk.Step {
+    glob = new { "**/*.kt" }
+    run = "ktlint {{ files }}"
+    fix = "ktlint -F {{ files }}"
+    run_all = "ktlint"
+    fix_all = "ktlint -F"
+}

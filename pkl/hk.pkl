@@ -1,0 +1,31 @@
+open class Step {
+    /// Which file patterns to run the step on
+    glob: Listing<String>?
+
+    /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
+    exclusive = false
+
+    /// a shell command to run. Any edits will be ignored.
+    run: String?
+
+    /// a shell command that checks and edits files. Edits will be automatically added to the index.
+    fix: String?
+
+    /// a shell command to run on all files
+    /// if run_all is not set, this will just use the run command and pass all files in the repo as {{files}}
+    run_all: String?
+
+    /// a shell command that checks and edits files. Edits will be automatically added to the index.
+    fix_all: String?
+
+    /// globs of files to add to git index after running a fix/fix_all step
+    /// if not set, all files will be added
+    stage: Listing<String>?
+}
+
+typealias Hook = Mapping<String, Step>
+
+min_hk_version: String?
+
+`pre-commit`: Hook?
+`pre-push`: Hook?

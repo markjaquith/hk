@@ -1,0 +1,63 @@
+// amends "package://hk.jdx.dev/v0/hk.pkl"
+amends "pkl/hk.pkl"
+import "pkl/builtins.pkl"
+
+min_hk_version = "0.1.0"
+
+// defines what happens during git pre-commit hook
+`pre-commit` {
+    // "prelint" here is simply a name to define the step
+    ["prelint"] {
+        // if a step has a "run" script it will execute that
+        run = "mise run prelint"
+        exclusive = true // ensures that the step runs in isolation
+    }
+    ["actionlint"] = new builtins.Actionlint {}
+    ["pkl"] {
+        glob = new { "*.pkl" }
+        run = "pkl eval {{files}} >/dev/null"
+    }
+    // predefined formatters+linters
+    // ["cargo-check"] = new builtins.CargoCheck {} // TODO: figure out why this causes recompiles
+    ["cargo-fmt"] = new builtins.CargoFmt {}
+    ["dbg"] {
+        // ensure no dbg! macros are used
+        glob = new { "**/*.rs" }
+        run = "! rg -e 'dbg!' {{files}}"
+    }
+    ["prettier"] = new builtins.Prettier {
+        glob = new { "*.js"; "*.ts" } // override the default globs
+    }
+    ["postlint"] {
+        run = "mise run postlint"
+        exclusive = true
+    }
+}
+
+`pre-push` {
+    // ["format"] {
+    //     check = true // ensures the files have no changes and fails otherwise
+    //     formatter = formatters.prettier
+    // }
+    // ["lint"] {
+    //     linters = new {
+    //         ["eslint"] {
+    //             glob = new { "*.ts" }
+    //         }
+    //         ["clippy"] {}
+    //         ["golangci-lint"] {}
+    //     }
+    // }
+}
+
+// TODO
+// commit_msg {
+// }
+
+// TODO
+// prepare_commit_msg {
+// }
+
+// TODO
+// update {
+// }

@@ -1,0 +1,440 @@
+{
+  "name": "hk",
+  "bin": "hk",
+  "cmd": {
+    "full_cmd": [],
+    "usage": "[FLAGS] <SUBCOMMAND>",
+    "subcommands": {
+      "cache": {
+        "full_cmd": [
+          "cache"
+        ],
+        "usage": "cache <SUBCOMMAND>",
+        "subcommands": {
+          "clear": {
+            "full_cmd": [
+              "cache",
+              "clear"
+            ],
+            "usage": "cache clear",
+            "subcommands": {},
+            "args": [],
+            "flags": [],
+            "mounts": [],
+            "hide": false,
+            "help": "Clear the cache directory",
+            "name": "clear",
+            "aliases": [],
+            "hidden_aliases": [],
+            "examples": []
+          }
+        },
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": true,
+        "subcommand_required": true,
+        "help": "Manage hk internal cache",
+        "name": "cache",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "completion": {
+        "full_cmd": [
+          "completion"
+        ],
+        "usage": "completion <SHELL>",
+        "subcommands": {},
+        "args": [
+          {
+            "name": "SHELL",
+            "usage": "<SHELL>",
+            "help": "The shell to generate completion for",
+            "help_first_line": "The shell to generate completion for",
+            "required": true,
+            "double_dash": "Optional",
+            "hide": false
+          }
+        ],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "help": "Generates shell completion scripts",
+        "name": "completion",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "config": {
+        "full_cmd": [
+          "config"
+        ],
+        "usage": "config",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "help": "Generate a default hk.toml configuration file",
+        "name": "config",
+        "aliases": [
+          "cfg"
+        ],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "generate": {
+        "full_cmd": [
+          "generate"
+        ],
+        "usage": "generate [--mise]",
+        "subcommands": {},
+        "args": [],
+        "flags": [
+          {
+            "name": "mise",
+            "usage": "--mise",
+            "help": "Generate a mise.toml file with hk configured",
+            "help_long": "Generate a mise.toml file with hk configured\n\nSet HK_MISE=1 to make this default behavior.",
+            "help_first_line": "Generate a mise.toml file with hk configured",
+            "short": [],
+            "long": [
+              "mise"
+            ],
+            "hide": false,
+            "global": false
+          }
+        ],
+        "mounts": [],
+        "hide": false,
+        "help": "Generates a new hk.pkl file for a project",
+        "name": "generate",
+        "aliases": [
+          "g"
+        ],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "install": {
+        "full_cmd": [
+          "install"
+        ],
+        "usage": "install [--mise]",
+        "subcommands": {},
+        "args": [],
+        "flags": [
+          {
+            "name": "mise",
+            "usage": "--mise",
+            "help": "Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools.",
+            "help_long": "Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools.\n\nSet HK_MISE=1 to make this default behavior.",
+            "help_first_line": "Use `mise x` to execute hooks. With this, it won't",
+            "short": [],
+            "long": [
+              "mise"
+            ],
+            "hide": false,
+            "global": false
+          }
+        ],
+        "mounts": [],
+        "hide": false,
+        "help": "Sets up git hooks to run hk",
+        "name": "install",
+        "aliases": [
+          "i"
+        ],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "run": {
+        "full_cmd": [
+          "run"
+        ],
+        "usage": "run <SUBCOMMAND>",
+        "subcommands": {
+          "pre-commit": {
+            "full_cmd": [
+              "run",
+              "pre-commit"
+            ],
+            "usage": "run pre-commit [FLAGS]",
+            "subcommands": {},
+            "args": [],
+            "flags": [
+              {
+                "name": "all",
+                "usage": "-a --all",
+                "help": "Run on all files instead of just staged files",
+                "help_first_line": "Run on all files instead of just staged files",
+                "short": [
+                  "a"
+                ],
+                "long": [
+                  "all"
+                ],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "fix",
+                "usage": "-f --fix",
+                "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "short": [
+                  "f"
+                ],
+                "long": [
+                  "fix"
+                ],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "run",
+                "usage": "-r --run",
+                "help": "Run run command instead of fix command",
+                "help_first_line": "Run run command instead of fix command",
+                "short": [
+                  "r"
+                ],
+                "long": [
+                  "run"
+                ],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "stash",
+                "usage": "--stash",
+                "help": "Force stashing even if it's disabled via HK_STASH",
+                "help_first_line": "Force stashing even if it's disabled via HK_STASH",
+                "short": [],
+                "long": [
+                  "stash"
+                ],
+                "hide": false,
+                "global": false
+              }
+            ],
+            "mounts": [],
+            "hide": false,
+            "help": "Sets up git hooks to run hk",
+            "name": "pre-commit",
+            "aliases": [
+              "co"
+            ],
+            "hidden_aliases": [],
+            "examples": []
+          },
+          "pre-push": {
+            "full_cmd": [
+              "run",
+              "pre-push"
+            ],
+            "usage": "run pre-push [FLAGS] <REMOTE> <URL>",
+            "subcommands": {},
+            "args": [
+              {
+                "name": "REMOTE",
+                "usage": "<REMOTE>",
+                "help": "Remote name",
+                "help_first_line": "Remote name",
+                "required": true,
+                "double_dash": "Optional",
+                "hide": false
+              },
+              {
+                "name": "URL",
+                "usage": "<URL>",
+                "help": "Remote URL",
+                "help_first_line": "Remote URL",
+                "required": true,
+                "double_dash": "Optional",
+                "hide": false
+              }
+            ],
+            "flags": [
+              {
+                "name": "all",
+                "usage": "-a --all",
+                "help": "Run on all files instead of just staged files",
+                "help_first_line": "Run on all files instead of just staged files",
+                "short": [
+                  "a"
+                ],
+                "long": [
+                  "all"
+                ],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "fix",
+                "usage": "-f --fix",
+                "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "short": [
+                  "f"
+                ],
+                "long": [
+                  "fix"
+                ],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "run",
+                "usage": "-r --run",
+                "help": "Run run command instead of fix command",
+                "help_first_line": "Run run command instead of fix command",
+                "short": [
+                  "r"
+                ],
+                "long": [
+                  "run"
+                ],
+                "hide": false,
+                "global": false
+              }
+            ],
+            "mounts": [],
+            "hide": false,
+            "help": "Sets up git hooks to run hk",
+            "name": "pre-push",
+            "aliases": [
+              "ph"
+            ],
+            "hidden_aliases": [],
+            "examples": []
+          }
+        },
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "subcommand_required": true,
+        "help": "Run a hook",
+        "name": "run",
+        "aliases": [
+          "r"
+        ],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "usage": {
+        "full_cmd": [
+          "usage"
+        ],
+        "usage": "usage",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": true,
+        "help": "Generates a usage spec for the CLI",
+        "help_long": "Generates a usage spec for the CLI\n\nhttps://usage.jdx.dev",
+        "name": "usage",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "version": {
+        "full_cmd": [
+          "version"
+        ],
+        "usage": "version",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "help": "Print the version of hk",
+        "name": "version",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      }
+    },
+    "args": [],
+    "flags": [
+      {
+        "name": "jobs",
+        "usage": "-j --jobs <JOBS>",
+        "help": "Number of jobs to run in parallel",
+        "help_first_line": "Number of jobs to run in parallel",
+        "short": [
+          "j"
+        ],
+        "long": [
+          "jobs"
+        ],
+        "hide": false,
+        "global": true,
+        "arg": {
+          "name": "JOBS",
+          "usage": "<JOBS>",
+          "required": true,
+          "double_dash": "Optional",
+          "hide": false
+        }
+      },
+      {
+        "name": "verbose",
+        "usage": "-v --verbose...",
+        "help": "Enables verbose output",
+        "help_first_line": "Enables verbose output",
+        "short": [
+          "v"
+        ],
+        "long": [
+          "verbose"
+        ],
+        "var": true,
+        "hide": false,
+        "global": true,
+        "count": true
+      },
+      {
+        "name": "quiet",
+        "usage": "-q --quiet",
+        "help": "Suppresses output",
+        "help_first_line": "Suppresses output",
+        "short": [
+          "q"
+        ],
+        "long": [
+          "quiet"
+        ],
+        "hide": false,
+        "global": true
+      },
+      {
+        "name": "silent",
+        "usage": "--silent",
+        "help": "Suppresses all output",
+        "help_first_line": "Suppresses all output",
+        "short": [],
+        "long": [
+          "silent"
+        ],
+        "hide": false,
+        "global": true
+      }
+    ],
+    "mounts": [],
+    "hide": false,
+    "name": "hk",
+    "aliases": [],
+    "hidden_aliases": [],
+    "examples": []
+  },
+  "config": {
+    "props": {}
+  },
+  "version": "0.1.9",
+  "usage": "Usage: hk [OPTIONS] <COMMAND>",
+  "complete": {},
+  "about": "A tool for managing git hooks"
+}
