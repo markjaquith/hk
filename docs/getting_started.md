@@ -62,7 +62,7 @@ See [configuration](/configuration) for more information on the `hk.pkl` file.
 
 Inside a git repository with a `hk.pkl` file, run:
 
-```
+```sh
 hk install
 ```
 
