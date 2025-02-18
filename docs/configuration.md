@@ -78,6 +78,32 @@ Profiles can be prefixed with `!` to disable them.
 
 Files the step should run on. By default this will only run this step if at least 1 staged file matches the glob patterns. If no patterns are provided, the step will always run.
 
+### `<HOOK>.<STEP>.depends: Listing<String>`
+
+A list of steps that must finish before this step can run.
+
+```pkl
+`pre-commit` {
+    ["prettier"] {
+        depends = new { "eslint" }
+    }
+}
+```
+
+### `<HOOK>.<STEP>.stage: Listing<String>`
+
+A list of globs of files to add to the git index after running a fix/fix_all step.
+
+```pkl
+`pre-commit` {
+    ["prettier"] {
+        stage = new { "*.js"; "*.ts" }
+    }
+}
+```
+
+By default, all modified files will be added to the git index.
+
 ### `<HOOK>.<STEP>.exclusive: bool`
 
 Default: `false`
@@ -152,6 +178,18 @@ A command to run for the hook that runs on all files. This is optional but if no
     }
 }
 ```
+
+### `<HOOK>.<STEP>.check_first: bool`
+
+Default: `true`
+
+If true, hk will run the check step first and only run the fix step if the check step fails.
+
+### `<HOOK>.<STEP>.stomp: bool`
+
+Default: `false`
+
+If true, hk will get a write lock when running the fix/fix_all step. Use this if the tool has its own locking mechanism or you simply don't care if files may be written to by multiple steps simultaneously.
 
 ### Alternative Syntax
 

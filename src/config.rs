@@ -9,7 +9,7 @@ use crate::{
     step_scheduler::StepScheduler,
     version, Result,
 };
-use miette::{bail, IntoDiagnostic};
+use miette::{bail, Context, IntoDiagnostic};
 
 impl Config {
     pub fn get() -> Result<Self> {
@@ -23,7 +23,9 @@ impl Config {
             for path in &paths {
                 let path = cwd.join(path);
                 if path.exists() {
-                    return Self::read(&path);
+                    return Self::read(&path).wrap_err_with(|| {
+                        format!("Failed to read config file: {}", path.display())
+                    });
                 }
             }
             cwd = cwd.parent().map(PathBuf::from).unwrap_or_default();

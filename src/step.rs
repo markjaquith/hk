@@ -12,16 +12,8 @@ use tokio::sync::RwLock;
 
 use serde_with::{serde_as, OneOrMany};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-#[serde(deny_unknown_fields)]
-pub struct FileLocks {
-    pub read: Option<String>,
-    pub write: Option<String>,
-}
-
 #[serde_as]
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
 pub struct Step {
@@ -30,6 +22,14 @@ pub struct Step {
     pub name: String,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub profiles: Option<Vec<String>>,
+    #[serde(default)]
+    pub exclusive: bool,
+    #[serde_as(as = "OneOrMany<_>")]
+    pub depends: Vec<String>,
+    #[serde(default)]
+    pub check_first: bool,
+    #[serde(default)]
+    pub stomp: bool,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
     pub check: Option<String>,
@@ -37,8 +37,6 @@ pub struct Step {
     pub check_all: Option<String>,
     pub fix_all: Option<String>,
     pub root: Option<PathBuf>,
-    pub exclusive: bool,
-    pub file_locks: Option<FileLocks>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
 }
@@ -189,6 +187,7 @@ impl Step {
     }
 }
 
+#[derive(Clone)]
 pub struct StepContext {
     pub run_type: RunType,
     pub files: Vec<PathBuf>,

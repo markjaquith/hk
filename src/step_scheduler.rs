@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 use itertools::Itertools;
 use miette::IntoDiagnostic;
-use std::{path::PathBuf, sync::Arc};
+use std::{collections::HashSet, path::PathBuf, sync::Arc};
 use tokio::sync::{Mutex, RwLock, Semaphore};
 use tokio::task::JoinSet;
 
@@ -47,6 +47,47 @@ impl StepScheduler {
         self
     }
 
+    /// Returns a subset of steps that have a fix command and need to at least 1 file another step will need a read/write lock on
+    fn fix_steps_in_contention<'a>(
+        &self,
+        steps: &[&'a Step],
+        files: &[PathBuf],
+    ) -> Result<HashSet<&'a Step>> {
+        if matches!(self.run_type, RunType::CheckAll | RunType::Check) {
+            return Ok(Default::default());
+        }
+        let files_per_step: IndexMap<&Step, HashSet<PathBuf>> = steps
+            .iter()
+            .map(|step| {
+                let files = glob::get_matches(step.glob.as_ref().unwrap_or(&vec![]), files)?;
+                Ok((*step, files.into_iter().collect()))
+            })
+            .collect::<Result<_>>()?;
+        let fix_steps = steps
+            .iter()
+            .copied()
+            .filter(|step| {
+                matches!(
+                    step.available_run_type(self.run_type),
+                    Some(RunType::Fix) | Some(RunType::FixAll)
+                )
+            })
+            .filter(|step| {
+                let other_files = files_per_step
+                    .iter()
+                    .filter(|(k, _)| *k != step)
+                    .map(|(_, v)| v)
+                    .collect::<Vec<_>>();
+                files_per_step.get(*step).unwrap().iter().any(|file| {
+                    other_files
+                        .iter()
+                        .any(|other_files| other_files.contains(file))
+                })
+            })
+            .collect();
+        Ok(fix_steps)
+    }
+
     async fn run_step(
         &self,
         step: &Step,
@@ -54,12 +95,8 @@ impl StepScheduler {
         ctx: StepContext,
     ) -> Result<()> {
         let settings = Settings::get();
-        let permit = self
-            .semaphore
-            .clone()
-            .acquire_owned()
-            .await
-            .into_diagnostic()?;
+        let semaphore = self.semaphore.clone();
+        let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
         let failed = self.failed.clone();
         if *failed.lock().await {
             trace!("{step}: skipping step due to previous failure");
@@ -96,15 +133,30 @@ impl StepScheduler {
         trace!("{step}: spawning step");
         let step = step.clone();
         set.spawn(async move {
-            let _permit = permit;
+            let mut _permit = Some(permit);
             let flocks = ctx.file_locks.values().cloned().collect::<Vec<_>>();
             let mut read_flocks = vec![];
             let mut write_flocks = vec![];
             for lock in flocks.iter() {
-                match ctx.run_type {
-                    RunType::CheckAll | RunType::Check => read_flocks.push(lock.read().await),
-                    RunType::FixAll | RunType::Fix => write_flocks.push(lock.write().await),
+                match (step.stomp, ctx.run_type) {
+                    (true, _) | (_, RunType::CheckAll | RunType::Check) => match lock.try_read() {
+                        Ok(lock) => read_flocks.push(lock),
+                        Err(_) => {
+                            _permit = None;
+                            read_flocks.push(lock.read().await);
+                        }
+                    },
+                    (_, RunType::FixAll | RunType::Fix) => match lock.try_write() {
+                        Ok(lock) => write_flocks.push(lock),
+                        Err(_) => {
+                            _permit = None;
+                            write_flocks.push(lock.write().await);
+                        }
+                    },
                 }
+            }
+            if _permit.is_some() {
+                _permit = Some(semaphore.acquire_owned().await.into_diagnostic()?);
             }
             match step.run(ctx).await {
                 Ok(()) => Ok(()),
@@ -132,6 +184,7 @@ impl StepScheduler {
 
         for group in groups {
             let mut set = JoinSet::new();
+            let fix_steps_in_contention = runner.fix_steps_in_contention(&group, &runner.files)?;
 
             // Spawn all tasks
             for step in &group {
@@ -162,8 +215,24 @@ impl StepScheduler {
                     files,
                 };
 
-                if *env::HK_CHECK_FIRST && matches!(ctx.run_type, RunType::FixAll | RunType::Fix) {
-                    trace!("{step}: TODO: run check step first if there are any other steps in this group that modify the same files");
+                if *env::HK_CHECK_FIRST
+                    && step.check_first
+                    && matches!(ctx.run_type, RunType::FixAll | RunType::Fix)
+                    && fix_steps_in_contention.contains(step)
+                {
+                    let mut ctx = ctx.clone();
+                    ctx.run_type = match ctx.run_type {
+                        RunType::FixAll => RunType::CheckAll,
+                        RunType::Fix => RunType::Check,
+                        _ => unreachable!(),
+                    };
+                    debug!("{step}: running check step first due to fix step contention");
+                    if let Err(e) = runner.run_step(step, &mut set, ctx).await {
+                        warn!("{step}: failed check step first: {e}");
+                    } else {
+                        debug!("{step}: successfully ran check step first");
+                        continue;
+                    }
                 }
                 runner.run_step(step, &mut set, ctx).await?;
             }
