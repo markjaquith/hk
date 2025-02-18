@@ -1,5 +1,6 @@
 [env]
 _.path = [
+    "bin",
     "test/bats/bin",
     "target/debug",
 ]

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export NODE_OPTIONS='--disable-warning=ExperimentalWarning'
+export LD_LIBRARY_PATH=/usr/local/lib
+
+exec cargo run --all-features --manifest-path ~/src/hk/Cargo.toml -- "$@"
