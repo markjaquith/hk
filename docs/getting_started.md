@@ -9,7 +9,7 @@ A tool for running hooks on files in a git repository.
 
 Use [mise-en-place](https://github.com/jdx/mise) to install hk (you'll also need the `pkl` cli):
 
-```
+```sh
 mise use hk pkl
 hk --version
 ```
@@ -22,7 +22,7 @@ See [mise integration](/mise_integration) for more information.
 
 Or install from source with `cargo`:
 
-```
+```sh
 cargo install hk
 ```
 
@@ -30,7 +30,7 @@ cargo install hk
 
 Use `hk generate` to generate a `hk.pkl` file:
 
-```
+```sh
 hk generate
 ```
 
@@ -68,22 +68,31 @@ hk install
 
 This will install the hooks for the repository like `pre-commit` and `pre-push` if they are defined in `hk.pkl`. Running `git commit` would now run the `pre-commit` steps defined above in our example.
 
+### `core.hooksPath`
+
+As an alternative to using `hk install`, you can run `git config --local core.hooksPath .hooks` to use the hooks defined in the `.hooks` directory of the repository:
+
+```sh
+#!/bin/sh
+hk run pre-commit
+```
+
 ## Running Hooks
 
 To explicitly run the hooks without going through git, use the `hk run` command.
 
-```
+```sh
 hk run pre-commit
 ```
 
 This will run the `pre-commit` hooks for the repository. This will run against all files that are staged for commit. To run against all files in the repository, use the `--all` flag.
 
-```
+```sh
 hk run pre-commit --all
 ```
 
 To run a specific step, use the `--step` flag.
 
-```
+```sh
 hk run pre-commit --step eslint
 ```

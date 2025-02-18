@@ -3,10 +3,7 @@
 hk is built by [@jdx](https://github.com/jdx).
 
 ::: danger
-Hey HN, I just published this thing _today_ and have only spent about 3 days on it. It's about as young as a project gets. What I've wrote on this page I got about 20% done with,
-moved onto something else, and hadn't come back to it. It certainly is not HN ready.
-
-Until hk hits 1.0 read this like you would notes left on someone's desk—because that's effectively what it is.
+This doc is a half-written draft. Once hk hits 1.0 I will come back and complete it.
 :::
 
 ## Why does this exist?

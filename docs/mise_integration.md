@@ -22,7 +22,7 @@ with developers who don't typically use mise but want hooks on a particular proj
 mise's tool management feature lets you define the version of all of the tools used in `hk.pkl` in a single place. To use, run `mise use` on
 all the tools you wish to use:
 
-```
+```sh
 mise use hk
 mise use jq
 mise use npm:prettier
