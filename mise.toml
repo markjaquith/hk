@@ -57,6 +57,9 @@ run = [
 ]
 [tasks.lint-fix]
 run = "cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features"
+[tasks.docs]
+dir = "docs"
+run = "bun i && bun run docs:dev"
 
 [tasks.render]
 depends = ["build"]

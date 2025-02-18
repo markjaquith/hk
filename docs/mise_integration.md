@@ -3,7 +3,7 @@
 Most git-hook managers provide features that hk's sister project, [mise-en-place](https://github.com/jdx/mise), already provides. For this reason, you will want to use mise and hk together if you'd like
 to use any of the features described below.
 
-To default hk to enable these mise features, set [`HK_MISE=1`](/environment_variables#hk-mise).
+To default hk to enable these mise features, set [`HK_MISE=1`](/configuration#hk-mise).
 
 ## `hk generate --mise`
 
