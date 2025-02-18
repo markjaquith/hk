@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 use itertools::Itertools;
-use miette::IntoDiagnostic;
-use std::{collections::HashSet, path::PathBuf, sync::Arc};
+use miette::{miette, IntoDiagnostic};
+use std::{collections::HashSet, iter::once, path::PathBuf, sync::Arc};
 use tokio::sync::{Mutex, RwLock, Semaphore};
 use tokio::task::JoinSet;
 
@@ -90,6 +90,7 @@ impl StepScheduler {
 
     async fn run_step(
         &self,
+        mut depends: IndexMap<String, Arc<RwLock<()>>>,
         step: &Step,
         set: &mut JoinSet<Result<()>>,
         ctx: StepContext,
@@ -129,10 +130,13 @@ impl StepScheduler {
                 return Ok(());
             }
         }
+        let depend_self = depends.shift_remove(&step.name).unwrap();
+        let self_depend_write_lock = depend_self.write_owned().await;
 
         trace!("{step}: spawning step");
         let step = step.clone();
         set.spawn(async move {
+            let _self_depend_write_lock = self_depend_write_lock;
             let mut _permit = Some(permit);
             let flocks = ctx.file_locks.values().cloned().collect::<Vec<_>>();
             let mut read_flocks = vec![];
@@ -142,30 +146,38 @@ impl StepScheduler {
                     (true, _) | (_, RunType::CheckAll | RunType::Check) => match lock.try_read() {
                         Ok(lock) => read_flocks.push(lock),
                         Err(_) => {
-                            _permit = None;
+                            _permit = None; // release the permit so someone else can work
                             read_flocks.push(lock.read().await);
                         }
                     },
                     (_, RunType::FixAll | RunType::Fix) => match lock.try_write() {
                         Ok(lock) => write_flocks.push(lock),
                         Err(_) => {
-                            _permit = None;
+                            _permit = None; // release the permit so someone else can work
                             write_flocks.push(lock.write().await);
                         }
                     },
                 }
             }
+            for (name, depends) in depends.iter() {
+                match depends.try_read() {
+                    Ok(lock) => read_flocks.push(lock),
+                    Err(_) => {
+                        trace!("{step}: waiting for {name} to finish");
+                        _permit = None; // release the permit so someone else can work
+                        read_flocks.push(depends.read().await);
+                    }
+                }
+            }
             if _permit.is_some() {
                 _permit = Some(semaphore.acquire_owned().await.into_diagnostic()?);
             }
-            match step.run(ctx).await {
-                Ok(()) => Ok(()),
-                Err(e) => {
-                    // Mark as failed to prevent new steps from starting
-                    *failed.lock().await = true;
-                    Err(e.wrap_err(step.name))
-                }
+            if let Err(err) = step.run(ctx).await {
+                // Mark as failed to prevent new steps from starting
+                *failed.lock().await = true;
+                return Err(err.wrap_err(step.name));
             }
+            Ok(())
         });
         Ok(())
     }
@@ -184,6 +196,10 @@ impl StepScheduler {
 
         for group in groups {
             let mut set = JoinSet::new();
+            let depend_locks: IndexMap<String, _> = group
+                .iter()
+                .map(|s| (s.name.clone(), Arc::new(RwLock::new(()))))
+                .collect();
             let fix_steps_in_contention = runner.fix_steps_in_contention(&group, &runner.files)?;
 
             // Spawn all tasks
@@ -215,6 +231,19 @@ impl StepScheduler {
                     files,
                 };
 
+                let depends = step
+                    .depends
+                    .iter()
+                    .chain(once(&step.name))
+                    .map(|dep| {
+                        depend_locks
+                            .iter()
+                            .find(|(name, _)| *name == dep || **name == step.name)
+                            .map(|(name, lock)| (name.to_string(), lock.clone()))
+                            .ok_or_else(|| miette!("No step named {dep} found in group"))
+                    })
+                    .collect::<Result<IndexMap<String, _>>>()?;
+
                 if *env::HK_CHECK_FIRST
                     && step.check_first
                     && matches!(ctx.run_type, RunType::FixAll | RunType::Fix)
@@ -227,14 +256,14 @@ impl StepScheduler {
                         _ => unreachable!(),
                     };
                     debug!("{step}: running check step first due to fix step contention");
-                    if let Err(e) = runner.run_step(step, &mut set, ctx).await {
+                    if let Err(e) = runner.run_step(depends.clone(), step, &mut set, ctx).await {
                         warn!("{step}: failed check step first: {e}");
                     } else {
                         debug!("{step}: successfully ran check step first");
                         continue;
                     }
                 }
-                runner.run_step(step, &mut set, ctx).await?;
+                runner.run_step(depends, step, &mut set, ctx).await?;
             }
 
             // Wait for tasks and abort on first error
