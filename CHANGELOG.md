@@ -1,6 +1,23 @@
 # Changelog
 
-## [0.2.3](https://github.com/jdx/hk/compare/v0.2.2..0.2.3) - 2025-02-17
+## [0.2.4](https://github.com/jdx/hk/compare/v0.2.3..0.2.4) - 2025-02-18
+
+### 🚀 Features
+
+- added depends/check_first/stomp configs by [@jdx](https://github.com/jdx) in [73480d0](https://github.com/jdx/hk/commit/73480d02ae058121ba6cc34bc3bb85a1b997280a)
+- make depends work by [@jdx](https://github.com/jdx) in [8ac584d](https://github.com/jdx/hk/commit/8ac584d38a513c8b35dbd6bb66ff5c6224a1b2ab)
+
+### 📚 Documentation
+
+- improve by [@jdx](https://github.com/jdx) in [58a8744](https://github.com/jdx/hk/commit/58a874416ac75dc80c14c0a7c12f2f293813a68b)
+- syntax by [@jdx](https://github.com/jdx) in [2a5abea](https://github.com/jdx/hk/commit/2a5abea382161cbda21db344c8db73f4370fb5fc)
+- describe cli more by [@jdx](https://github.com/jdx) in [5ec008c](https://github.com/jdx/hk/commit/5ec008ca703f788fba8f9d4187115880a58e2093)
+
+### 🔍 Other Changes
+
+- added local hk wrapper by [@jdx](https://github.com/jdx) in [bff8b53](https://github.com/jdx/hk/commit/bff8b53c15d0dde5d2a72258282a71e368df1705)
+
+## [0.2.3](https://github.com/jdx/hk/compare/v0.2.2..v0.2.3) - 2025-02-17
 
 ### 🚀 Features
 
