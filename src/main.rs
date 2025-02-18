@@ -15,6 +15,7 @@ mod step_scheduler;
 mod tera;
 mod ui;
 mod version;
+#[cfg(unix)]
 use tokio::signal;
 #[cfg(unix)]
 use tokio::signal::unix::SignalKind;
