@@ -1,0 +1,7 @@
+import "../hk.pkl"
+
+class Actionlint extends hk.Step {
+    glob = new { ".github/workflows/*.{yml,yaml}" }
+    check = "actionlint {{ files }}"
+    check_all = "actionlint"
+} 

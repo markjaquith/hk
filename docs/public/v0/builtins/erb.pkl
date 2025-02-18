@@ -1,0 +1,6 @@
+import "../hk.pkl"
+
+class Erb extends hk.Step {
+    glob = new { "**/*.erb" }
+    check = "erb -P -x -T - {{ files }} | ruby -c"
+} 

@@ -1,0 +1,7 @@
+import "../hk.pkl"
+
+class GomodTidy extends hk.Step {
+    glob = new { "**/go.mod" }
+    check = "go mod tidy -check"
+    fix = "go mod tidy"
+} 

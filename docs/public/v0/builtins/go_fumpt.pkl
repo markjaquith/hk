@@ -1,0 +1,9 @@
+import "../hk.pkl"
+
+class GoFumpt extends hk.Step {
+    glob = new { "**/*.go" }
+    check = "gofumpt -l {{ files }}"
+    fix = "gofumpt -w {{ files }}"
+    check_all = "gofumpt -l ."
+    fix_all = "gofumpt -w ."
+} 

@@ -1,0 +1,9 @@
+import "../hk.pkl"
+
+class PhpCS extends hk.Step {
+    glob = new { "**/*.php" }
+    check = "phpcs {{ files }}"
+    fix = "phpcbf {{ files }}"
+    check_all = "phpcs ."
+    fix_all = "phpcbf ."
+} 
