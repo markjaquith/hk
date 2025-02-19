@@ -72,6 +72,5 @@ run = [
   "rm -rf docs/cli && mkdir -p docs/cli",
   "usage g markdown -mf hk.usage.kdl --out-dir docs/cli --url-prefix /cli",
   "usage g json -f hk.usage.kdl > docs/cli/commands.json",
-  "rm -rf docs/public/v0 && cp -r pkl docs/public/v0",
   "git add hk.usage.kdl docs",
 ]
