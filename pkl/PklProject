@@ -1,0 +1,13 @@
+amends "pkl:Project"
+
+package {
+  name = "hk"
+  authors { "jdx <216188+jdx@users.noreply.github.com>" }
+  version = read?("env:VERSION")?.replaceFirst("\(name)@", "") ?? "0.0.1-SNAPSHOT"
+  baseUri = "package://pkg.pkl-lang.org/github.com/jdx/hk"
+  packageZipUrl = "https://github.com/jdx/hk/releases/download/\(name)@\(version)/\(name)@\(version).zip"
+  sourceCode = "https://github.com/jdx/hk"
+  sourceCodeUrlScheme = "https://github.com/jdx/hk/blob/\(version)/pkl%{path}#%{line}-%{endLine}"
+  license = "MIT"
+  description = "pkl code for hk"
+}
