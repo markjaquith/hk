@@ -240,7 +240,7 @@ amends "$PKL_PATH/hk.pkl"
     ["b"] {
         glob = new {"*.sh"}
         check = "echo 'start b' && echo 'exit b' && exit 1"
-        fix = "echo 'start b' && echo 'end b'"
+        fix = "echo 'start b' && echo 'end b' && touch test.sh"
     }
 }
 EOF
@@ -250,8 +250,8 @@ EOF
     assert_success
 
     # runs b to completion without a
-    assert_output --partial "INFO  b               echo 'start b' && echo 'end b'
-DEBUG $ echo 'start b' && echo 'end b'
+    assert_output --partial "INFO  b               echo 'start b' && echo 'end b' && touch test.sh
+DEBUG $ echo 'start b' && echo 'end b' && touch test.sh
 INFO  b               start b
 INFO  b               end b
 INFO  b             ✓ 1 file"

@@ -81,17 +81,8 @@ impl Step {
             warn!("{}: no run command", self);
             return Ok(ctx);
         };
-        let run = tera::render(run, &tctx).unwrap();
-        pr.set_message(run.clone());
-        CmdLineRunner::new("sh")
-            .arg("-c")
-            .arg(run)
-            .with_pr(pr.clone())
-            .execute()
-            .await
-            .into_diagnostic()?;
-        if matches!(ctx.run_type, RunType::Fix | RunType::FixAll) {
-            ctx.files_to_add = if let Some(stage) = &self.stage {
+        let files_to_add = if matches!(ctx.run_type, RunType::Fix | RunType::FixAll) {
+            if let Some(stage) = &self.stage {
                 let stage = stage
                     .iter()
                     .map(|s| tera::render(s, &tctx).unwrap())
@@ -102,7 +93,41 @@ impl Step {
             } else {
                 vec![]
             }
-        }
+            .into_iter()
+            .map(|p| {
+                (
+                    p.metadata()
+                        .and_then(|m| m.modified())
+                        .unwrap_or(std::time::SystemTime::UNIX_EPOCH),
+                    p,
+                )
+            })
+            .collect_vec()
+        } else {
+            vec![]
+        };
+        let run = tera::render(run, &tctx).unwrap();
+        pr.set_message(run.clone());
+        CmdLineRunner::new("sh")
+            .arg("-c")
+            .arg(run)
+            .with_pr(pr.clone())
+            .execute()
+            .await
+            .into_diagnostic()?;
+        ctx.files_to_add = files_to_add
+            .into_iter()
+            .filter(|(prev_mod, p)| {
+                if !p.exists() {
+                    return false;
+                }
+                let Ok(metadata) = p.metadata().and_then(|m| m.modified()) else {
+                    return false;
+                };
+                metadata > *prev_mod
+            })
+            .map(|(_, p)| p)
+            .collect_vec();
         if ctx.files_to_add.is_empty() {
             pr.finish_with_message("done".to_string());
         } else {
