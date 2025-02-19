@@ -1,6 +1,13 @@
 # Changelog
 
-## [0.3.0](https://github.com/jdx/hk/compare/v0.2.4..0.3.0) - 2025-02-19
+## [0.3.1](https://github.com/jdx/hk/compare/v0.3.0..0.3.1) - 2025-02-19
+
+### 🔍 Other Changes
+
+- fix pkl to work as module by [@jdx](https://github.com/jdx) in [5cc993c](https://github.com/jdx/hk/commit/5cc993ce259f2951bb40aaa06539e2ed26c86199)
+- fix pkl to work as module by [@jdx](https://github.com/jdx) in [4a97788](https://github.com/jdx/hk/commit/4a977880cf250d3b0e530910a16df00da162485a)
+
+## [0.3.0](https://github.com/jdx/hk/compare/v0.2.4..v0.3.0) - 2025-02-19
 
 ### 🐛 Bug Fixes
 
