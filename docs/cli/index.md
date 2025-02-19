@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.2.4
+**Version**: 0.3.0
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -33,6 +33,7 @@ Suppresses all output
 - [`hk cache clear`](/cli/cache/clear.md)
 - [`hk completion <SHELL>`](/cli/completion.md)
 - [`hk config`](/cli/config.md)
+- [`hk fix [-a --all] [--stash]`](/cli/fix.md)
 - [`hk generate [--mise]`](/cli/generate.md)
 - [`hk install [--mise]`](/cli/install.md)
 - [`hk run <SUBCOMMAND>`](/cli/run.md)

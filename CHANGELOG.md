@@ -1,6 +1,28 @@
 # Changelog
 
-## [0.2.4](https://github.com/jdx/hk/compare/v0.2.3..0.2.4) - 2025-02-18
+## [0.3.0](https://github.com/jdx/hk/compare/v0.2.4..0.3.0) - 2025-02-19
+
+### 🐛 Bug Fixes
+
+- check_first logic by [@jdx](https://github.com/jdx) in [#11](https://github.com/jdx/hk/pull/11)
+- only add changed files by [@jdx](https://github.com/jdx) in [218e254](https://github.com/jdx/hk/commit/218e2541ff942f3e5c695cfba0675e932489cbee)
+- skip adding if no files by [@jdx](https://github.com/jdx) in [1313311](https://github.com/jdx/hk/commit/13133117a2c9c75278aa70a43c71b102c8443b8f)
+
+### 🔍 Other Changes
+
+- fix windows lint issue by [@jdx](https://github.com/jdx) in [8c4dade](https://github.com/jdx/hk/commit/8c4dade0e4f208e4489a5bc1c334347c192608b3)
+- build pkl only on releases by [@jdx](https://github.com/jdx) in [0924566](https://github.com/jdx/hk/commit/09245666b9021c952be319ea23a8747a535dd4aa)
+- fix CI by [@jdx](https://github.com/jdx) in [c9fa55b](https://github.com/jdx/hk/commit/c9fa55b74a527fbadaee413688b75953faf16470)
+- Create renovate.json by [@jdx](https://github.com/jdx) in [a5bfbe8](https://github.com/jdx/hk/commit/a5bfbe835a39eeafa230f28df52513fad67af774)
+- Update README.md by [@jdx](https://github.com/jdx) in [64d8f27](https://github.com/jdx/hk/commit/64d8f276cccb9f6b499d4d45d64e39b84906887b)
+- package pkl into project by [@jdx](https://github.com/jdx) in [44adb46](https://github.com/jdx/hk/commit/44adb46a7856d30900f3cbcbd34678827411078e)
+- added PklProject.deps.json by [@jdx](https://github.com/jdx) in [b392f84](https://github.com/jdx/hk/commit/b392f84fc88165b81fe47ce153d0cf38262eb2bf)
+- move min_hk_version to base pkl by [@jdx](https://github.com/jdx) in [ff35c94](https://github.com/jdx/hk/commit/ff35c94aaeda5a4a091d9ac44289e1b5ff605b9a)
+- stop building pkl to v0 by [@jdx](https://github.com/jdx) in [a62c874](https://github.com/jdx/hk/commit/a62c8748562f78af2a33e5a59e56d764bc4a7056)
+- prettier on commands.json by [@jdx](https://github.com/jdx) in [6591de2](https://github.com/jdx/hk/commit/6591de2e9fefc69279a28bdf878d7f4d231af0eb)
+- prettier on commands.json by [@jdx](https://github.com/jdx) in [216c4d0](https://github.com/jdx/hk/commit/216c4d0673ca0916f6be5b6eb9f55bbd2f1f409d)
+
+## [0.2.4](https://github.com/jdx/hk/compare/v0.2.3..v0.2.4) - 2025-02-18
 
 ### 🚀 Features
 

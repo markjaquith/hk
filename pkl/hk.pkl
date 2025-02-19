@@ -1,4 +1,4 @@
-min_hk_version = "0.2.4"
+min_hk_version = "0.3.0"
 
 open class Step {
     /// Which profiles (HK_PROFILES) need to be active for the step to run
