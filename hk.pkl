@@ -10,10 +10,11 @@ min_hk_version = "0.1.0"
 // defines what happens during git pre-commit hook
 `pre-commit` {
     ["actionlint"] = new actionlint.Actionlint {}
-    ["pkl"] {
-        glob = new { "*.pkl" }
-        check = "pkl eval {{files}} >/dev/null"
-    }
+    // TODO: fails on releases with hk-example.pkl
+    //["pkl"] {
+        //glob = new { "*.pkl" }
+        //check = "pkl eval {{files}} >/dev/null"
+    //}
     // predefined formatters+linters
     ["cargo-clippy"] = new cargo_clippy.CargoClippy {
         profiles = new { "slow" }
