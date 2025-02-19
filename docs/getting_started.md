@@ -39,8 +39,8 @@ hk generate
 This will generate a `hk.pkl` file in the root of the repository, here's an example `hk.pkl` with eslint and prettier hooks:
 
 ```pkl
-amends "https://hk.jdx.dev/v0/hk.pkl"
-import "https://hk.jdx.dev/v0/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.3.2/hk@0.3.2#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.3.2/hk@0.3.2#/builtins/prettier.pkl"
 
 `pre-commit` {
     // hooks can be manually defined

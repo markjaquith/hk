@@ -67,6 +67,7 @@ run = "bun i && bun run docs:dev"
 
 [tasks.render]
 depends = ["render:*"]
+run = "render:update-version"
 
 [tasks."render:usage"]
 depends = ["build"]
