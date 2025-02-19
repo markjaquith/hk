@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.3.1](https://github.com/jdx/hk/compare/v0.3.0..0.3.1) - 2025-02-19
+## [0.3.2](https://github.com/jdx/hk/compare/v0.3.1..0.3.2) - 2025-02-19
+
+### 🔍 Other Changes
+
+- fix pkl packageZipUrl by [@jdx](https://github.com/jdx) in [42daa33](https://github.com/jdx/hk/commit/42daa33cbb07df402bf4e527e38b8dae5ed8dfa7)
+
+## [0.3.1](https://github.com/jdx/hk/compare/v0.3.0..v0.3.1) - 2025-02-19
 
 ### 🔍 Other Changes
 
