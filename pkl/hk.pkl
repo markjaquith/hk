@@ -1,3 +1,5 @@
+min_hk_version = "0.2.4"
+
 open class Step {
     /// Which profiles (HK_PROFILES) need to be active for the step to run
     profiles: Listing<String>?
@@ -39,8 +41,6 @@ open class Step {
 }
 
 typealias Hook = Mapping<String, Step>
-
-min_hk_version: String?
 
 `pre-commit`: Hook?
 `pre-push`: Hook?

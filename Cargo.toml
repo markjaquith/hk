@@ -44,7 +44,6 @@ lto = true
 
 [package.metadata.release]
 pre-release-hook = ["mise", "run", "pre-release", "--version", "{{version}}"]
-# pre-release-replacements = [
-#     {file="pkl/PklProject", search='version = ".*"', replace='version = "{{version | truncate(length=1)}}"'},
-#     {file="README.md", search='hk.jdx.dev/hk@.*#/', replace='hk.jdx.dev/hk@{{version | truncate(length=1)}}#/'},
-# ]
+pre-release-replacements = [
+    {file="pkl/hk.pkl", search='min_hk_version = ".*"', replace='min_hk_version = "{{version}}"'},
+]
