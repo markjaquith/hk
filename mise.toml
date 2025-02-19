@@ -52,7 +52,10 @@ run = "echo prelint"
 run = "echo postlint"
 [tasks.pre-release]
 depends = ["render"]
-run = "git cliff -o CHANGELOG.md --tag {{option(name='version')}}"
+run = [
+  "git cliff -o CHANGELOG.md --tag {{option(name='version')}}",
+  "VERSION={{option(name='version')}} mise run update-version",
+]
 [tasks.lint]
 depends = ["build"]
 run = [
@@ -67,7 +70,6 @@ run = "bun i && bun run docs:dev"
 
 [tasks.render]
 depends = ["render:*"]
-run = "render:update-version"
 
 [tasks."render:usage"]
 depends = ["build"]
