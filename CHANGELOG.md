@@ -1,6 +1,14 @@
 # Changelog
 
-## [0.3.2](https://github.com/jdx/hk/compare/v0.3.1..0.3.2) - 2025-02-19
+## [0.3.3](https://github.com/jdx/hk/compare/v0.3.2..0.3.3) - 2025-02-19
+
+### 🔍 Other Changes
+
+- bump version on releases in docs by [@jdx](https://github.com/jdx) in [33a1e5a](https://github.com/jdx/hk/commit/33a1e5a8095ebbed55f7f1b57bbf219b11e0f0a3)
+- bump version on releases in docs by [@jdx](https://github.com/jdx) in [ca0c739](https://github.com/jdx/hk/commit/ca0c739faa0530a31c17630a1bf0642536bfc1e1)
+- bump version on releases in docs by [@jdx](https://github.com/jdx) in [2d99a45](https://github.com/jdx/hk/commit/2d99a450c7601ffb578c823ed12ee4422be169b2)
+
+## [0.3.2](https://github.com/jdx/hk/compare/v0.3.1..v0.3.2) - 2025-02-19
 
 ### 🔍 Other Changes
 
