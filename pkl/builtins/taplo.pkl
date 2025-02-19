@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Taplo extends hk.Step {
+class Taplo extends Config.Step {
     glob = new { "**/*.toml" }
     check = "taplo check {{ files }}"
     fix = "taplo format {{ files }}"

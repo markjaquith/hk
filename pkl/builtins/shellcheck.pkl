@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Shellcheck extends hk.Step {
+class Shellcheck extends Config.Step {
     glob = new { "**/*.{sh,bash}" }
     check = "shellcheck {{ files }}"
     check_all = "shellcheck ."

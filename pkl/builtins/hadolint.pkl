@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Hadolint extends hk.Step {
+class Hadolint extends Config.Step {
     glob = new { "**/Dockerfile*" }
     check = "hadolint {{ files }}"
 } 

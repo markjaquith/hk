@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class PrettierPackageJson extends hk.Step {
+class PrettierPackageJson extends Config.Step {
     glob = new { "**/package.json" }
     check = "prettier-package-json --list-different {{ files }}"
     fix = "prettier-package-json --write {{ files }}"

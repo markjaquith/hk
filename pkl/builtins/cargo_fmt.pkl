@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class CargoFmt extends hk.Step {
+class CargoFmt extends Config.Step {
     glob = new { "**/*.rs" }
     check_all = "cargo fmt --check"
     fix_all = "cargo fmt"

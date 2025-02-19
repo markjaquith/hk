@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Mypy extends hk.Step {
+class Mypy extends Config.Step {
     glob = new { "**/*.py" }
     check = "mypy {{ files }}"
     check_all = "mypy ."

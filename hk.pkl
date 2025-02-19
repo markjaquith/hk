@@ -1,5 +1,5 @@
-// amends "https://hk.jdx.dev/v0/hk.pkl"
-amends "pkl/hk.pkl"
+// amends "package://pkg.pkl-lang.org/github.com/jdx/hk/hk@0.3.0#/Config.pkl"
+amends "pkl/Config.pkl"
 import "pkl/builtins/actionlint.pkl"
 import "pkl/builtins/cargo_clippy.pkl"
 import "pkl/builtins/cargo_fmt.pkl"

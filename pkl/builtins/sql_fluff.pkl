@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class SqlFluff extends hk.Step {
+class SqlFluff extends Config.Step {
     glob = new { "**/*.sql" }
     check = "sqlfluff lint {{ files }}"
     fix = "sqlfluff fix {{ files }}"

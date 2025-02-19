@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class GoFmt extends hk.Step {
+class GoFmt extends Config.Step {
     glob = new { "**/*.go" }
     check = "gofmt -l {{ files }}"
     fix = "gofmt -w {{ files }}"

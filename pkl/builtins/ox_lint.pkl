@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class OxLint extends hk.Step {
+class OxLint extends Config.Step {
     glob = new { "**/*.{js,jsx,ts,tsx}" }
     check = "oxlint {{ files }}"
     fix = "oxlint --fix {{ files }}"

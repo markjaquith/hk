@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class ClangFormat extends hk.Step {
+class ClangFormat extends Config.Step {
     glob = new { "**/*.{c,h,cpp,hpp,cc,hh,cxx,hxx}" }
     check = "clang-format --dry-run -Werror {{ files }}"
     fix = "clang-format -i {{ files }}"

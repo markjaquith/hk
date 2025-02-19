@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class SwiftLint extends hk.Step {
+class SwiftLint extends Config.Step {
     glob = new { "**/*.swift" }
     check = "swiftlint lint {{ files }}"
     fix = "swiftlint --fix {{ files }}"

@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Revive extends hk.Step {
+class Revive extends Config.Step {
     glob = new { "**/*.go" }
     check = "revive {{ files }}"
     check_all = "revive ./..."

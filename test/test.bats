@@ -43,7 +43,7 @@ teardown() {
 
 @test "hk install creates git hooks" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
@@ -60,7 +60,7 @@ console.log("test")
 EOF
     run git add test.js
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
@@ -82,7 +82,7 @@ EOF
     git add test.js
     git commit -m init
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/prettier.pkl"
 
 \`pre-commit\` {
@@ -96,7 +96,7 @@ EOF
 
 @test "builtin: json" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/jq.pkl"
 
 \`pre-commit\` {
@@ -114,7 +114,7 @@ EOF
 
 @test "builtin: json format" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/jq.pkl"
 
 \`pre-commit\` {
@@ -133,7 +133,7 @@ EOF
 
 @test "builtin: yaml" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/yq.pkl"
 
 \`pre-commit\` {
@@ -151,7 +151,7 @@ EOF
 
 @test "builtin: yaml format" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/yq.pkl"
 
 \`pre-commit\` {
@@ -169,7 +169,7 @@ EOF
 
 @test "builtin: shellcheck" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/shellcheck.pkl"
 
 \`pre-commit\` {
@@ -188,7 +188,7 @@ EOF
 
 @test "HK_SKIP_STEPS skips specified steps" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/prettier.pkl"
 import "$PKL_PATH/builtins/shellcheck.pkl"
 
@@ -209,7 +209,7 @@ EOF
 
 @test "HK_SKIP_HOOK skips entire hooks" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 import "$PKL_PATH/builtins/prettier.pkl"
 import "$PKL_PATH/builtins/shellcheck.pkl"
 
@@ -229,7 +229,7 @@ EOF
 
 @test "check_first waits" {
     cat <<EOF > hk.pkl
-amends "$PKL_PATH/hk.pkl"
+amends "$PKL_PATH/Config.pkl"
 
 \`pre-commit\` {
     ["a"] {

@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Rubocop extends hk.Step {
+class Rubocop extends Config.Step {
     glob = new { "**/*.rb" }
     check = "rubocop {{ files }}"
     check_all = "rubocop ."

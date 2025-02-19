@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Yq extends hk.Step {
+class Yq extends Config.Step {
     glob = new { "**/*.yaml" }
     check = "yq {{ files }}"
     fix = "yq -iP {{ files }}"

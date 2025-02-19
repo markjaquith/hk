@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Tsc extends hk.Step {
+class Tsc extends Config.Step {
     glob = new { "**/*.{ts,tsx}" }
     check = "tsc --noEmit {{ files }}"
     check_all = "tsc --noEmit"

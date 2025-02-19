@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class PhpCS extends hk.Step {
+class PhpCS extends Config.Step {
     glob = new { "**/*.php" }
     check = "phpcs {{ files }}"
     fix = "phpcbf {{ files }}"

@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Isort extends hk.Step {
+class Isort extends Config.Step {
     glob = new { "**/*.py" }
     check = "isort --check-only {{ files }}"
     fix = "isort {{ files }}"

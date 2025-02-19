@@ -1,3 +1,5 @@
+@ModuleInfo { minPklVersion = "0.27.2" }
+module hk.Config
 min_hk_version = "0.3.0"
 
 open class Step {

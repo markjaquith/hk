@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class ErrCheck extends hk.Step {
+class ErrCheck extends Config.Step {
     glob = new { "**/*.go" }
     check = "errcheck {{ files }}"
     check_all = "errcheck ./..."

@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Jq extends hk.Step {
+class Jq extends Config.Step {
     glob = new { "**/*.json" }
     check = "jq . {{ files }}"
     fix = "jq -S . {{ files }}"

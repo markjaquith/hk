@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class GomodTidy extends hk.Step {
+class GomodTidy extends Config.Step {
     glob = new { "**/go.mod" }
     check = "go mod tidy -check"
     fix = "go mod tidy"

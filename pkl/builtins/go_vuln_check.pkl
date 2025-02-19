@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class GoVulnCheck extends hk.Step {
+class GoVulnCheck extends Config.Step {
     glob = new { "**/*.go" }
     check = "govulncheck {{ files }}"
     check_all = "govulncheck ./..."

@@ -1,6 +1,6 @@
-import "../hk.pkl"
+import "../Config.pkl"
 
-class Shfmt extends hk.Step {
+class Shfmt extends Config.Step {
     glob = new { "**/*.{sh,bash}" }
     check = "shfmt -d {{ files }}"
     fix = "shfmt -w {{ files }}"
