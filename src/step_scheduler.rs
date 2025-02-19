@@ -141,13 +141,15 @@ impl<'a> StepScheduler<'a> {
                 }
             }
 
-            trace!("staging files: {:?}", &files_to_stage);
-            self.repo.add(
-                &files_to_stage
-                    .iter()
-                    .map(|f| f.to_str().unwrap())
-                    .collect_vec(),
-            )?;
+            if !files_to_stage.is_empty() {
+                trace!("staging files: {:?}", &files_to_stage);
+                self.repo.add(
+                    &files_to_stage
+                        .iter()
+                        .map(|f| f.to_str().unwrap())
+                        .collect_vec(),
+                )?;
+            }
         }
         Ok(())
     }
