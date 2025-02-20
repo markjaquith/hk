@@ -21,6 +21,7 @@ jobs:
         with:
           # changelog: CHANGELOG.md not working for some reason
           token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
 
   upload-assets:
     needs: create-release
@@ -68,3 +69,12 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: .out/**
+          draft: true
+
+  publish-release:
+    needs: [upload-assets, pkl]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: false
