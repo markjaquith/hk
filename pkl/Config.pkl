@@ -32,6 +32,9 @@ open class Linter {
     fix: String?
     fix_extra_args: String?
 
+    /// if set, run the linter on workspaces only which are parent directories containing this filename
+    workspace_indicator: String?
+
     /// if not set, all files will be added
     stage: Listing<String>?
 }

@@ -1,12 +1,19 @@
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use miette::{miette, IntoDiagnostic};
-use std::{collections::HashSet, iter::once, path::PathBuf, sync::Arc};
-use tokio::sync::{Mutex, OwnedSemaphorePermit, RwLock, Semaphore};
+use std::{collections::{HashMap, HashSet}, iter::once, path::{Path, PathBuf}, sync::Arc};
+use tokio::sync::{
+    Mutex, OwnedRwLockReadGuard, OwnedRwLockWriteGuard, OwnedSemaphorePermit, RwLock, Semaphore,
+};
 use tokio::task::JoinSet;
 
 use crate::{
-    config::Config, env, git::Git, glob, settings::Settings, step::{RunType, Step}
+    config::Config,
+    env,
+    git::Git,
+    glob,
+    settings::Settings,
+    step::{RunType, Step},
 };
 use crate::{step::StepContext, Result};
 
@@ -27,12 +34,18 @@ impl<'a> StepScheduler<'a> {
         Self {
             run_type,
             repo,
-            steps: hook.values().flat_map(|s| match &s.r#type {
-                Some(r#type) if r#type == "check" || r#type == "fix" => {
-                    config.linters.values().cloned().map(|linter| linter.into()).collect()
-                }
-                _ => vec![s.clone()],
-            }).collect(),
+            steps: hook
+                .values()
+                .flat_map(|s| match &s.r#type {
+                    Some(r#type) if r#type == "check" || r#type == "fix" => config
+                        .linters
+                        .values()
+                        .cloned()
+                        .map(|linter| linter.into())
+                        .collect(),
+                    _ => vec![s.clone()],
+                })
+                .collect(),
             files: vec![],
             failed: Arc::new(Mutex::new(false)),
             semaphore: Arc::new(Semaphore::new(settings.jobs().get())),
@@ -67,8 +80,7 @@ impl<'a> StepScheduler<'a> {
                 .iter()
                 .map(|s| (s.name.clone(), Arc::new(RwLock::new(()))))
                 .collect();
-            let fix_steps_in_contention =
-                Arc::new(self.fix_steps_in_contention(&group, &self.files)?);
+            let files_in_contention = Arc::new(self.files_in_contention(&group, &self.files)?);
 
             // Spawn all tasks
             for step in &group {
@@ -113,12 +125,16 @@ impl<'a> StepScheduler<'a> {
                     })
                     .collect::<Result<IndexMap<String, _>>>()?;
 
+                if !step.is_profile_enabled() {
+                    continue;
+                }
+                
                 self.run_step(
                     depends,
                     step,
                     &mut set,
                     ctx,
-                    fix_steps_in_contention.clone(),
+                    files_in_contention.clone(),
                 )
                 .await?;
             }
@@ -156,46 +172,29 @@ impl<'a> StepScheduler<'a> {
         Ok(())
     }
 
-    /// Returns a subset of steps that have a fix command and need to at least 1 file another step will need a read/write lock on
-    fn fix_steps_in_contention(
-        &self,
-        steps: &[&Step],
-        files: &[PathBuf],
-    ) -> Result<HashSet<String>> {
-        if matches!(self.run_type, RunType::Check) {
-            return Ok(Default::default());
-        }
-        let files_per_step: IndexMap<&Step, HashSet<PathBuf>> = steps
+    fn files_in_contention(&self, steps: &[&Step], files: &[PathBuf]) -> Result<HashSet<PathBuf>> {
+        let files_by_step: HashMap<&Step, Vec<PathBuf>> = steps
             .iter()
             .map(|step| {
                 let files = glob::get_matches(step.glob.as_ref().unwrap_or(&vec![]), files)?;
-                Ok((*step, files.into_iter().collect()))
+                Ok((*step, files))
             })
             .collect::<Result<_>>()?;
-        let fix_steps = steps
-            .iter()
-            .copied()
-            .filter(|step| {
-                matches!(
-                    step.available_run_type(self.run_type),
-                    Some(RunType::Fix)
-                )
-            })
-            .filter(|step| {
-                let other_files = files_per_step
-                    .iter()
-                    .filter(|(k, _)| *k != step)
-                    .map(|(_, v)| v)
-                    .collect::<Vec<_>>();
-                files_per_step.get(*step).unwrap().iter().any(|file| {
-                    other_files
-                        .iter()
-                        .any(|other_files| other_files.contains(file))
-                })
-            })
-            .map(|step| step.name.clone())
-            .collect();
-        Ok(fix_steps)
+        let mut steps_per_file: HashMap<&Path, Vec<&Step>> = Default::default();
+        for (step, files) in files_by_step.iter() {
+            for file in files {
+                steps_per_file.entry(file.as_path()).or_default().push(step);
+            }
+        }
+
+        let mut files_in_contention = HashSet::new();
+        for (file, steps) in steps_per_file.iter() {
+            if steps.iter().any(|step| step.available_run_type(self.run_type) == Some(RunType::Fix)) {
+                files_in_contention.insert(file.to_path_buf());
+            }
+        }
+
+        Ok(files_in_contention)
     }
 
     async fn run_step(
@@ -204,42 +203,14 @@ impl<'a> StepScheduler<'a> {
         step: &Step,
         set: &mut JoinSet<Result<StepContext>>,
         ctx: StepContext,
-        fix_steps_in_contention: Arc<HashSet<String>>,
+        files_in_contention: Arc<HashSet<PathBuf>>,
     ) -> Result<()> {
-        let settings = Settings::get();
         let semaphore = self.semaphore.clone();
         let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
         let failed = self.failed.clone();
         if *failed.lock().await {
             trace!("{step}: skipping step due to previous failure");
             return Ok(());
-        }
-        // Check if step should be skipped based on HK_SKIP_STEPS
-        if crate::env::HK_SKIP_STEPS.contains(&step.name) {
-            warn!("{step}: skipping step due to HK_SKIP_STEPS");
-            return Ok(());
-        }
-        if let Some(profiles) = step.enabled_profiles() {
-            let enabled_profiles = settings.enabled_profiles();
-            let missing_profiles = profiles.difference(&enabled_profiles).collect::<Vec<_>>();
-            if !missing_profiles.is_empty() {
-                trace!(
-                    "{step}: skipping step due to missing profile: {}",
-                    missing_profiles.iter().join(", ")
-                );
-                return Ok(());
-            }
-        }
-        if let Some(profiles) = step.disabled_profiles() {
-            let enabled_profiles = settings.enabled_profiles();
-            let disabled_profiles = profiles.intersection(&enabled_profiles).collect::<Vec<_>>();
-            if !disabled_profiles.is_empty() {
-                trace!(
-                    "{step}: skipping step due to disabled profile: {}",
-                    disabled_profiles.iter().join(", ")
-                );
-                return Ok(());
-            }
         }
         let depend_self = depends.shift_remove(&step.name).unwrap();
         let self_depend_write_lock = depend_self.write_owned().await;
@@ -248,39 +219,41 @@ impl<'a> StepScheduler<'a> {
         let step = step.clone();
         set.spawn(async move {
             let _self_depend_write_lock = self_depend_write_lock;
-            let permit = Arc::new(Mutex::new(Some(permit)));
             let depends = depends;
             if *env::HK_CHECK_FIRST
                 && step.check_first
                 && matches!(ctx.run_type, RunType::Fix)
-                && fix_steps_in_contention.contains(&step.name)
+                && ctx.files.iter().any(|file| files_in_contention.contains(file))
             {
-                let mut ctx = ctx.clone();
-                ctx.run_type = match ctx.run_type {
+                let mut check_ctx = ctx.clone();
+                check_ctx.run_type = match ctx.run_type {
                     RunType::Fix => RunType::Check,
                     _ => unreachable!(),
                 };
                 debug!("{step}: running check step first due to fix step contention");
                 match run(
-                    ctx,
+                    check_ctx,
                     semaphore.clone(),
                     &step,
                     failed.clone(),
-                    permit.clone(),
+                    permit,
                     &depends,
                 )
                 .await
                 {
                     Ok(ctx) => {
                         debug!("{step}: successfully ran check step first");
-                        return Ok(ctx);
+                        Ok(ctx)
                     }
                     Err(e) => {
                         warn!("{step}: failed check step first: {e}");
+                        let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
+                        run(ctx, semaphore, &step, failed, permit, &depends).await
                     }
                 }
+            } else {
+                run(ctx, semaphore, &step, failed, permit, &depends).await
             }
-            return run(ctx, semaphore, &step, failed, permit, &depends).await;
         });
         Ok(())
     }
@@ -291,49 +264,10 @@ async fn run(
     semaphore: Arc<Semaphore>,
     step: &Step,
     failed: Arc<Mutex<bool>>,
-    _permit: Arc<Mutex<Option<OwnedSemaphorePermit>>>,
+    permit: OwnedSemaphorePermit,
     depends: &IndexMap<String, Arc<RwLock<()>>>,
 ) -> Result<StepContext> {
-    let mut read_flocks = vec![];
-    let mut write_flocks = vec![];
-    for (path, lock) in ctx.file_locks.iter() {
-        let lock = lock.clone();
-        match (step.stomp, ctx.run_type) {
-            (_, RunType::Run) => {},
-            (true, _) | (_, RunType::Check) => {
-                match lock.clone().try_read_owned() {
-                    Ok(lock) => read_flocks.push(lock),
-                    Err(_) => {
-                        trace!("{step}: waiting for {} to finish", path.display());
-                        *_permit.lock().await = None; // release the permit so someone else can work
-                        read_flocks.push(lock.read_owned().await);
-                    }
-                }
-            }
-            (_, RunType::Fix) => match lock.clone().try_write_owned() {
-                Ok(lock) => write_flocks.push(lock),
-                Err(_) => {
-                    trace!("{step}: waiting for {} to finish", path.display());
-                    // TODO: this has a race condition, the permit is released but we may retain some file locks
-                    *_permit.lock().await = None; // release the permit so someone else can work
-                    write_flocks.push(lock.write_owned().await);
-                }
-            },
-        }
-    }
-    for (name, depends) in depends.iter() {
-        match depends.clone().try_read_owned() {
-            Ok(lock) => read_flocks.push(lock),
-            Err(_) => {
-                trace!("{step}: waiting for {name} to finish");
-                *_permit.lock().await = None; // release the permit so someone else can work
-                read_flocks.push(depends.clone().read_owned().await);
-            }
-        }
-    }
-    if _permit.lock().await.is_none() {
-        *_permit.lock().await = Some(semaphore.acquire_owned().await.into_diagnostic()?);
-    }
+    let _locks = StepLocks::lock(step, &ctx, semaphore, permit, depends).await?;
     match step.run(ctx).await {
         Ok(ctx) => Ok(ctx),
         Err(err) => {
@@ -341,5 +275,85 @@ async fn run(
             *failed.lock().await = true;
             Err(err.wrap_err(step.name.clone()))
         }
+    }
+}
+
+#[allow(unused)]
+struct StepLocks {
+    read_flocks: Vec<OwnedRwLockReadGuard<()>>,
+    write_flocks: Vec<OwnedRwLockWriteGuard<()>>,
+    permit: OwnedSemaphorePermit,
+}
+
+impl StepLocks {
+    fn try_lock(
+        step: &Step,
+        ctx: &StepContext,
+        depends: &IndexMap<String, Arc<RwLock<()>>>,
+        permit: OwnedSemaphorePermit,
+    ) -> Option<Self> {
+        let mut read_flocks = vec![];
+        let mut write_flocks = vec![];
+        for (name, depends) in depends.iter() {
+            if depends.try_read().is_err() {
+                trace!("{step}: waiting for {name} to finish");
+                return None;
+            }
+        }
+        for (path, lock) in ctx.file_locks.iter() {
+            let lock = lock.clone();
+            match (step.stomp, ctx.run_type) {
+                (_, RunType::Run) => {}
+                (true, _) | (_, RunType::Check) => match lock.clone().try_read_owned() {
+                    Ok(lock) => read_flocks.push(lock),
+                    Err(_) => {
+                        trace!("{step}: waiting for {} to finish", path.display());
+                        return None;
+                    }
+                },
+                (_, RunType::Fix) => match lock.clone().try_write_owned() {
+                    Ok(lock) => write_flocks.push(lock),
+                    Err(_) => {
+                        trace!("{step}: waiting for {} to finish", path.display());
+                        return None;
+                    }
+                },
+            }
+        }
+        Some(StepLocks {
+            read_flocks,
+            write_flocks,
+            permit,
+        })
+    }
+
+    async fn lock(
+        step: &Step,
+        ctx: &StepContext,
+        semaphore: Arc<Semaphore>,
+        permit: OwnedSemaphorePermit,
+        depends: &IndexMap<String, Arc<RwLock<()>>>,
+    ) -> Result<Self> {
+        if let Some(locks) = Self::try_lock(step, ctx, depends, permit) {
+            return Ok(locks);
+        }
+        let mut read_flocks = vec![];
+        let mut write_flocks = vec![];
+        for (_name, depends) in depends.iter() {
+            read_flocks.push(depends.clone().read_owned().await);
+        }
+        for (_path, lock) in ctx.file_locks.iter() {
+            let lock = lock.clone();
+            match (step.stomp, ctx.run_type) {
+                (_, RunType::Run) => {}
+                (true, _) | (_, RunType::Check) => read_flocks.push(lock.clone().read_owned().await),
+                (_, RunType::Fix) => write_flocks.push(lock.clone().write_owned().await),
+            }
+        }
+        Ok(Self {
+            read_flocks,
+            write_flocks,
+            permit: semaphore.clone().acquire_owned().await.into_diagnostic()?,
+        })
     }
 }

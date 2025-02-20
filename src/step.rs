@@ -1,6 +1,6 @@
-use crate::glob;
 use crate::tera;
 use crate::Result;
+use crate::{glob, settings::Settings};
 use ensembler::CmdLineRunner;
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
@@ -37,6 +37,7 @@ pub struct Step {
     pub check_extra_args: Option<String>,
     pub fix: Option<String>,
     pub fix_extra_args: Option<String>,
+    pub workspace_indicator: Option<String>,
     pub root: Option<PathBuf>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
@@ -160,7 +161,12 @@ impl Step {
     }
 
     pub fn available_run_type(&self, run_type: RunType) -> Option<RunType> {
-        match (run_type, self.check.is_some(), self.fix.is_some(), self.run.is_some()) {
+        match (
+            run_type,
+            self.check.is_some(),
+            self.fix.is_some(),
+            self.run.is_some(),
+        ) {
             (RunType::Check, true, _, _) => Some(RunType::Check),
             (RunType::Fix, _, true, _) => Some(RunType::Fix),
             (_, _, _, true) => Some(RunType::Run),
@@ -188,6 +194,34 @@ impl Step {
                 .map(|s| s.strip_prefix('!').unwrap().to_string())
                 .collect()
         })
+    }
+
+    pub fn is_profile_enabled(&self) -> bool {
+        // Check if step should be skipped based on HK_SKIP_STEPS
+        if crate::env::HK_SKIP_STEPS.contains(&self.name) {
+            info!("{self}: skipping step due to HK_SKIP_STEPS");
+            return false;
+        }
+        let settings = Settings::get();
+        let enabled_profiles = settings.enabled_profiles();
+        if let Some(enabled) = self.enabled_profiles() {
+            let missing_profiles = enabled.difference(&enabled_profiles).collect::<Vec<_>>();
+            if !missing_profiles.is_empty() {
+                let missing_profiles = missing_profiles.iter().join(", ");
+                info!("{self}: skipping step due to missing profile: {missing_profiles}");
+                return false;
+            }
+        }
+        if let Some(disabled) = self.disabled_profiles() {
+            let enabled_profiles = settings.enabled_profiles();
+            let disabled_profiles = disabled.intersection(&enabled_profiles).collect::<Vec<_>>();
+            if !disabled_profiles.is_empty() {
+                let disabled_profiles = disabled_profiles.iter().join(", ");
+                info!("{self}: skipping step due to disabled profile: {disabled_profiles}");
+                return false;
+            }
+        }
+        true
     }
 }
 
