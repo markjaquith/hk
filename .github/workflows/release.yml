@@ -75,6 +75,4 @@ jobs:
     needs: [upload-assets, pkl]
     runs-on: ubuntu-latest
     steps:
-      - uses: softprops/action-gh-release@v2
-        with:
-          draft: false
+      - run: gh release edit ${{ github.ref_name }} --draft=false
