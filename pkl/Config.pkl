@@ -1,6 +1,6 @@
 @ModuleInfo { minPklVersion = "0.27.2" }
 module hk.Config
-min_hk_version = "0.4.0"
+min_hk_version = "0.4.1"
 
 open class Linter {
     /// Which profiles (HK_PROFILES) need to be active for the step to run
