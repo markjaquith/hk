@@ -1,6 +1,6 @@
 # `hk fix`
 
-- **Usage**: `hk fix [-a --all] [--stash]`
+- **Usage**: `hk fix [-a --all]`
 - **Aliases**: `f`
 
 Fixes code
@@ -10,7 +10,3 @@ Fixes code
 ### `-a --all`
 
 Run on all files instead of just staged files
-
-### `--stash`
-
-Force stashing even if it's disabled via HK_STASH

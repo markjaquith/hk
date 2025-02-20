@@ -35,6 +35,41 @@
         "hidden_aliases": [],
         "examples": []
       },
+      "check": {
+        "full_cmd": ["check"],
+        "usage": "check [-a --all] [--stash]",
+        "subcommands": {},
+        "args": [],
+        "flags": [
+          {
+            "name": "all",
+            "usage": "-a --all",
+            "help": "Run on all files instead of just staged files",
+            "help_first_line": "Run on all files instead of just staged files",
+            "short": ["a"],
+            "long": ["all"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "stash",
+            "usage": "--stash",
+            "help": "Force stashing even if it's disabled via HK_STASH",
+            "help_first_line": "Force stashing even if it's disabled via HK_STASH",
+            "short": [],
+            "long": ["stash"],
+            "hide": false,
+            "global": false
+          }
+        ],
+        "mounts": [],
+        "hide": false,
+        "help": "Fixes code",
+        "name": "check",
+        "aliases": ["c"],
+        "hidden_aliases": [],
+        "examples": []
+      },
       "completion": {
         "full_cmd": ["completion"],
         "usage": "completion <SHELL>",
@@ -75,7 +110,7 @@
       },
       "fix": {
         "full_cmd": ["fix"],
-        "usage": "fix [-a --all] [--stash]",
+        "usage": "fix [-a --all]",
         "subcommands": {},
         "args": [],
         "flags": [
@@ -86,16 +121,6 @@
             "help_first_line": "Run on all files instead of just staged files",
             "short": ["a"],
             "long": ["all"],
-            "hide": false,
-            "global": false
-          },
-          {
-            "name": "stash",
-            "usage": "--stash",
-            "help": "Force stashing even if it's disabled via HK_STASH",
-            "help_first_line": "Force stashing even if it's disabled via HK_STASH",
-            "short": [],
-            "long": ["stash"],
             "hide": false,
             "global": false
           }
@@ -415,7 +440,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.3.3",
+  "version": "0.4.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

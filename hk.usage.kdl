@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.3.3"
+version "0.4.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -15,6 +15,11 @@ flag --silent help="Suppresses all output" global=#true
 cmd cache hide=#true subcommand_required=#true help="Manage hk internal cache" {
     cmd clear help="Clear the cache directory"
 }
+cmd check help="Fixes code" {
+    alias c
+    flag "-a --all" help="Run on all files instead of just staged files"
+    flag --stash help="Force stashing even if it's disabled via HK_STASH"
+}
 cmd completion help="Generates shell completion scripts" {
     arg <SHELL> help="The shell to generate completion for"
 }
@@ -24,7 +29,6 @@ cmd config help="Generate a default hk.toml configuration file" {
 cmd fix help="Fixes code" {
     alias f
     flag "-a --all" help="Run on all files instead of just staged files"
-    flag --stash help="Force stashing even if it's disabled via HK_STASH"
 }
 cmd generate help="Generates a new hk.pkl file for a project" {
     alias g

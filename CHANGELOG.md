@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.3.3](https://github.com/jdx/hk/compare/v0.3.2..0.3.3) - 2025-02-19
+## [0.4.0](https://github.com/jdx/hk/compare/v0.3.3..0.4.0) - 2025-02-20
+
+### 🚀 Features
+
+- new schema by [@jdx](https://github.com/jdx) in [#15](https://github.com/jdx/hk/pull/15)
+
+### 🔍 Other Changes
+
+- Update README.md by [@jdx](https://github.com/jdx) in [8ac0c21](https://github.com/jdx/hk/commit/8ac0c2161ff3fb1ff9a27d7ec1a12d1b08422a69)
+
+## [0.3.3](https://github.com/jdx/hk/compare/v0.3.2..v0.3.3) - 2025-02-19
 
 ### 🔍 Other Changes
 
@@ -118,7 +128,7 @@
 - created flocks by [@jdx](https://github.com/jdx) in [343ab06](https://github.com/jdx/hk/commit/343ab06baebb3d1b580d1281045edbcfb1f6a913)
 - disabled beta toolchain on CI by [@jdx](https://github.com/jdx) in [41e2028](https://github.com/jdx/hk/commit/41e20288d5c1b8f06183b7622ef01f1f3d99ea29)
 
-## [0.2.0](https://github.com/jdx/hk/compare/v0.1.8..v0.2.0) - 2025-02-17
+## [0.2.0](https://github.com/jdx/hk/compare/v0.1.9..v0.2.0) - 2025-02-17
 
 ### 🚀 Features
 
