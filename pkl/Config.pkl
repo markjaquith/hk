@@ -58,9 +58,9 @@ class Fix extends Step {
     run = "fix"
 }
 
-class Lint extends Step {
-    type = "lint"
-    run = "lint"
+class Check extends Step {
+    type = "check"
+    run = "check"
 }
 
 typealias Hook = Mapping<String, Step>
