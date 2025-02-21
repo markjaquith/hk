@@ -1,14 +1,14 @@
 [package]
 name = "hk"
 version = "0.4.2"
-edition = "2021"
+edition = "2024"
 description = "A tool for managing git hooks"
 license = "MIT"
 repository = "https://github.com/jdx/hk"
 documentation = "https://hk.jdx.dev"
 homepage = "https://hk.jdx.dev"
 include = ["/src/**/*", "/Cargo.toml", "/Cargo.lock", "/README.md", "/LICENSE", "/CHANGELOG.md", "/pkl"]
-rust-version = "1.80"
+rust-version = "1.85"
 
 [dependencies]
 chrono = "0.4"
@@ -38,6 +38,8 @@ clx = "0.1.0"
 semver = "1.0.25"
 clap_usage = "2.0.3"
 which = "7.0.2"
+siphasher = "1.0.1"
+once_cell = "1.20.3"
 
 [profile.serious]
 inherits = "release"

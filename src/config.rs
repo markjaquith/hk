@@ -3,8 +3,10 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
 use crate::{
+    cache::CacheManagerBuilder,
     env,
     git::Git,
+    hash,
     step::{RunType, Step},
     step_scheduler::StepScheduler,
     version, Result,
@@ -23,9 +25,17 @@ impl Config {
             for path in &paths {
                 let path = cwd.join(path);
                 if path.exists() {
-                    return Self::read(&path).wrap_err_with(|| {
-                        format!("Failed to read config file: {}", path.display())
-                    });
+                    let hash_key = format!("{}.json", hash::hash_to_str(&path));
+                    let hash_key_path = env::HK_CACHE_DIR.join("configs").join(hash_key);
+                    return CacheManagerBuilder::new(hash_key_path)
+                        .with_fresh_file(path.to_path_buf())
+                        .build()
+                        .get_or_try_init(|| {
+                            Self::read(&path).wrap_err_with(|| {
+                                format!("Failed to read config file: {}", path.display())
+                            })
+                        })
+                        .cloned();
                 }
             }
             cwd = cwd.parent().map(PathBuf::from).unwrap_or_default();

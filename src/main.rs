@@ -3,6 +3,7 @@ extern crate log;
 
 pub use miette::Result;
 
+mod cache;
 mod cli;
 mod config;
 mod env;
@@ -15,6 +16,7 @@ mod step_scheduler;
 mod tera;
 mod ui;
 mod version;
+mod hash;
 #[cfg(unix)]
 use tokio::signal;
 #[cfg(unix)]
