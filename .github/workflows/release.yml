@@ -75,4 +75,4 @@ jobs:
     needs: [upload-assets, pkl]
     runs-on: ubuntu-latest
     steps:
-      - run: gh release edit ${{ github.ref_name }} --draft=false
+      - run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }}
