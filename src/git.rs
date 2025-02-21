@@ -194,6 +194,9 @@ impl Git {
     }
 
     pub fn push_stash(&mut self) -> Result<Option<Oid>> {
+        if self.unstaged_files()?.is_empty() {
+            return Ok(None);
+        }
         let sig = self.repo.signature().into_diagnostic()?;
         let mut flags = git2::StashFlags::default();
         flags.set(git2::StashFlags::INCLUDE_UNTRACKED, true);
