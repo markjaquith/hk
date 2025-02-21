@@ -1,6 +1,30 @@
 # Changelog
 
-## [0.4.1](https://github.com/jdx/hk/compare/v0.4.0..0.4.1) - 2025-02-20
+## [0.4.2](https://github.com/jdx/hk/compare/v0.4.1..0.4.2) - 2025-02-21
+
+### 🐛 Bug Fixes
+
+- use real stashing by [@jdx](https://github.com/jdx) in [#22](https://github.com/jdx/hk/pull/22)
+
+### 🚜 Refactor
+
+- paving the way for batching steps by [@jdx](https://github.com/jdx) in [f8c4ff3](https://github.com/jdx/hk/commit/f8c4ff368ebd9be348f5bc8aee4da8ab40c1f892)
+
+### 📚 Documentation
+
+- favicon by [@jdx](https://github.com/jdx) in [2fb8aa0](https://github.com/jdx/hk/commit/2fb8aa0b7db244b13c7ddb102baba08b22b9fa97)
+
+### 🔍 Other Changes
+
+- fix draft release by [@jdx](https://github.com/jdx) in [3d79627](https://github.com/jdx/hk/commit/3d796276daa63e62af74765f190d6078d965fc3f)
+- Delete pkl/builtins/prettier_package_json.pkl by [@jdx](https://github.com/jdx) in [44dc0f0](https://github.com/jdx/hk/commit/44dc0f002fe3e1fa9fd4e6aa6b590fbdcb2d60cb)
+- make compatible with lowest semver by [@jdx](https://github.com/jdx) in [444e6e2](https://github.com/jdx/hk/commit/444e6e2910ed85275e4b79c4fe6bf087bc446fdf)
+- Update README.md by [@jdx](https://github.com/jdx) in [694cea7](https://github.com/jdx/hk/commit/694cea77aa990d806f0c60ad7bc33554f9e0b472)
+- Update README.md by [@jdx](https://github.com/jdx) in [9e527f4](https://github.com/jdx/hk/commit/9e527f49d9d651f7b45d0c80800d536790fff02f)
+- Update README.md by [@jdx](https://github.com/jdx) in [cc09b3d](https://github.com/jdx/hk/commit/cc09b3ddc30e8e958bfc071a9110eb07955216ad)
+- Update getting_started.md by [@jdx](https://github.com/jdx) in [3a878d5](https://github.com/jdx/hk/commit/3a878d53d4165be85ca3e35157667bfc16223ba6)
+
+## [0.4.1](https://github.com/jdx/hk/compare/v0.4.0..v0.4.1) - 2025-02-20
 
 ### 🐛 Bug Fixes
 

@@ -1,5 +1,5 @@
-amends "package://github.com/jdx/hk/releases/download/v0.4.1/hk@0.4.1#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.4.1/hk@0.4.1#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.4.2/hk@0.4.2#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.4.2/hk@0.4.2#/builtins/prettier.pkl"
 
 linters {
     // hooks can be manually defined
