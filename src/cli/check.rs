@@ -2,7 +2,7 @@ use std::iter::once;
 
 use crate::{
     git::Git,
-    step::{RunType, Step},
+    step::{CheckType, RunType, Step},
     Result,
 };
 
@@ -26,7 +26,7 @@ impl Check {
         let repo = Git::new()?; // TODO: remove repo
         let hook = once(("check".to_string(), Step::check())).collect();
         config
-            .run_hook(self.all, &hook, RunType::Check, &repo)
+            .run_hook(self.all, &hook, RunType::Check(CheckType::Check), &repo)
             .await
     }
 }

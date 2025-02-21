@@ -2,7 +2,7 @@ use std::sync::LazyLock;
 
 use indexmap::IndexMap;
 
-use crate::config::Config;
+use crate::{config::Config, step::CheckType};
 use crate::{env, step::{RunType, Step}};
 use crate::{git::Git, Result};
 
@@ -41,7 +41,7 @@ impl PrePush {
             return Ok(());
         }
         let mut repo = Git::new()?;
-        let run_type = RunType::Check;
+        let run_type = RunType::Check(CheckType::Check);
         if !self.all {
             repo.stash_unstaged(self.stash)?;
         }

@@ -2,7 +2,7 @@ use std::sync::LazyLock;
 
 use indexmap::IndexMap;
 
-use crate::{config::Config, env, step::{RunType, Step}};
+use crate::{config::Config, env, step::{CheckType, RunType, Step}};
 use crate::{git::Git, Result};
 
 /// Sets up git hooks to run hk
@@ -35,7 +35,7 @@ impl PreCommit {
         let run_type = if !self.check && (self.fix || *env::HK_FIX) {
             RunType::Fix
         } else {
-            RunType::Check
+            RunType::Check(CheckType::Check)
         };
         if !self.all {
             repo.stash_unstaged(self.stash)?;

@@ -34,6 +34,8 @@ pub struct Step {
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
     pub check: Option<String>,
+    pub check_diff: Option<String>,
+    pub check_list_files: Option<String>,
     pub check_extra_args: Option<String>,
     pub fix: Option<String>,
     pub fix_extra_args: Option<String>,
@@ -62,9 +64,16 @@ pub enum FileKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RunType {
-    Check,
+    Check(CheckType),
     Fix,
     Run,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CheckType {
+    Check,
+    ListFiles,
+    Diff,
 }
 
 impl Step {
@@ -91,7 +100,9 @@ impl Step {
         );
         let pr = self.build_pr();
         let (Some(mut run), extra) = (match ctx.run_type {
-            RunType::Check => (self.check.clone(), self.check_extra_args.as_ref()),
+            RunType::Check(CheckType::Check) => (self.check.clone(), self.check_extra_args.as_ref()),
+            RunType::Check(CheckType::Diff) => (self.check_diff.clone(), self.check_extra_args.as_ref()),
+            RunType::Check(CheckType::ListFiles) => (self.check_list_files.clone(), self.check_extra_args.as_ref()),
             RunType::Fix => (self.fix.clone(), self.fix_extra_args.as_ref()),
             RunType::Run => (self.run.clone(), None),
         }) else {
@@ -168,11 +179,11 @@ impl Step {
             self.fix.is_some(),
             self.run.is_some(),
         ) {
-            (RunType::Check, true, _, _) => Some(RunType::Check),
+            (RunType::Check(_), true, _, _) => Some(RunType::Check(CheckType::Check)),
             (RunType::Fix, _, true, _) => Some(RunType::Fix),
             (_, _, _, true) => Some(RunType::Run),
             (_, false, true, _) => Some(RunType::Fix),
-            (_, true, false, _) => Some(RunType::Check),
+            (_, true, false, _) => Some(RunType::Check(CheckType::Check)),
             _ => None,
         }
     }

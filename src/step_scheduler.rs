@@ -13,7 +13,7 @@ use crate::{
     git::Git,
     glob,
     settings::Settings,
-    step::{RunType, Step},
+    step::{CheckType, RunType, Step},
 };
 use crate::{step::StepContext, Result};
 
@@ -227,7 +227,9 @@ impl<'a> StepScheduler<'a> {
             {
                 let mut check_ctx = ctx.clone();
                 check_ctx.run_type = match ctx.run_type {
-                    RunType::Fix => RunType::Check,
+                    RunType::Fix if step.check_diff.is_some() => RunType::Check(CheckType::Diff),
+                    RunType::Fix if step.check_list_files.is_some() => RunType::Check(CheckType::ListFiles),
+                    RunType::Fix => RunType::Check(CheckType::Check),
                     _ => unreachable!(),
                 };
                 debug!("{step}: running check step first due to fix step contention");
@@ -304,7 +306,7 @@ impl StepLocks {
             let lock = lock.clone();
             match (step.stomp, ctx.run_type) {
                 (_, RunType::Run) => {}
-                (true, _) | (_, RunType::Check) => match lock.clone().try_read_owned() {
+                (true, _) | (_, RunType::Check(_)) => match lock.clone().try_read_owned() {
                     Ok(lock) => read_flocks.push(lock),
                     Err(_) => {
                         trace!("{step}: waiting for {} to finish", path.display());
@@ -346,7 +348,7 @@ impl StepLocks {
             let lock = lock.clone();
             match (step.stomp, ctx.run_type) {
                 (_, RunType::Run) => {}
-                (true, _) | (_, RunType::Check) => read_flocks.push(lock.clone().read_owned().await),
+                (true, _) | (_, RunType::Check(_)) => read_flocks.push(lock.clone().read_owned().await),
                 (_, RunType::Fix) => write_flocks.push(lock.clone().write_owned().await),
             }
         }
