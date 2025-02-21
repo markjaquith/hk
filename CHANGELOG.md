@@ -1,6 +1,34 @@
 # Changelog
 
-## [0.4.2](https://github.com/jdx/hk/compare/v0.4.1..0.4.2) - 2025-02-21
+## [0.4.3](https://github.com/jdx/hk/compare/v0.4.2..0.4.3) - 2025-02-21
+
+### 🚀 Features
+
+- cache config by [@jdx](https://github.com/jdx) in [6791c00](https://github.com/jdx/hk/commit/6791c00a7da09b0929ccb258f8b86ce7cd892602)
+- check_diff and check_list_files added (but do nothing extra yet) by [@jdx](https://github.com/jdx) in [4aea0a8](https://github.com/jdx/hk/commit/4aea0a85d2c2b45da365a4ebff8676aa03a07719)
+- stub out new pkl fields by [@jdx](https://github.com/jdx) in [5a598c3](https://github.com/jdx/hk/commit/5a598c3c69b9cffe2215454eb57b6d9b0209f313)
+- workspace_indicator by [@jdx](https://github.com/jdx) in [#21](https://github.com/jdx/hk/pull/21)
+
+### 🐛 Bug Fixes
+
+- improve output a bit by [@jdx](https://github.com/jdx) in [9f4b534](https://github.com/jdx/hk/commit/9f4b5346d58ba695254f49215f3bd172fde0f72f)
+
+### 📚 Documentation
+
+- add more stuff to the example by [@jdx](https://github.com/jdx) in [614f47b](https://github.com/jdx/hk/commit/614f47b9d301257128eaf495e821bfe5f623cc24)
+- add more stuff to the example by [@jdx](https://github.com/jdx) in [7ca1c36](https://github.com/jdx/hk/commit/7ca1c363c1bc2e0722216bc74d8111ba26d7e50b)
+
+### 🧪 Testing
+
+- fix tests by [@jdx](https://github.com/jdx) in [7eb11ca](https://github.com/jdx/hk/commit/7eb11ca0f3219efc28f641c720696ae25ae86d6a)
+
+### 🔍 Other Changes
+
+- fix release job by [@jdx](https://github.com/jdx) in [1604dbc](https://github.com/jdx/hk/commit/1604dbc801d4f2c9574eabdec5d7076f7f478841)
+- update rust by [@jdx](https://github.com/jdx) in [630f9f7](https://github.com/jdx/hk/commit/630f9f72fc5ad6208c10da5a200eca93fcd2cbc6)
+- update rust by [@jdx](https://github.com/jdx) in [0ad4c71](https://github.com/jdx/hk/commit/0ad4c714fae80e3729de2de2800d0740fd38d702)
+
+## [0.4.2](https://github.com/jdx/hk/compare/v0.4.1..v0.4.2) - 2025-02-21
 
 ### 🐛 Bug Fixes
 

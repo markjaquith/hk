@@ -11,8 +11,8 @@ hk is configured via `hk.pkl` which is written in [pkl-lang](https://pkl-lang.or
 Here's a basic `hk.pkl` file:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v0.4.2/hk@0.4.2#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.4.2/hk@0.4.2#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.4.3/hk@0.4.3#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.4.3/hk@0.4.3#/builtins/prettier.pkl"
 
 linters {
     // linters can be manually defined
