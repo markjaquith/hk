@@ -20,6 +20,10 @@ open class Linter {
     /// Note that this behavior is only used if multiple steps would be in contention. If all fix steps edit disjoint files, the fix step will be chosen first despite this config.
     check_first = true
 
+    /// Run check/fix step on batches of files instead of all files at once.
+    /// This takes advantage of parallel processing for otherwise single-threaded linters like eslint and prettier.
+    batch = false
+
     /// fetches a read lock instead of a write lock when running fix/fix_all. Use if the tool has its own locking mechanism or you simply don't care if files may be written to
     /// by multiple steps.
     stomp = false
@@ -61,11 +65,13 @@ open class Step {
 class Fix extends Step {
     type = "fix"
     run = "fix"
+    linter_dependencies = new Mapping<String, Listing<String>>{}
 }
 
 class Check extends Step {
     type = "check"
     run = "check"
+    linter_dependencies = new Mapping<String, Listing<String>>{}
 }
 
 typealias Hook = Mapping<String, Step>

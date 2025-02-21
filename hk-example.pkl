@@ -55,7 +55,7 @@ hooks {
         }
         ["fix"] = new Fix {
             // TODO: dependency overlay
-            // dependencies {
+            // linter_dependencies {
             //     // prettier has to run after eslint
             //     // this will be done by batch, so a single batch of files
             //     // may be formatted by prettier after eslint even if eslint hasn't processed all the files yet
