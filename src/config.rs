@@ -102,7 +102,7 @@ pub struct Config {
     pub hooks: IndexMap<String, IndexMap<String, Step>>,
 }
 
-#[derive(Debug, Clone, Default, Deserialize, Serialize, Hash, Eq, PartialEq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
 pub struct Linter {
@@ -111,6 +111,8 @@ pub struct Linter {
     pub glob: Option<Vec<String>>,
     pub profiles: Option<Vec<String>>,
     pub exclusive: bool,
+    pub check_first: bool,
+    pub batch: bool,
     pub stomp: bool,
     pub check: Option<String>,
     pub check_diff: Option<String>,
@@ -121,7 +123,8 @@ pub struct Linter {
     pub workspace_indicator: Option<String>,
     pub stage: Option<Vec<String>>,
     pub depends: Vec<String>,
-    pub check_first: bool,
+    #[serde(default)]
+    pub linter_dependencies: IndexMap<String, Vec<String>>,
 }
 
 impl From<Linter> for Step {
@@ -131,6 +134,8 @@ impl From<Linter> for Step {
             glob: linter.glob,
             profiles: linter.profiles,
             exclusive: linter.exclusive,
+            check_first: linter.check_first,
+            batch: linter.batch,
             stomp: linter.stomp,
             check: linter.check,
             check_diff: linter.check_diff,
@@ -142,9 +147,9 @@ impl From<Linter> for Step {
             stage: linter.stage,
             name: linter.name,
             depends: linter.depends,
-            check_first: linter.check_first,
             run: None,
             root: None,
+            linter_dependencies: linter.linter_dependencies,
         }
     }
 }

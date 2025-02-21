@@ -173,16 +173,21 @@ impl<'a> StepScheduler<'a> {
     }
 
     fn files_in_contention(&self, steps: &[&Step], files: &[PathBuf]) -> Result<HashSet<PathBuf>> {
-        let files_by_step: HashMap<&Step, Vec<PathBuf>> = steps
+        let step_map: IndexMap<String, &Step> = steps
+            .iter()
+            .map(|step| (step.name.clone(), *step))
+            .collect();
+        let files_by_step: HashMap<String, Vec<PathBuf>> = steps
             .iter()
             .map(|step| {
                 let files = glob::get_matches(step.glob.as_ref().unwrap_or(&vec![]), files)?;
-                Ok((*step, files))
+                Ok((step.name.clone(), files))
             })
             .collect::<Result<_>>()?;
         let mut steps_per_file: HashMap<&Path, Vec<&Step>> = Default::default();
-        for (step, files) in files_by_step.iter() {
+        for (step_name, files) in files_by_step.iter() {
             for file in files {
+                let step = step_map.get(step_name).unwrap();
                 steps_per_file.entry(file.as_path()).or_default().push(step);
             }
         }

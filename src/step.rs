@@ -13,7 +13,7 @@ use tokio::sync::RwLock;
 use serde_with::{serde_as, OneOrMany};
 
 #[serde_as]
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
 pub struct Step {
@@ -29,6 +29,8 @@ pub struct Step {
     #[serde(default)]
     pub check_first: bool,
     #[serde(default)]
+    pub batch: bool,
+    #[serde(default)]
     pub stomp: bool,
     pub run: Option<String>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
@@ -43,6 +45,8 @@ pub struct Step {
     pub root: Option<PathBuf>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
+    #[serde(default)]
+    pub linter_dependencies: IndexMap<String, Vec<String>>,
 }
 
 impl fmt::Display for Step {
