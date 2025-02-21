@@ -1,13 +1,18 @@
+use crate::{step::StepResponse, tera};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use miette::{miette, IntoDiagnostic};
-use std::{collections::{HashMap, HashSet}, path::{Path, PathBuf}, sync::Arc};
+use miette::{IntoDiagnostic, miette};
+use std::{
+    collections::{HashMap, HashSet},
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 use tokio::sync::{
     Mutex, OwnedRwLockReadGuard, OwnedRwLockWriteGuard, OwnedSemaphorePermit, RwLock, Semaphore,
 };
 use tokio::task::JoinSet;
-use crate::{step::StepResponse, tera};
 
+use crate::{Result, step::StepContext};
 use crate::{
     config::Config,
     env,
@@ -16,7 +21,6 @@ use crate::{
     settings::Settings,
     step::{CheckType, RunType, Step},
 };
-use crate::{step::StepContext, Result};
 
 pub struct StepScheduler<'a> {
     run_type: RunType,
@@ -110,7 +114,14 @@ impl<'a> StepScheduler<'a> {
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect(),
                     files,
-                    depend_self: Some(depend_locks.get(&step.name).unwrap().clone().write_owned().await),
+                    depend_self: Some(
+                        depend_locks
+                            .get(&step.name)
+                            .unwrap()
+                            .clone()
+                            .write_owned()
+                            .await,
+                    ),
                 };
 
                 let depends = step
@@ -233,7 +244,10 @@ impl<'a> StepScheduler<'a> {
 
         let mut files_in_contention = HashSet::new();
         for (file, steps) in steps_per_file.iter() {
-            if steps.iter().any(|step| step.available_run_type(self.run_type) == Some(RunType::Fix)) {
+            if steps
+                .iter()
+                .any(|step| step.available_run_type(self.run_type) == Some(RunType::Fix))
+            {
                 files_in_contention.insert(file.to_path_buf());
             }
         }
@@ -261,12 +275,17 @@ impl<'a> StepScheduler<'a> {
             if *env::HK_CHECK_FIRST
                 && step.check_first
                 && matches!(ctx.run_type, RunType::Fix)
-                && ctx.files.iter().any(|file| files_in_contention.contains(file))
+                && ctx
+                    .files
+                    .iter()
+                    .any(|file| files_in_contention.contains(file))
             {
                 let mut check_ctx = ctx.clone();
                 check_ctx.run_type = match ctx.run_type {
                     RunType::Fix if step.check_diff.is_some() => RunType::Check(CheckType::Diff),
-                    RunType::Fix if step.check_list_files.is_some() => RunType::Check(CheckType::ListFiles),
+                    RunType::Fix if step.check_list_files.is_some() => {
+                        RunType::Check(CheckType::ListFiles)
+                    }
                     RunType::Fix => RunType::Check(CheckType::Check),
                     _ => unreachable!(),
                 };
@@ -292,7 +311,17 @@ impl<'a> StepScheduler<'a> {
                 }
             }
             let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
-            match run(ctx, tctx, semaphore, &step, failed.clone(), permit, &depends).await {
+            match run(
+                ctx,
+                tctx,
+                semaphore,
+                &step,
+                failed.clone(),
+                permit,
+                &depends,
+            )
+            .await
+            {
                 Ok(rsp) => Ok(rsp),
                 Err(err) => {
                     // Mark as failed to prevent new steps from starting
@@ -321,9 +350,7 @@ async fn run(
     }
     match step.run(ctx, tctx).await {
         Ok(rsp) => Ok(rsp),
-        Err(err) => {
-            Err(err.wrap_err(step.name.clone()))
-        }
+        Err(err) => Err(err.wrap_err(step.name.clone())),
     }
 }
 
@@ -395,7 +422,9 @@ impl StepLocks {
             let lock = lock.clone();
             match (step.stomp, ctx.run_type) {
                 (_, RunType::Run) => {}
-                (true, _) | (_, RunType::Check(_)) => read_flocks.push(lock.clone().read_owned().await),
+                (true, _) | (_, RunType::Check(_)) => {
+                    read_flocks.push(lock.clone().read_owned().await)
+                }
                 (_, RunType::Fix) => write_flocks.push(lock.clone().write_owned().await),
             }
         }

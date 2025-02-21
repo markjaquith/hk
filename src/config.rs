@@ -3,15 +3,16 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
 use crate::{
+    Result,
     cache::CacheManagerBuilder,
     env,
     git::Git,
     hash,
     step::{RunType, Step},
     step_scheduler::StepScheduler,
-    version, Result,
+    version,
 };
-use miette::{bail, Context, IntoDiagnostic};
+use miette::{Context, IntoDiagnostic, bail};
 
 impl Config {
     pub fn get() -> Result<Self> {

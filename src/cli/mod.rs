@@ -1,7 +1,7 @@
 use crate::version as version_lib;
 use std::num::NonZero;
 
-use crate::{logger, settings::Settings, Result};
+use crate::{Result, logger, settings::Settings};
 use clap::Parser;
 
 mod cache;

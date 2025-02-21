@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::{env, version, Result};
+use crate::{Result, env, version};
 
 /// Generates a new hk.pkl file for a project
 #[derive(Debug, clap::Args)]

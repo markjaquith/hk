@@ -1,5 +1,5 @@
-use crate::tera;
 use crate::Result;
+use crate::tera;
 use crate::{glob, settings::Settings};
 use ensembler::CmdLineRunner;
 use indexmap::{IndexMap, IndexSet};
@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use std::{fmt, sync::Arc};
 use tokio::sync::{OwnedRwLockWriteGuard, RwLock};
 
-use serde_with::{serde_as, OneOrMany};
+use serde_with::{OneOrMany, serde_as};
 
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
@@ -93,20 +93,33 @@ impl Step {
             ..Default::default()
         }
     }
-    pub(crate) async fn run(&self, ctx: StepContext, mut tctx: tera::Context) -> Result<StepResponse> {
+    pub(crate) async fn run(
+        &self,
+        ctx: StepContext,
+        mut tctx: tera::Context,
+    ) -> Result<StepResponse> {
         let mut rsp = StepResponse::default();
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
         tctx.with_files(&ctx.files);
-        let file_msg = |files: &[PathBuf]| format!(
-            "{} file{}",
-            files.len(),
-            if files.len() == 1 { "" } else { "s" }
-        );
+        let file_msg = |files: &[PathBuf]| {
+            format!(
+                "{} file{}",
+                files.len(),
+                if files.len() == 1 { "" } else { "s" }
+            )
+        };
         let pr = self.build_pr();
         let (Some(mut run), extra) = (match ctx.run_type {
-            RunType::Check(CheckType::Check) => (self.check.clone(), self.check_extra_args.as_ref()),
-            RunType::Check(CheckType::Diff) => (self.check_diff.clone(), self.check_extra_args.as_ref()),
-            RunType::Check(CheckType::ListFiles) => (self.check_list_files.clone(), self.check_extra_args.as_ref()),
+            RunType::Check(CheckType::Check) => {
+                (self.check.clone(), self.check_extra_args.as_ref())
+            }
+            RunType::Check(CheckType::Diff) => {
+                (self.check_diff.clone(), self.check_extra_args.as_ref())
+            }
+            RunType::Check(CheckType::ListFiles) => (
+                self.check_list_files.clone(),
+                self.check_extra_args.as_ref(),
+            ),
             RunType::Fix => (self.fix.clone(), self.fix_extra_args.as_ref()),
             RunType::Run => (self.run.clone(), None),
         }) else {
@@ -142,7 +155,12 @@ impl Step {
             vec![]
         };
         let run = tera::render(&run, &tctx).unwrap();
-        pr.set_message(format!("{} – {} – {}", file_msg(&ctx.files), self.glob.as_ref().unwrap_or(&vec![]).join(" "), run));
+        pr.set_message(format!(
+            "{} – {} – {}",
+            file_msg(&ctx.files),
+            self.glob.as_ref().unwrap_or(&vec![]).join(" "),
+            run
+        ));
         CmdLineRunner::new("sh")
             .arg("-c")
             .arg(run)

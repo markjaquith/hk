@@ -1,4 +1,4 @@
-use crate::{config::Config as HKConfig, Result};
+use crate::{Result, config::Config as HKConfig};
 
 /// Generate a default hk.toml configuration file
 #[derive(Debug, clap::Args)]

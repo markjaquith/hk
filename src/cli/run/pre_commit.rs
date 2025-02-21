@@ -2,8 +2,12 @@ use std::sync::LazyLock;
 
 use indexmap::IndexMap;
 
-use crate::{config::Config, env, step::{CheckType, RunType, Step}};
-use crate::{git::Git, Result};
+use crate::{Result, git::Git};
+use crate::{
+    config::Config,
+    env,
+    step::{CheckType, RunType, Step},
+};
 
 /// Sets up git hooks to run hk
 #[derive(Debug, clap::Args)]

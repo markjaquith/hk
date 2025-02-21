@@ -1,5 +1,5 @@
-use crate::version;
 use crate::Result;
+use crate::version;
 
 /// Print the version of hk
 #[derive(Debug, clap::Args)]

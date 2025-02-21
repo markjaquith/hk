@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 use crate::Result;
-use miette::{bail, IntoDiagnostic};
+use miette::{IntoDiagnostic, bail};
 pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }

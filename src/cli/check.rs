@@ -1,9 +1,9 @@
 use std::iter::once;
 
 use crate::{
+    Result,
     git::Git,
     step::{CheckType, RunType, Step},
-    Result,
 };
 
 use crate::config::Config;

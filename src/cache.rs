@@ -8,8 +8,8 @@ use std::time::Duration;
 use crate::Result;
 use itertools::Itertools;
 use miette::IntoDiagnostic;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use std::sync::LazyLock as Lazy;
 
 use crate::hash::hash_to_str;

@@ -1,4 +1,4 @@
-use crate::{env, Result};
+use crate::{Result, env};
 
 #[derive(Debug, clap::Args)]
 pub struct Clear {}

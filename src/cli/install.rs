@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::{config::Config, env, Result};
+use crate::{Result, config::Config, env};
 
 /// Sets up git hooks to run hk
 #[derive(Debug, clap::Args)]

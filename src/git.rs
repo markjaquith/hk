@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use git2::{Commit, Oid, Repository, StatusOptions, StatusShow, Tree};
 use itertools::{Either, Itertools};
 use miette::Result;
-use miette::{miette, Context, IntoDiagnostic};
+use miette::{Context, IntoDiagnostic, miette};
 
 use crate::env;
 

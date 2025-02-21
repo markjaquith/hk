@@ -9,6 +9,7 @@ mod config;
 mod env;
 mod git;
 mod glob;
+mod hash;
 mod logger;
 mod settings;
 mod step;
@@ -16,7 +17,6 @@ mod step_scheduler;
 mod tera;
 mod ui;
 mod version;
-mod hash;
 #[cfg(unix)]
 use tokio::signal;
 #[cfg(unix)]
@@ -37,3 +37,4 @@ fn handle_epipe() {
         debug!("received SIGPIPE");
     });
 }
+// foo

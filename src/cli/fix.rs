@@ -1,8 +1,8 @@
 use std::iter::once;
 
 use crate::step::RunType;
+use crate::{Result, git::Git};
 use crate::{config::Config, step::Step};
-use crate::{git::Git, Result};
 
 /// Fixes code
 #[derive(Debug, clap::Args)]
