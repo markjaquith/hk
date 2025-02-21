@@ -26,6 +26,8 @@ open class Linter {
 
     /// a shell command to check. Any edits will be ignored.
     check: String?
+    check_list_files: String?
+    check_diff: String?
     check_extra_args: String?
 
     /// a shell command that checks and edits files. Edits will be automatically added to the index.

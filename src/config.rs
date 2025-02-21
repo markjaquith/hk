@@ -113,6 +113,8 @@ pub struct Linter {
     pub exclusive: bool,
     pub stomp: bool,
     pub check: Option<String>,
+    pub check_list_files: Option<String>,
+    pub check_diff: Option<String>,
     pub check_extra_args: Option<String>,
     pub fix: Option<String>,
     pub fix_extra_args: Option<String>,

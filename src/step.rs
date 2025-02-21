@@ -84,6 +84,11 @@ impl Step {
         let mut tctx = tera::Context::default();
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
         tctx.with_files(&ctx.files);
+        let file_msg = |files: &[PathBuf]| format!(
+            "{} file{}",
+            files.len(),
+            if files.len() == 1 { "" } else { "s" }
+        );
         let pr = self.build_pr();
         let (Some(mut run), extra) = (match ctx.run_type {
             RunType::Check => (self.check.clone(), self.check_extra_args.as_ref()),
@@ -122,7 +127,7 @@ impl Step {
             vec![]
         };
         let run = tera::render(&run, &tctx).unwrap();
-        pr.set_message(run.clone());
+        pr.set_message(format!("{} – {} – {}", file_msg(&ctx.files), self.glob.as_ref().unwrap_or(&vec![]).join(" "), run));
         CmdLineRunner::new("sh")
             .arg("-c")
             .arg(run)
@@ -146,11 +151,7 @@ impl Step {
         if ctx.files_to_add.is_empty() {
             pr.finish_with_message("done".to_string());
         } else {
-            pr.finish_with_message(format!(
-                "{} file{}",
-                ctx.files_to_add.len(),
-                if ctx.files_to_add.len() == 1 { "" } else { "s" }
-            ));
+            pr.finish_with_message(format!("{} modified", file_msg(&ctx.files_to_add)));
         }
         Ok(ctx)
     }
