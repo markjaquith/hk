@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-# cargo build --profile serious
+cargo build --profile serious
 export PATH="$PWD/target/serious:$PATH"
 
 git stash || true
