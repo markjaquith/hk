@@ -23,13 +23,13 @@ linters {
         // instead of passing all files to check/fix, it will split them into batches
         // this takes advantage of parallel processing for otherwise single-threaded linters like eslint and prettier
         // default: false
-        // batch = true
+        batch = true
     }
     // linters can start from a builtin linter and be customized
     ["prettier"] = new prettier.Prettier {
         // providing a "check_list_files" command will be used to help the "check_first" method work more efficiently
         // rather than running fix against all the files that were checked, it only runs fix against the files returned by this command
-        // check_list_files = "prettier --list-different {{files}}"
+        check_list_files = "prettier --list-different {{files}}"
     }
     ["clippy"] {
         // this linter works on directories instead of individual files.
@@ -42,7 +42,7 @@ linters {
         workspace_indicator = "go.mod"
         // assists "check_first" method because this will return a patch to stdout that hk can simply apply
         // without needing to actually run a "fix" step
-        // check_diff = "cd {{workspace}} && go mod tidy -diff"
+        check_diff = "cd {{workspace}} && go mod tidy -diff"
     }
 }
 
@@ -54,13 +54,12 @@ hooks {
             exclusive = true // prevent other steps from running before this one or starting before this one finishes
         }
         ["fix"] = new Fix {
-            // TODO: dependency overlay
-            // linter_dependencies {
-            //     // prettier has to run after eslint
-            //     // this will be done by batch, so a single batch of files
-            //     // may be formatted by prettier after eslint even if eslint hasn't processed all the files yet
-            //     ["prettier"] = new { "eslint" }
-            // }
+            linter_dependencies {
+                // prettier has to run after eslint
+                // this will be done by batch, so a single batch of files
+                // may be formatted by prettier after eslint even if eslint hasn't processed all the files yet
+                ["prettier"] = new { "eslint" }
+            }
         }
         ["postlint"] {
             run = "mise run postlint"
