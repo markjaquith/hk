@@ -173,7 +173,8 @@ impl Step {
         }
         let mut cmd = CmdLineRunner::new("sh")
             .arg("-c")
-            .arg(run);
+            .arg(run)
+            .with_pr(pr.clone());
         if let Some(dir) = &self.dir {
             cmd = cmd.current_dir(dir);
         }

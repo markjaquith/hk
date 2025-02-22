@@ -216,12 +216,12 @@ EOF
 amends "$PKL_PATH/Config.pkl"
 linters {
     ["a"] {
-        glob = new {"*.sh"}
+        glob = List("*.sh")
         check = "echo 'start a' && sleep 0.1 && echo 'exit a' && exit 1"
         fix = "echo 'start a' && sleep 0.1 && echo 'end a'"
     }
     ["b"] {
-        glob = new {"*.sh"}
+        glob = List("*.sh")
         check = "echo 'start b' && echo 'exit b' && exit 1"
         fix = "echo 'start b' && echo 'end b' && touch test.sh"
     }

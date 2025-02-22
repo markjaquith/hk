@@ -356,8 +356,14 @@ async fn run(
         return Ok(Default::default());
     }
     match step.run(ctx, tctx).await {
-        Ok(rsp) => Ok(rsp),
-        Err(err) => Err(err.wrap_err(step.name.clone())),
+        Ok(rsp) => {
+            trace!("{step}: successfully ran step");
+            Ok(rsp)
+        }
+        Err(err) => {
+            trace!("{step}: failed to run step: {err}");
+            Err(err.wrap_err(step.name.clone()))
+        }
     }
 }
 
