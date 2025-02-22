@@ -1,6 +1,31 @@
 # Changelog
 
-## [0.4.3](https://github.com/jdx/hk/compare/v0.4.2..0.4.3) - 2025-02-21
+## [0.4.4](https://github.com/jdx/hk/compare/v0.4.3..0.4.4) - 2025-02-22
+
+### 🚀 Features
+
+- support eslint by [@jdx](https://github.com/jdx) in [34ec22d](https://github.com/jdx/hk/commit/34ec22dd7f9193e55a6025ad69cbd7b2b5afbadf)
+
+### 🐛 Bug Fixes
+
+- use List instead of Listing by [@jdx](https://github.com/jdx) in [48edd5d](https://github.com/jdx/hk/commit/48edd5d77021d280b29b11995509a278a7d0ec7b)
+
+### 📚 Documentation
+
+- update example by [@jdx](https://github.com/jdx) in [84cb727](https://github.com/jdx/hk/commit/84cb7277d9e2da1895b65f271320f0d7566a0a7f)
+- update benchmark.png by [@jdx](https://github.com/jdx) in [8fbfbec](https://github.com/jdx/hk/commit/8fbfbec1d6131b071aea7f836e00e31006e63037)
+
+### 🧪 Testing
+
+- fix check_first test by [@jdx](https://github.com/jdx) in [92c25c6](https://github.com/jdx/hk/commit/92c25c603c446cd0c1be6a3fef7aa83641cdfc37)
+
+### 🔍 Other Changes
+
+- rustfmt by [@jdx](https://github.com/jdx) in [4aa7bfb](https://github.com/jdx/hk/commit/4aa7bfb2f0b5408cdc981f952587f48da16a76e8)
+- build cli for benchmark by [@jdx](https://github.com/jdx) in [cd4c016](https://github.com/jdx/hk/commit/cd4c0163b51744347a38f09d90d02f142063a05c)
+- macos code signing by [@jdx](https://github.com/jdx) in [782b290](https://github.com/jdx/hk/commit/782b2900e712cf82eed347b672e9a9e09117b46f)
+
+## [0.4.3](https://github.com/jdx/hk/compare/v0.4.2..v0.4.3) - 2025-02-21
 
 ### 🚀 Features
 

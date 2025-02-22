@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.4.3
+**Version**: 0.4.4
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -27,6 +27,12 @@ Suppresses output
 ### `--silent`
 
 Suppresses all output
+
+## Flags
+
+### `-s --slow`
+
+Shorthand for --profile=slow
 
 ## Subcommands
 

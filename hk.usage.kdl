@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.4.3"
+version "0.4.4"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -9,6 +9,7 @@ flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
 flag "-p --profile" help="Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast" var=#true global=#true {
     arg <PROFILE>
 }
+flag "-s --slow" help="Shorthand for --profile=slow"
 flag "-v --verbose" help="Enables verbose output" var=#true global=#true count=#true
 flag "-q --quiet" help="Suppresses output" global=#true
 flag --silent help="Suppresses all output" global=#true

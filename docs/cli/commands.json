@@ -398,6 +398,16 @@
         }
       },
       {
+        "name": "slow",
+        "usage": "-s --slow",
+        "help": "Shorthand for --profile=slow",
+        "help_first_line": "Shorthand for --profile=slow",
+        "short": ["s"],
+        "long": ["slow"],
+        "hide": false,
+        "global": false
+      },
+      {
         "name": "verbose",
         "usage": "-v --verbose...",
         "help": "Enables verbose output",
@@ -440,7 +450,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.4.3",
+  "version": "0.4.4",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
