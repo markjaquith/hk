@@ -50,6 +50,11 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: rust-${{ matrix.target }}
+      - if: matrix.os == 'macos-latest'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
+          p12-password: ${{ secrets.CERTIFICATES_P12_PASS }}
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: hk
@@ -57,6 +62,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           features: git2/vendored-libgit2,git2/vendored-openssl
           profile: serious
+          codesign: "Developer ID Application: Jeffrey Dickey (4993Y37DX6)"
+          codesign_prefix: dev.jdx.
 
   pkl:
     needs: create-release
