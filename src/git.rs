@@ -224,6 +224,10 @@ impl Git {
             }
             Either::Right(_oid) => {
                 let mut opts = git2::StashApplyOptions::new();
+                let mut checkout_opts = git2::build::CheckoutBuilder::new();
+                checkout_opts.allow_conflicts(true);
+                checkout_opts.force();
+                opts.checkout_options(checkout_opts);
                 opts.reinstantiate_index();
                 self.repo
                     .stash_pop(0, Some(&mut opts))

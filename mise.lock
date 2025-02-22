@@ -3,8 +3,11 @@ version = "1.7.7"
 backend = "aqua:rhysd/actionlint"
 
 [tools.cargo-binstall]
-version = "1.10.22"
+version = "1.11.0"
 backend = "aqua:cargo-bins/cargo-binstall"
+
+[tools.cargo-binstall.checksums]
+"cargo-binstall-aarch64-apple-darwin.zip" = "sha256:bd746c656e5cc9820fb277b442f438127bc461c52f20500452b845a767d15322"
 
 [tools."cargo:cargo-msrv"]
 version = "0.18.1"
@@ -25,7 +28,7 @@ backend = "aqua:pinterest/ktlint"
 "ktlint-1.5.0.zip" = "sha256:3958a51ca45a82baf3d03aefd3ea199058d1e170df022b0c47605ef0c9a048e7"
 
 [tools."npm:prettier"]
-version = "3.4.2"
+version = "3.5.2"
 backend = "npm:prettier"
 
 [tools."npm:stylelint"]
@@ -44,7 +47,7 @@ version = "0.10.0"
 backend = "ubi:koalaman/shellcheck"
 
 [tools.swiftlint]
-version = "0.54.0"
+version = "0.58.2"
 backend = "asdf:swiftlint"
 
 [tools.yq]
