@@ -9,7 +9,7 @@ linters {
     ["eslint"] {
         // the files to run the hook on, if no files are matched, the hook will be skipped
         // this will filter the staged files and return the subset matching these globs
-        glob = new { "*.js"; "*.ts" }
+        glob = List("*.js", "*.ts")
         // a command that returns non-zero to fail the step
         check = "eslint {{files}}"
         // a command that edits files in place
@@ -58,7 +58,7 @@ hooks {
                 // prettier has to run after eslint
                 // this will be done by batch, so a single batch of files
                 // may be formatted by prettier after eslint even if eslint hasn't processed all the files yet
-                ["prettier"] = new { "eslint" }
+                ["prettier"] = List("eslint")
             }
         }
         ["postlint"] {

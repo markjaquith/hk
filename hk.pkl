@@ -16,11 +16,11 @@ linters = new {
     //}
     // predefined formatters+linters
     ["cargo-clippy"] = new cargo_clippy.CargoClippy {
-        profiles = new { "slow" }
+        profiles = List("slow")
         check_extra_args = "-- -D warnings"
     }
     ["cargo-fmt"] = new cargo_fmt.CargoFmt {
-        profiles = new { "!slow" }
+        profiles = List("!slow")
     }
     ["dbg"] {
         // ensure no dbg! macros are used

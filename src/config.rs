@@ -113,6 +113,7 @@ pub struct Linter {
     pub name: String,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
     pub profiles: Option<Vec<String>>,
     pub exclusive: bool,
     pub check_first: bool,
@@ -127,8 +128,9 @@ pub struct Linter {
     pub workspace_indicator: Option<String>,
     pub prefix: Option<String>,
     pub dir: Option<String>,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
-    pub depends: Vec<String>,
+    pub depends: Option<Vec<String>>,
     #[serde(default)]
     pub linter_dependencies: IndexMap<String, Vec<String>>,
 }

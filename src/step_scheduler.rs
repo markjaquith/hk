@@ -133,6 +133,8 @@ impl<'a> StepScheduler<'a> {
 
                 let depends = step
                     .depends
+                    .as_ref()
+                    .unwrap_or(&vec![])
                     .iter()
                     .map(|dep| {
                         depend_locks

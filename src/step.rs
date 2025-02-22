@@ -10,12 +10,12 @@ use std::path::PathBuf;
 use std::{fmt, sync::Arc};
 use tokio::sync::{OwnedRwLockWriteGuard, RwLock};
 
-use serde_with::{OneOrMany, serde_as};
+use serde_with::serde_as;
 
-#[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
+#[serde_as]
 pub struct Step {
     pub r#type: Option<String>,
     #[serde(default)]
@@ -24,8 +24,7 @@ pub struct Step {
     pub profiles: Option<Vec<String>>,
     #[serde(default)]
     pub exclusive: bool,
-    #[serde_as(as = "OneOrMany<_>")]
-    pub depends: Vec<String>,
+    pub depends: Option<Vec<String>>,
     #[serde(default)]
     pub check_first: bool,
     #[serde(default)]
