@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class ErrCheck extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "errcheck {{ files }}"
 } 

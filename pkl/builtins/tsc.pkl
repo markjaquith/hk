@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Tsc extends Config.Linter {
-    glob = new { "**/*.{ts,tsx}" }
+    glob = List("**/*.{ts,tsx}")
     check = "tsc --noEmit {{ files }}"
 } 

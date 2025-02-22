@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class Black extends Config.Linter {
-    glob = new { "**/*.py" }
+    glob = List("**/*.py")
     check = "black --check {{ files }}"
     fix = "black {{ files }}"
 } 

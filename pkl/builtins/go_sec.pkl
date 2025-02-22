@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class GoSec extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "gosec {{ files }}"
 } 

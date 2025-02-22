@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class StaticCheck extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "staticcheck {{ files }}"
 } 

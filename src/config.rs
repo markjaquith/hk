@@ -1,6 +1,7 @@
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
+use serde_with::{serde_as};
 
 use crate::{
     Result,
@@ -106,9 +107,11 @@ pub struct Config {
 #[derive(Debug, Clone, Default, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
+#[serde_as]
 pub struct Linter {
     #[serde(default)]
     pub name: String,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
     pub profiles: Option<Vec<String>>,
     pub exclusive: bool,
@@ -122,6 +125,8 @@ pub struct Linter {
     pub fix: Option<String>,
     pub fix_extra_args: Option<String>,
     pub workspace_indicator: Option<String>,
+    pub prefix: Option<String>,
+    pub dir: Option<String>,
     pub stage: Option<Vec<String>>,
     pub depends: Vec<String>,
     #[serde(default)]
@@ -145,6 +150,8 @@ impl From<Linter> for Step {
             fix: linter.fix,
             fix_extra_args: linter.fix_extra_args,
             workspace_indicator: linter.workspace_indicator,
+            prefix: linter.prefix,
+            dir: linter.dir,
             stage: linter.stage,
             name: linter.name,
             depends: linter.depends,

@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Xmllint extends Config.Linter {
-    glob = new { "**/*.xml" }
+    glob = List("**/*.xml")
     check = "xmllint --noout {{ files }}"
 } 

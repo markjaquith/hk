@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Reek extends Config.Linter {
-    glob = new { "**/*.rb" }
+    glob = List("**/*.rb")
     check = "reek {{ files }}"
 } 

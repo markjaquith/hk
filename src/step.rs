@@ -42,6 +42,8 @@ pub struct Step {
     pub fix: Option<String>,
     pub fix_extra_args: Option<String>,
     pub workspace_indicator: Option<String>,
+    pub prefix: Option<String>,
+    pub dir: Option<String>,
     pub root: Option<PathBuf>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
@@ -126,6 +128,9 @@ impl Step {
             warn!("{}: no run command", self);
             return Ok(rsp);
         };
+        if let Some(prefix) = &self.prefix {
+            run = format!("{} {}", prefix, run);
+        }
         if let Some(extra) = extra {
             run = format!("{} {}", run, extra);
         }
@@ -161,13 +166,18 @@ impl Step {
             self.glob.as_ref().unwrap_or(&vec![]).join(" "),
             run
         ));
-        CmdLineRunner::new("sh")
+        if log::log_enabled!(log::Level::Trace) {
+            for file in &ctx.files {
+                trace!("{self}: {}", file.display());
+            }
+        }
+        let mut cmd = CmdLineRunner::new("sh")
             .arg("-c")
-            .arg(run)
-            .with_pr(pr.clone())
-            .execute()
-            .await
-            .into_diagnostic()?;
+            .arg(run);
+        if let Some(dir) = &self.dir {
+            cmd = cmd.current_dir(dir);
+        }
+        cmd.execute().await.into_diagnostic()?;
         rsp.files_to_add = files_to_add
             .into_iter()
             .filter(|(prev_mod, p)| {

@@ -7,7 +7,7 @@ open class Linter {
     profiles: Listing<String>?
 
     /// Which file patterns to run the step on
-    glob: Listing<String>?
+    glob: List<String>?
 
     /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
     exclusive = false
@@ -40,6 +40,12 @@ open class Linter {
 
     /// if set, run the linter on workspaces only which are parent directories containing this filename
     workspace_indicator: String?
+
+    /// if set, run the linter scripts with this prefix, e.g.: "mise exec --" or "npm run"
+    prefix: String?
+
+    /// if set, run the linter script in this directory
+    dir: String?
 
     /// if not set, all files will be added
     stage: Listing<String>?

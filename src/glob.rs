@@ -1,5 +1,5 @@
 use crate::Result;
-use globset::{Glob, GlobSetBuilder};
+use globset::{GlobBuilder, GlobSetBuilder};
 use itertools::Itertools;
 use miette::IntoDiagnostic;
 use std::path::{Path, PathBuf};
@@ -8,7 +8,7 @@ pub fn get_matches<P: AsRef<Path>>(glob: &[String], files: &[P]) -> Result<Vec<P
     let files = files.iter().map(|f| f.as_ref()).collect_vec();
     let mut gb = GlobSetBuilder::new();
     for g in glob {
-        gb.add(Glob::new(g).into_diagnostic()?);
+        gb.add(GlobBuilder::new(g).empty_alternates(true).build().into_diagnostic()?);
     }
     let gs = gb.build().into_diagnostic()?;
     let matches = files

@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class GoImports extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "goimports -l {{ files }}"
     fix = "goimports -w {{ files }}"
 } 

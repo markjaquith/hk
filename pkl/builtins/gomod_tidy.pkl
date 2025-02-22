@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class GomodTidy extends Config.Linter {
-    glob = new { "**/go.mod" }
+    glob = List("**/go.mod")
     check_diff = "go mod tidy -diff"
     fix = "go mod tidy"
 } 

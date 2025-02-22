@@ -1,5 +1,5 @@
 import "../Config.pkl"
 
 class CargoFmt extends Config.Linter {
-    glob = new { "**/*.rs" }
+    glob = List("**/*.rs")
 } 

@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Revive extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "revive {{ files }}"
 } 

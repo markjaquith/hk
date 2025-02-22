@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A tool for running hooks on files in a git repository.",
   "main": "index.js",
+  "workspaces": [
+    "docs"
+  ],
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -19,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/jdx/hk/issues"
   },
-  "homepage": "https://github.com/jdx/hk#readme"
+  "homepage": "https://github.com/jdx/hk#readme",
+  "dependencies": {
+    "eslint": "^9.21.0"
+  },
+  "devDependencies": {
+    "globals": "^16.0.0"
+  }
 }

@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Hadolint extends Config.Linter {
-    glob = new { "**/Dockerfile*" }
+    glob = List("**/Dockerfile*")
     check = "hadolint {{ files }}"
 } 

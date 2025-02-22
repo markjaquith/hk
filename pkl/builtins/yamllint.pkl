@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Yamllint extends Config.Linter {
-    glob = new { "**/*.{yml,yaml}" }
+    glob = List("**/*.{yml,yaml}")
     check = "yamllint {{ files }}"
 } 

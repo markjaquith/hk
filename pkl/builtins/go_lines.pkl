@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class GoLines extends Config.Linter {
-    glob = new { "**/*.go" }
+    glob = List("**/*.go")
     check = "golines --dry-run {{ files }}"
     fix = "golines -w {{ files }}"
 } 

@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class PhpCS extends Config.Linter {
-    glob = new { "**/*.php" }
+    glob = List("**/*.php")
     check = "phpcs {{ files }}"
     fix = "phpcbf {{ files }}"
 } 

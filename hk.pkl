@@ -4,8 +4,7 @@ import "pkl/builtins/actionlint.pkl"
 import "pkl/builtins/cargo_clippy.pkl"
 import "pkl/builtins/cargo_fmt.pkl"
 import "pkl/builtins/prettier.pkl"
-
-min_hk_version = "0.1.0"
+import "pkl/builtins/eslint.pkl"
 
 // defines what happens during git pre-commit hook
 linters = new {
@@ -25,11 +24,15 @@ linters = new {
     }
     ["dbg"] {
         // ensure no dbg! macros are used
-        glob = new { "**/*.rs" }
+        glob = List("**/*.rs")
         check = "! rg -e 'dbg!' {{files}}"
     }
+    ["eslint"] = new eslint.Eslint {
+        dir = "docs"
+        prefix = "bun run"
+    }
     ["prettier"] = new prettier.Prettier {
-        glob = new { "*.js"; "*.ts" } // override the default globs
+        glob = List("*.js", "*.ts") // override the default globs
     }
 }
 

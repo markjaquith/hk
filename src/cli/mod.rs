@@ -26,6 +26,9 @@ struct Cli {
     /// e.g. --profile slow --profile !fast
     #[clap(short, long, global = true)]
     profile: Vec<String>,
+    /// Shorthand for --profile=slow
+    #[clap(short, long)]
+    slow: bool,
     /// Enables verbose output
     #[clap(short, long, global = true, action = clap::ArgAction::Count, overrides_with_all = ["quiet", "silent"])]
     verbose: u8,
@@ -79,6 +82,9 @@ pub async fn run() -> Result<()> {
     }
     if !args.profile.is_empty() {
         settings.with_profiles(&args.profile);
+    }
+    if args.slow {
+        settings.with_profiles(&["slow".to_string()]);
     }
     match args.command {
         Commands::Cache(cmd) => cmd.run().await,

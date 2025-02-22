@@ -1,7 +1,7 @@
 import "../Config.pkl"
 
 class Biome extends Config.Linter {
-    glob = new { "**/*.{js,jsx,ts,tsx,json}" }
+    glob = List("**/*.{js,jsx,ts,tsx,json}")
     check = "biome check {{ files }}"
     fix = "biome check --apply {{ files }}"
 } 

@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
 class Shellcheck extends Config.Linter {
-    glob = new { "**/*.{sh,bash}" }
+    glob = List("**/*.{sh,bash}")
     check = "shellcheck {{ files }}"
 } 
