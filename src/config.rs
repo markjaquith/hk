@@ -128,9 +128,10 @@ pub struct Linter {
     pub workspace_indicator: Option<String>,
     pub prefix: Option<String>,
     pub dir: Option<String>,
+    pub env: IndexMap<String, String>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
-    pub depends: Option<Vec<String>>,
+    pub depends: Vec<String>,
     #[serde(default)]
     pub linter_dependencies: IndexMap<String, Vec<String>>,
 }
@@ -154,6 +155,7 @@ impl From<Linter> for Step {
             workspace_indicator: linter.workspace_indicator,
             prefix: linter.prefix,
             dir: linter.dir,
+            env: linter.env,
             stage: linter.stage,
             name: linter.name,
             depends: linter.depends,

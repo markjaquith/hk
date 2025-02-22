@@ -24,7 +24,7 @@ pub struct Step {
     pub profiles: Option<Vec<String>>,
     #[serde(default)]
     pub exclusive: bool,
-    pub depends: Option<Vec<String>>,
+    pub depends: Vec<String>,
     #[serde(default)]
     pub check_first: bool,
     #[serde(default)]
@@ -43,6 +43,7 @@ pub struct Step {
     pub workspace_indicator: Option<String>,
     pub prefix: Option<String>,
     pub dir: Option<String>,
+    pub env: IndexMap<String, String>,
     pub root: Option<PathBuf>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
@@ -177,6 +178,9 @@ impl Step {
         if let Some(dir) = &self.dir {
             cmd = cmd.current_dir(dir);
         }
+        for (key, value) in &self.env {
+            cmd = cmd.env(key, value);
+        }
         cmd.execute().await.into_diagnostic()?;
         rsp.files_to_add = files_to_add
             .into_iter()
@@ -243,7 +247,7 @@ impl Step {
     pub fn is_profile_enabled(&self) -> bool {
         // Check if step should be skipped based on HK_SKIP_STEPS
         if crate::env::HK_SKIP_STEPS.contains(&self.name) {
-            info!("{self}: skipping step due to HK_SKIP_STEPS");
+            debug!("{self}: skipping step due to HK_SKIP_STEPS");
             return false;
         }
         let settings = Settings::get();
@@ -252,7 +256,7 @@ impl Step {
             let missing_profiles = enabled.difference(&enabled_profiles).collect::<Vec<_>>();
             if !missing_profiles.is_empty() {
                 let missing_profiles = missing_profiles.iter().join(", ");
-                info!("{self}: skipping step due to missing profile: {missing_profiles}");
+                debug!("{self}: skipping step due to missing profile: {missing_profiles}");
                 return false;
             }
         }
@@ -261,7 +265,7 @@ impl Step {
             let disabled_profiles = disabled.intersection(&enabled_profiles).collect::<Vec<_>>();
             if !disabled_profiles.is_empty() {
                 let disabled_profiles = disabled_profiles.iter().join(", ");
-                info!("{self}: skipping step due to disabled profile: {disabled_profiles}");
+                debug!("{self}: skipping step due to disabled profile: {disabled_profiles}");
                 return false;
             }
         }

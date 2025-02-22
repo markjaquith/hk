@@ -27,7 +27,7 @@ struct Cli {
     #[clap(short, long, global = true)]
     profile: Vec<String>,
     /// Shorthand for --profile=slow
-    #[clap(short, long)]
+    #[clap(short, long, global = true)]
     slow: bool,
     /// Enables verbose output
     #[clap(short, long, global = true, action = clap::ArgAction::Count, overrides_with_all = ["quiet", "silent"])]
