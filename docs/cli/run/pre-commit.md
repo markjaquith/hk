@@ -19,6 +19,10 @@ Run fix command instead of run command This is the default behavior unless HK_FI
 
 Run run command instead of fix command
 
+### `--linter... <LINTER>`
+
+Run on specific linter(s)
+
 ### `--stash`
 
 Force stashing even if it's disabled via HK_STASH

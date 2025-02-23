@@ -1,6 +1,6 @@
 # `hk check`
 
-- **Usage**: `hk check [-a --all] [--stash]`
+- **Usage**: `hk check [FLAGS]`
 - **Aliases**: `c`
 
 Fixes code
@@ -10,6 +10,10 @@ Fixes code
 ### `-a --all`
 
 Run on all files instead of just staged files
+
+### `--linter... <LINTER>`
+
+Run on specific linter(s)
 
 ### `--stash`
 

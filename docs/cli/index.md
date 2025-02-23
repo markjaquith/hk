@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.4.4
+**Version**: 0.4.5
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -16,6 +16,10 @@ Number of jobs to run in parallel
 
 Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast
 
+### `-s --slow`
+
+Shorthand for --profile=slow
+
 ### `-v --verbose...`
 
 Enables verbose output
@@ -28,19 +32,13 @@ Suppresses output
 
 Suppresses all output
 
-## Flags
-
-### `-s --slow`
-
-Shorthand for --profile=slow
-
 ## Subcommands
 
 - [`hk cache clear`](/cli/cache/clear.md)
-- [`hk check [-a --all] [--stash]`](/cli/check.md)
+- [`hk check [FLAGS]`](/cli/check.md)
 - [`hk completion <SHELL>`](/cli/completion.md)
 - [`hk config`](/cli/config.md)
-- [`hk fix [-a --all]`](/cli/fix.md)
+- [`hk fix [-a --all] [--linter... <LINTER>]`](/cli/fix.md)
 - [`hk generate [--mise]`](/cli/generate.md)
 - [`hk install [--mise]`](/cli/install.md)
 - [`hk run <SUBCOMMAND>`](/cli/run.md)

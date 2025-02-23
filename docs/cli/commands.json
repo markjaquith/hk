@@ -37,7 +37,7 @@
       },
       "check": {
         "full_cmd": ["check"],
-        "usage": "check [-a --all] [--stash]",
+        "usage": "check [FLAGS]",
         "subcommands": {},
         "args": [],
         "flags": [
@@ -50,6 +50,24 @@
             "long": ["all"],
             "hide": false,
             "global": false
+          },
+          {
+            "name": "linter",
+            "usage": "--linter... <LINTER>",
+            "help": "Run on specific linter(s)",
+            "help_first_line": "Run on specific linter(s)",
+            "short": [],
+            "long": ["linter"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "LINTER",
+              "usage": "<LINTER>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
           },
           {
             "name": "stash",
@@ -110,7 +128,7 @@
       },
       "fix": {
         "full_cmd": ["fix"],
-        "usage": "fix [-a --all]",
+        "usage": "fix [-a --all] [--linter... <LINTER>]",
         "subcommands": {},
         "args": [],
         "flags": [
@@ -123,6 +141,24 @@
             "long": ["all"],
             "hide": false,
             "global": false
+          },
+          {
+            "name": "linter",
+            "usage": "--linter... <LINTER>",
+            "help": "Run on specific linter(s)",
+            "help_first_line": "Run on specific linter(s)",
+            "short": [],
+            "long": ["linter"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "LINTER",
+              "usage": "<LINTER>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
           }
         ],
         "mounts": [],
@@ -226,6 +262,24 @@
                 "global": false
               },
               {
+                "name": "linter",
+                "usage": "--linter... <LINTER>",
+                "help": "Run on specific linter(s)",
+                "help_first_line": "Run on specific linter(s)",
+                "short": [],
+                "long": ["linter"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "LINTER",
+                  "usage": "<LINTER>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
                 "name": "stash",
                 "usage": "--stash",
                 "help": "Force stashing even if it's disabled via HK_STASH",
@@ -298,6 +352,24 @@
                 "long": ["check"],
                 "hide": false,
                 "global": false
+              },
+              {
+                "name": "linter",
+                "usage": "--linter... <LINTER>",
+                "help": "Run on specific linter(s)",
+                "help_first_line": "Run on specific linter(s)",
+                "short": [],
+                "long": ["linter"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "LINTER",
+                  "usage": "<LINTER>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
               },
               {
                 "name": "stash",
@@ -405,7 +477,7 @@
         "short": ["s"],
         "long": ["slow"],
         "hide": false,
-        "global": false
+        "global": true
       },
       {
         "name": "verbose",
@@ -450,7 +522,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.4.4",
+  "version": "0.4.5",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

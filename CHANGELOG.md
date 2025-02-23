@@ -1,6 +1,23 @@
 # Changelog
 
-## [0.4.4](https://github.com/jdx/hk/compare/v0.4.3..0.4.4) - 2025-02-22
+## [0.4.5](https://github.com/jdx/hk/compare/v0.4.4..0.4.5) - 2025-02-23
+
+### 🚀 Features
+
+- added env field to step/linter by [@jdx](https://github.com/jdx) in [ee02aa0](https://github.com/jdx/hk/commit/ee02aa0475df486a9d0188cbc84198209f038f40)
+- filter check_first with list of files by [@jdx](https://github.com/jdx) in [d97ac4f](https://github.com/jdx/hk/commit/d97ac4fd9fba1f5c21b0d1e245095fa3ae263b7f)
+
+### 🐛 Bug Fixes
+
+- use `--force` when popping unstaged changes by [@jdx](https://github.com/jdx) in [bed8692](https://github.com/jdx/hk/commit/bed8692a005e23f117139dfb2eccf73ddef0b460)
+- workspace_indicator with cargo-fmt by [@jdx](https://github.com/jdx) in [6832fd3](https://github.com/jdx/hk/commit/6832fd3f98055378e4b0b7169eb4aa0b0700cd5b)
+- show warning if missing fix files by [@jdx](https://github.com/jdx) in [62051eb](https://github.com/jdx/hk/commit/62051ebab721d9f040f4fcb26a3dd38f09071f1a)
+
+### 🔍 Other Changes
+
+- cargo up by [@jdx](https://github.com/jdx) in [d1fd40b](https://github.com/jdx/hk/commit/d1fd40b8d5cd4f765ce16f8104d24e9d5dbd9a77)
+
+## [0.4.4](https://github.com/jdx/hk/compare/v0.4.3..v0.4.4) - 2025-02-22
 
 ### 🚀 Features
 

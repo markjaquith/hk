@@ -1,6 +1,6 @@
-amends "package://github.com/jdx/hk/releases/download/v0.4.4/hk@0.4.4#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.4.4/hk@0.4.4#/builtins/actionlint.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.4.4/hk@0.4.4#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.4.5/hk@0.4.5#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.4.5/hk@0.4.5#/builtins/actionlint.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.4.5/hk@0.4.5#/builtins/prettier.pkl"
 
 linters {
     // some linters are built into hk

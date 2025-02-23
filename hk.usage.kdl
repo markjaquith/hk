@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.4.4"
+version "0.4.5"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -9,7 +9,7 @@ flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
 flag "-p --profile" help="Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast" var=#true global=#true {
     arg <PROFILE>
 }
-flag "-s --slow" help="Shorthand for --profile=slow"
+flag "-s --slow" help="Shorthand for --profile=slow" global=#true
 flag "-v --verbose" help="Enables verbose output" var=#true global=#true count=#true
 flag "-q --quiet" help="Suppresses output" global=#true
 flag --silent help="Suppresses all output" global=#true
@@ -19,6 +19,9 @@ cmd cache hide=#true subcommand_required=#true help="Manage hk internal cache" {
 cmd check help="Fixes code" {
     alias c
     flag "-a --all" help="Run on all files instead of just staged files"
+    flag --linter help="Run on specific linter(s)" var=#true {
+        arg <LINTER>
+    }
     flag --stash help="Force stashing even if it's disabled via HK_STASH"
 }
 cmd completion help="Generates shell completion scripts" {
@@ -30,6 +33,9 @@ cmd config help="Generate a default hk.toml configuration file" {
 cmd fix help="Fixes code" {
     alias f
     flag "-a --all" help="Run on all files instead of just staged files"
+    flag --linter help="Run on specific linter(s)" var=#true {
+        arg <LINTER>
+    }
 }
 cmd generate help="Generates a new hk.pkl file for a project" {
     alias g
@@ -51,6 +57,9 @@ cmd run subcommand_required=#true help="Run a hook" {
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
         flag "-c --check" help="Run run command instead of fix command"
+        flag --linter help="Run on specific linter(s)" var=#true {
+            arg <LINTER>
+        }
         flag --stash help="Force stashing even if it's disabled via HK_STASH"
     }
     cmd pre-push help="Sets up git hooks to run hk" {
@@ -58,6 +67,9 @@ cmd run subcommand_required=#true help="Run a hook" {
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
         flag "-c --check" help="Run check command instead of fix command"
+        flag --linter help="Run on specific linter(s)" var=#true {
+            arg <LINTER>
+        }
         flag --stash help="Force stashing even if it's disabled via HK_STASH"
         arg <REMOTE> help="Remote name"
         arg <URL> help="Remote URL"
