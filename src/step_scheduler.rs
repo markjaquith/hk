@@ -332,8 +332,11 @@ impl<'a> StepScheduler<'a> {
                             warn!("{step}: failed check step first: {source}");
                             let filtered_files: HashSet<PathBuf> =
                                 stdout.lines().map(PathBuf::from).collect();
-                            // TODO: what happens if the files don't exactly match, e.g.: `./foo.js` vs `foo.js`?
-                            ctx.files.retain(|f| filtered_files.contains(f));
+                            let files: IndexSet<PathBuf> = ctx.files.into_iter().filter(|f| filtered_files.contains(f)).collect();
+                            for f in filtered_files.into_iter().filter(|f| !files.contains(f)) {
+                                warn!("{step}: file in check_list_files not found in original files: {}", f.display());
+                            }
+                            ctx.files = files.into_iter().collect();
                         }
                         warn!("{step}: failed check step first: {e}");
                     }
