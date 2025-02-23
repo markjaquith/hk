@@ -156,9 +156,9 @@ impl<'a> StepScheduler<'a> {
                     set.spawn(async move {
                         let mut rsp = StepResponse::default();
                         let mut set = JoinSet::new();
-                        for workspace_file in workspaces {
+                        for workspace_indicator in workspaces {
                             let mut tctx = tctx.clone();
-                            tctx.with_workspace_file(&workspace_file);
+                            tctx.with_workspace_indicator(&workspace_indicator);
                             StepScheduler::run_step(
                                 semaphore.clone(),
                                 failed.clone(),

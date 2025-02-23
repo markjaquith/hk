@@ -54,17 +54,23 @@ impl Context {
         self
     }
 
-    pub fn with_workspace_file<P: AsRef<Path>>(&mut self, workspace_file: &P) -> &mut Self {
-        let workspace_file = workspace_file.as_ref();
+    pub fn with_workspace_indicator<P: AsRef<Path>>(
+        &mut self,
+        workspace_indicator: &P,
+    ) -> &mut Self {
+        let workspace_indicator = workspace_indicator.as_ref();
         self.insert(
             "workspace",
-            &workspace_file
+            &workspace_indicator
                 .parent()
                 .unwrap_or(Path::new("."))
                 .display()
                 .to_string(),
         );
-        self.insert("workspace_file", &workspace_file.display().to_string());
+        self.insert(
+            "workspace_indicator",
+            &workspace_indicator.display().to_string(),
+        );
         self
     }
 }

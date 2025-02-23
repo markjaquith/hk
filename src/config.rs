@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 use std::path::{Path, PathBuf};
-use serde_with::{serde_as};
 
 use crate::{
     Result,

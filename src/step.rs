@@ -4,7 +4,7 @@ use crate::{glob, settings::Settings};
 use ensembler::CmdLineRunner;
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use miette::IntoDiagnostic;
+use miette::{Context, IntoDiagnostic};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fmt, sync::Arc};
@@ -173,7 +173,7 @@ impl Step {
         }
         let mut cmd = CmdLineRunner::new("sh")
             .arg("-c")
-            .arg(run)
+            .arg(&run)
             .with_pr(pr.clone());
         if let Some(dir) = &self.dir {
             cmd = cmd.current_dir(dir);
@@ -181,7 +181,7 @@ impl Step {
         for (key, value) in &self.env {
             cmd = cmd.env(key, value);
         }
-        cmd.execute().await.into_diagnostic()?;
+        cmd.execute().await.into_diagnostic().wrap_err(run)?;
         rsp.files_to_add = files_to_add
             .into_iter()
             .filter(|(prev_mod, p)| {
@@ -278,7 +278,7 @@ impl Step {
     /// src/crate-2/src/lib.rs
     /// src/crate-2/src/subdir/mod.rs
     /// If the workspace indicator is "Cargo.toml", and there are Cargo.toml files in the root of crate-1 and crate-2,
-    /// this will return: ["src/crate-1", "src/crate-2"]
+    /// this will return: ["src/crate-1/Cargo.toml", "src/crate-2/Cargo.toml"]
     pub fn workspaces_for_files(&self, files: &[PathBuf]) -> Result<Option<IndexSet<PathBuf>>> {
         let Some(workspace_indicator) = &self.workspace_indicator else {
             return Ok(None);
@@ -287,7 +287,9 @@ impl Step {
         let mut workspaces: IndexSet<PathBuf> = Default::default();
         while let Some(dir) = dirs.pop() {
             if let Some(workspace) = xx::file::find_up(dir, &[workspace_indicator]) {
-                dirs.retain(|d| !d.starts_with(&workspace));
+                if let Some(dir) = dir.parent() {
+                    dirs.retain(|d| !d.starts_with(dir));
+                }
                 workspaces.insert(workspace);
             }
         }
