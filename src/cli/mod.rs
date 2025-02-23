@@ -59,6 +59,7 @@ enum Commands {
 pub async fn run() -> Result<()> {
     let args = Cli::parse();
     let mut level = None;
+    clx::MultiProgressReport::set_cli_name("hk");
     if args.verbose > 1 || log::log_enabled!(log::Level::Trace) {
         clx::MultiProgressReport::set_output_type(clx::OutputType::Verbose);
         level = Some(log::LevelFilter::Trace);

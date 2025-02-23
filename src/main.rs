@@ -1,12 +1,13 @@
 #[macro_use]
 extern crate log;
 
-pub use miette::Result;
+pub use eyre::Result;
 
 mod cache;
 mod cli;
 mod config;
 mod env;
+mod error;
 mod git;
 mod glob;
 mod hash;

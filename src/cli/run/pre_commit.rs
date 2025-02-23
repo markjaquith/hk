@@ -23,6 +23,9 @@ pub struct PreCommit {
     /// Run run command instead of fix command
     #[clap(short, long, overrides_with = "fix")]
     check: bool,
+    /// Run on specific linter(s)
+    #[clap(long)]
+    linter: Vec<String>,
     /// Force stashing even if it's disabled via HK_STASH
     #[clap(long)]
     stash: bool,
@@ -46,7 +49,9 @@ impl PreCommit {
         }
         static HOOK: LazyLock<IndexMap<String, Step>> = LazyLock::new(Default::default);
         let hook = config.hooks.get("pre-commit").unwrap_or(&HOOK);
-        let mut result = config.run_hook(self.all, hook, run_type, &repo).await;
+        let mut result = config
+            .run_hook(self.all, hook, run_type, &repo, &self.linter)
+            .await;
 
         if let Err(err) = repo.pop_stash() {
             if result.is_ok() {

@@ -1,14 +1,14 @@
 use std::cmp::Ordering;
 
 use crate::Result;
-use miette::{IntoDiagnostic, bail};
+use eyre::bail;
 pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
 pub fn version_cmp(version: &str) -> Result<Ordering> {
-    let version = semver::Version::parse(version).into_diagnostic()?;
-    let current = semver::Version::parse(env!("CARGO_PKG_VERSION")).into_diagnostic()?;
+    let version = semver::Version::parse(version)?;
+    let current = semver::Version::parse(env!("CARGO_PKG_VERSION"))?;
     Ok(version.cmp(&current))
 }
 

@@ -11,6 +11,9 @@ pub struct Fix {
     /// Run on all files instead of just staged files
     #[clap(short, long)]
     all: bool,
+    /// Run on specific linter(s)
+    #[clap(long)]
+    linter: Vec<String>,
 }
 
 impl Fix {
@@ -18,6 +21,8 @@ impl Fix {
         let config = Config::get()?;
         let repo = Git::new()?; // TODO: remove repo
         let hook = once(("fix".to_string(), Step::fix())).collect();
-        config.run_hook(self.all, &hook, RunType::Fix, &repo).await
+        config
+            .run_hook(self.all, &hook, RunType::Fix, &repo, &self.linter)
+            .await
     }
 }

@@ -1,10 +1,10 @@
-use crate::Result;
 use crate::tera;
+use crate::{Result, error::Error};
 use crate::{glob, settings::Settings};
 use ensembler::CmdLineRunner;
+use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use miette::{Context, IntoDiagnostic};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fmt, sync::Arc};
@@ -181,7 +181,21 @@ impl Step {
         for (key, value) in &self.env {
             cmd = cmd.env(key, value);
         }
-        cmd.execute().await.into_diagnostic().wrap_err(run)?;
+        match cmd.execute().await {
+            Ok(_) => {}
+            Err(err) => {
+                if let ensembler::Error::ScriptFailed(_, _, result) = &err {
+                    if let RunType::Check(CheckType::ListFiles) = ctx.run_type {
+                        let stdout = result.stdout.clone();
+                        return Err(Error::CheckListFailed {
+                            source: eyre!("{}", err),
+                            stdout,
+                        })?;
+                    }
+                }
+                return Err(err).wrap_err(run);
+            }
+        }
         rsp.files_to_add = files_to_add
             .into_iter()
             .filter(|(prev_mod, p)| {
@@ -196,7 +210,7 @@ impl Step {
             .map(|(_, p)| p)
             .collect_vec();
         if rsp.files_to_add.is_empty() {
-            pr.finish_with_message("done".to_string());
+            pr.finish_with_message("".to_string());
         } else {
             pr.finish_with_message(format!("{} modified", file_msg(&rsp.files_to_add)));
         }

@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
+use crate::Result;
+use eyre::{WrapErr, eyre};
 use git2::{Commit, Oid, Repository, StatusOptions, StatusShow, Tree};
 use itertools::{Either, Itertools};
-use miette::Result;
-use miette::{Context, IntoDiagnostic, miette};
 
 use crate::env;
 
@@ -15,9 +15,7 @@ pub struct Git {
 
 impl Git {
     pub fn new() -> Result<Self> {
-        let repo = Repository::open(".")
-            .into_diagnostic()
-            .wrap_err("failed to open repository")?;
+        let repo = Repository::open(".").wrap_err("failed to open repository")?;
         Ok(Self {
             root: repo.workdir().unwrap().to_path_buf(),
             repo,
@@ -26,27 +24,17 @@ impl Git {
     }
 
     fn head_tree(&self) -> Result<Tree<'_>> {
-        let head = self
-            .repo
-            .head()
-            .into_diagnostic()
-            .wrap_err("failed to get head")?;
+        let head = self.repo.head().wrap_err("failed to get head")?;
         let head = head
             .peel_to_tree()
-            .into_diagnostic()
             .wrap_err("failed to peel head to tree")?;
         Ok(head)
     }
 
     fn head_commit(&self) -> Result<Commit<'_>> {
-        let head = self
-            .repo
-            .head()
-            .into_diagnostic()
-            .wrap_err("failed to get head")?;
+        let head = self.repo.head().wrap_err("failed to get head")?;
         let commit = head
             .peel_to_commit()
-            .into_diagnostic()
             .wrap_err("failed to peel head to commit")?;
         Ok(commit)
     }
@@ -55,7 +43,7 @@ impl Git {
         let commit = self.head_commit()?;
         let message = commit
             .message()
-            .ok_or(miette!("failed to get commit message"))?;
+            .ok_or(eyre!("failed to get commit message"))?;
         Ok(message.to_string())
     }
 
@@ -75,7 +63,6 @@ impl Git {
             }
             git2::TreeWalkResult::Ok
         })
-        .into_diagnostic()
         .wrap_err("failed to walk tree")?;
         Ok(files)
     }
@@ -92,7 +79,6 @@ impl Git {
         let statuses = self
             .repo
             .statuses(Some(&mut status_options))
-            .into_diagnostic()
             .wrap_err("failed to get statuses")?;
         let paths = statuses
             .iter()
@@ -110,7 +96,6 @@ impl Git {
         let statuses = self
             .repo
             .statuses(Some(&mut status_options))
-            .into_diagnostic()
             .wrap_err("failed to get statuses")?;
         let paths = statuses
             .iter()
@@ -155,7 +140,6 @@ impl Git {
         checkout_opts.update_index(false);
         self.repo
             .checkout_index(None, Some(&mut checkout_opts))
-            .into_diagnostic()
             .wrap_err("failed to reset to head")?;
 
         Ok(())
@@ -171,7 +155,6 @@ impl Git {
         let diff = self
             .repo
             .diff_index_to_workdir(None, Some(&mut opts))
-            .into_diagnostic()
             .wrap_err("failed to get diff")?;
         let mut diff_bytes = vec![];
         diff.print(git2::DiffFormat::Patch, |_delta, _hunk, line| {
@@ -182,9 +165,8 @@ impl Git {
             diff_bytes.extend(line.content());
             true
         })
-        .into_diagnostic()
         .wrap_err("failed to print diff")?;
-        let mut idx = self.repo.index().into_diagnostic()?;
+        let mut idx = self.repo.index()?;
         // if we can't write the index or there's no diff, don't stash
         if idx.write().is_err() || diff_bytes.is_empty() {
             Ok(None)
@@ -197,14 +179,14 @@ impl Git {
         if self.unstaged_files()?.is_empty() {
             return Ok(None);
         }
-        let sig = self.repo.signature().into_diagnostic()?;
+        let sig = self.repo.signature()?;
         let mut flags = git2::StashFlags::default();
         flags.set(git2::StashFlags::INCLUDE_UNTRACKED, true);
         flags.set(git2::StashFlags::KEEP_INDEX, false);
         let oid = self
             .repo
             .stash_save2(&sig, None, Some(flags))
-            .into_diagnostic()?;
+            .wrap_err("failed to stash")?;
         Ok(Some(oid))
     }
 
@@ -215,11 +197,10 @@ impl Git {
 
         match diff {
             Either::Left(diff) => {
-                let diff = git2::Diff::from_buffer(diff.as_bytes()).into_diagnostic()?;
+                let diff = git2::Diff::from_buffer(diff.as_bytes())?;
                 let mut apply_opts = git2::ApplyOptions::new();
                 self.repo
                     .apply(&diff, git2::ApplyLocation::WorkDir, Some(&mut apply_opts))
-                    .into_diagnostic()
                     .wrap_err("failed to apply diff")?;
             }
             Either::Right(_oid) => {
@@ -231,7 +212,6 @@ impl Git {
                 opts.reinstantiate_index();
                 self.repo
                     .stash_pop(0, Some(&mut opts))
-                    .into_diagnostic()
                     .wrap_err("failed to reset to stash")?;
             }
         }
@@ -244,19 +224,11 @@ impl Git {
             .map(|p| p.replace(self.root.to_str().unwrap(), ""))
             .collect_vec();
         trace!("adding files: {:?}", &pathspecs);
-        let mut index = self
-            .repo
-            .index()
-            .into_diagnostic()
-            .wrap_err("failed to get index")?;
+        let mut index = self.repo.index().wrap_err("failed to get index")?;
         index
             .add_all(&pathspecs, git2::IndexAddOption::DEFAULT, None)
-            .into_diagnostic()
             .wrap_err("failed to add files to index")?;
-        index
-            .write()
-            .into_diagnostic()
-            .wrap_err("failed to write index")?;
+        index.write().wrap_err("failed to write index")?;
         Ok(())
     }
 }

@@ -32,7 +32,7 @@ linters = new {
         prefix = "bun run"
     }
     ["prettier"] = new prettier.Prettier {
-        glob = List("*.js", "*.ts") // override the default globs
+        glob = List("*.js", "*.ts", "*.yml", "*.yaml") // override the default globs
     }
 }
 

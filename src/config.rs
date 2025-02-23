@@ -13,7 +13,7 @@ use crate::{
     step_scheduler::StepScheduler,
     version,
 };
-use miette::{Context, IntoDiagnostic, bail};
+use eyre::{WrapErr, bail};
 
 impl Config {
     pub fn get() -> Result<Self> {
@@ -22,7 +22,7 @@ impl Config {
         } else {
             vec!["hk.pkl", "hk.toml", "hk.yaml", "hk.yml", "hk.json"]
         };
-        let mut cwd = std::env::current_dir().into_diagnostic()?;
+        let mut cwd = std::env::current_dir()?;
         while cwd != Path::new("/") {
             for path in &paths {
                 let path = cwd.join(path);
@@ -51,15 +51,15 @@ impl Config {
         let mut config: Config = match ext {
             "toml" => {
                 let raw = xx::file::read_to_string(path)?;
-                toml::from_str(&raw).into_diagnostic()?
+                toml::from_str(&raw)?
             }
             "yaml" => {
                 let raw = xx::file::read_to_string(path)?;
-                serde_yaml::from_str(&raw).into_diagnostic()?
+                serde_yaml::from_str(&raw)?
             }
             "json" => {
                 let raw = xx::file::read_to_string(path)?;
-                serde_json::from_str(&raw).into_diagnostic()?
+                serde_json::from_str(&raw)?
             }
             "pkl" => {
                 match rpkl::from_config(path) {
@@ -69,7 +69,7 @@ impl Config {
                         if which::which("pkl").is_err() {
                             bail!("install pkl cli to use pkl config files https://pkl-lang.org/");
                         } else {
-                            return Err(err).into_diagnostic()?;
+                            return Err(err).wrap_err("failed to read pkl config file");
                         }
                     }
                 }
@@ -179,6 +179,7 @@ impl Config {
         hook: &IndexMap<String, Step>,
         run_type: RunType,
         repo: &Git,
+        linters: &[String],
     ) -> Result<()> {
         let files = if all {
             repo.all_files()?
@@ -187,6 +188,7 @@ impl Config {
         };
         StepScheduler::new(hook, run_type, repo)
             .with_files(files)
+            .with_linters(linters)
             .run()
             .await
     }

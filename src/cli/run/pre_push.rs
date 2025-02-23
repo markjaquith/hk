@@ -23,6 +23,9 @@ pub struct PrePush {
     /// Run check command instead of fix command
     #[clap(short, long, overrides_with = "fix")]
     check: bool,
+    /// Run on specific linter(s)
+    #[clap(long)]
+    linter: Vec<String>,
     /// Remote name
     remote: String,
     /// Force stashing even if it's disabled via HK_STASH
@@ -50,7 +53,9 @@ impl PrePush {
         }
         static HOOK: LazyLock<IndexMap<String, Step>> = LazyLock::new(Default::default);
         let hook = config.hooks.get("pre-push").unwrap_or(&HOOK);
-        let mut result = config.run_hook(self.all, hook, run_type, &repo).await;
+        let mut result = config
+            .run_hook(self.all, hook, run_type, &repo, &self.linter)
+            .await;
 
         if let Err(err) = repo.pop_stash() {
             if result.is_ok() {

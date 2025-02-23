@@ -7,7 +7,6 @@ use std::time::Duration;
 
 use crate::Result;
 use itertools::Itertools;
-use miette::IntoDiagnostic;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::sync::LazyLock as Lazy;
@@ -110,7 +109,7 @@ where
             let path = &self.cache_file_path;
             if self.is_fresh() && !cfg!(debug_assertions) {
                 match self.parse() {
-                    Ok(val) => return Ok::<_, miette::Report>(val),
+                    Ok(val) => return Ok::<_, eyre::Report>(val),
                     Err(err) => {
                         warn!("failed to parse cache file: {} {:#}", path.display(), err);
                     }
@@ -128,18 +127,18 @@ where
     fn parse(&self) -> Result<T> {
         let path = &self.cache_file_path;
         trace!("reading {}", path.display());
-        let mut f = File::open(path).into_diagnostic()?;
-        serde_json::from_reader(&mut f).into_diagnostic()
+        let mut f = File::open(path)?;
+        let val = serde_json::from_reader(&mut f)?;
+        Ok(val)
     }
 
     pub fn write(&self, val: &T) -> Result<()> {
         trace!("writing {}", self.cache_file_path.display());
         if let Some(parent) = self.cache_file_path.parent() {
-            xx::file::create_dir_all(parent).into_diagnostic()?;
+            xx::file::create_dir_all(parent)?;
         }
-        let mut f = File::create(&self.cache_file_path).into_diagnostic()?;
-        f.write_all(&serde_json::to_vec(val).into_diagnostic()?)
-            .into_diagnostic()?;
+        let mut f = File::create(&self.cache_file_path)?;
+        f.write_all(&serde_json::to_vec(val)?)?;
         Ok(())
     }
 
@@ -148,7 +147,7 @@ where
         let path = &self.cache_file_path;
         trace!("clearing cache {}", path.display());
         if path.exists() {
-            xx::file::remove_file(path).into_diagnostic()?;
+            xx::file::remove_file(path)?;
         }
         Ok(())
     }

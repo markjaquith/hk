@@ -7,7 +7,6 @@ use std::{io::Write, sync::OnceLock};
 
 use crate::{env, ui};
 use log::{Level, LevelFilter, Metadata, Record};
-use miette::IntoDiagnostic;
 
 #[derive(Debug)]
 struct Logger {
@@ -153,7 +152,6 @@ fn init_log_file(log_file: &Path) -> Result<File> {
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(log_file)
-        .into_diagnostic()?;
+        .open(log_file)?;
     Ok(file)
 }

@@ -1,7 +1,7 @@
-use crate::{step::StepResponse, tera};
+use crate::{error::Error, step::StepResponse, tera};
+use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use miette::{IntoDiagnostic, miette};
 use std::{
     collections::{HashMap, HashSet},
     path::{Path, PathBuf},
@@ -60,6 +60,19 @@ impl<'a> StepScheduler<'a> {
 
     pub fn with_files(mut self, files: Vec<PathBuf>) -> Self {
         self.files = files;
+        self
+    }
+
+    pub fn with_linters(mut self, linters: &[String]) -> Self {
+        if linters.is_empty() {
+            return self;
+        }
+        self.steps = self
+            .steps
+            .iter()
+            .filter(|s| linters.contains(&s.name))
+            .cloned()
+            .collect();
         self
     }
 
@@ -139,7 +152,7 @@ impl<'a> StepScheduler<'a> {
                             .iter()
                             .find(|(name, _)| *name == dep)
                             .map(|(name, lock)| (name.to_string(), lock.clone()))
-                            .ok_or_else(|| miette!("No step named {dep} found in group"))
+                            .ok_or_else(|| eyre!("No step named {dep} found in group"))
                     })
                     .collect::<Result<IndexMap<String, _>>>()?;
 
@@ -176,7 +189,7 @@ impl<'a> StepScheduler<'a> {
                             match result {
                                 Ok(Ok(r)) => rsp.extend(r),
                                 Ok(Err(e)) => return Err(e),
-                                Err(e) => return Err(e).into_diagnostic(),
+                                Err(e) => return Err(e).wrap_err(step.name.clone()),
                             }
                         }
                         Ok(rsp)
@@ -211,7 +224,7 @@ impl<'a> StepScheduler<'a> {
                     Err(e) => {
                         // JoinError occurred
                         set.abort_all();
-                        return Err(e).into_diagnostic();
+                        return Err(eyre!("{}", e));
                     }
                 }
             }
@@ -266,14 +279,14 @@ impl<'a> StepScheduler<'a> {
     async fn run_step(
         semaphore: Arc<Semaphore>,
         failed: Arc<Mutex<bool>>,
-        ctx: StepContext,
+        mut ctx: StepContext,
         tctx: tera::Context,
         depends: IndexMap<String, Arc<RwLock<()>>>,
         step: &Step,
         set: &mut JoinSet<Result<StepResponse>>,
         files_in_contention: Arc<HashSet<PathBuf>>,
     ) -> Result<()> {
-        let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
+        let permit = semaphore.clone().acquire_owned().await?;
 
         trace!("{step}: spawning step");
         let step = step.clone();
@@ -313,11 +326,20 @@ impl<'a> StepScheduler<'a> {
                         return Ok(ctx);
                     }
                     Err(e) => {
+                        if let Some(Error::CheckListFailed { source, stdout }) =
+                            e.downcast_ref::<Error>()
+                        {
+                            warn!("{step}: failed check step first: {source}");
+                            let filtered_files: HashSet<PathBuf> =
+                                stdout.lines().map(PathBuf::from).collect();
+                            // TODO: what happens if the files don't exactly match, e.g.: `./foo.js` vs `foo.js`?
+                            ctx.files.retain(|f| filtered_files.contains(f));
+                        }
                         warn!("{step}: failed check step first: {e}");
                     }
                 }
             }
-            let permit = semaphore.clone().acquire_owned().await.into_diagnostic()?;
+            let permit = semaphore.clone().acquire_owned().await?;
             match run(
                 ctx,
                 tctx,
@@ -444,7 +466,7 @@ impl StepLocks {
         Ok(Self {
             read_flocks,
             write_flocks,
-            permit: semaphore.clone().acquire_owned().await.into_diagnostic()?,
+            permit: semaphore.clone().acquire_owned().await?,
         })
     }
 }

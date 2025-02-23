@@ -37,7 +37,7 @@ fi
             xx::file::write(&hook_file, &hook_content)?;
             xx::file::make_executable(&hook_file)?;
             println!("Installed hk hook: .git/hooks/{hook}");
-            Result::<(), miette::Report>::Ok(())
+            Result::<(), eyre::Report>::Ok(())
         };
         if config.hooks.contains_key("pre-commit") {
             add_hook("pre-commit")?;

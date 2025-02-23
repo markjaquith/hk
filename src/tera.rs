@@ -2,13 +2,12 @@ use std::{path::Path, sync::LazyLock};
 
 use crate::Result;
 use itertools::Itertools;
-use miette::IntoDiagnostic;
 use serde::Serialize;
 use tera::Tera;
 
 pub fn render(input: &str, ctx: &Context) -> Result<String> {
     let mut tera = Tera::default();
-    let output = tera.render_str(input, &ctx.ctx).into_diagnostic()?;
+    let output = tera.render_str(input, &ctx.ctx)?;
     Ok(output)
 }
 

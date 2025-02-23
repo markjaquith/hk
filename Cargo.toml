@@ -22,7 +22,6 @@ globset = "0.4"
 indexmap = { version = "2", features = ["serde"] }
 itertools = "0.14"
 log = "0.4"
-miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
 rpkl = {version="0.4", features=["indexmap"]}
 serde = { version = "1", features = ["derive"] }
 serde_with = "3"
@@ -40,6 +39,8 @@ clap_usage = "2.0.3"
 which = "7.0.2"
 siphasher = "1.0.1"
 once_cell = "1.20.3"
+eyre = "0.6.12"
+color-eyre = "0.6.3"
 
 [profile.serious]
 inherits = "release"

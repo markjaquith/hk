@@ -15,6 +15,9 @@ pub struct Check {
     /// Run on all files instead of just staged files
     #[clap(short, long)]
     all: bool,
+    /// Run on specific linter(s)
+    #[clap(long)]
+    linter: Vec<String>,
     /// Force stashing even if it's disabled via HK_STASH
     #[clap(long)]
     stash: bool,
@@ -26,7 +29,13 @@ impl Check {
         let repo = Git::new()?; // TODO: remove repo
         let hook = once(("check".to_string(), Step::check())).collect();
         config
-            .run_hook(self.all, &hook, RunType::Check(CheckType::Check), &repo)
+            .run_hook(
+                self.all,
+                &hook,
+                RunType::Check(CheckType::Check),
+                &repo,
+                &self.linter,
+            )
             .await
     }
 }

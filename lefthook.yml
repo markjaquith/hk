@@ -1,13 +1,13 @@
 pre-commit:
   parallel: true
   jobs:
-  - run: actionlint {staged_files}
-    glob: ".github/workflows/*.{yml,yaml}"
-  # - run: pkl eval {staged_files} >/dev/null
-  #   glob: "*.pkl"
-  - run: cargo fmt
-    glob: "*.rs"
-  - run: '! rg -e "dbg!" {staged_files}'
-    glob: "*.rs"
-  - run: prettier --write {staged_files}
-    glob: "*.{js,jsx,ts,tsx,css,scss,less,html,json,jsonc,yaml,markdown,markdown.mdx,graphql,handlebars,svelte,astro,htmlangular}"
+    - run: actionlint {staged_files}
+      glob: ".github/workflows/*.{yml,yaml}"
+    # - run: pkl eval {staged_files} >/dev/null
+    #   glob: "*.pkl"
+    - run: cargo fmt
+      glob: "*.rs"
+    - run: '! rg -e "dbg!" {staged_files}'
+      glob: "*.rs"
+    - run: prettier --write {staged_files}
+      glob: "*.{js,jsx,ts,tsx,css,scss,less,html,json,jsonc,yaml,markdown,markdown.mdx,graphql,handlebars,svelte,astro,htmlangular}"
