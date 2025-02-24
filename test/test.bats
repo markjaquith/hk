@@ -66,7 +66,7 @@ EOF
     hk install
     run cat test.js
     assert_output 'console.log("test")'
-    run git commit -m "test"
+    git commit -m "test"
     run cat test.js
     assert_output 'console.log("test");'
 }

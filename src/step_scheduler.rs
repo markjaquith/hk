@@ -77,6 +77,7 @@ impl<'a> StepScheduler<'a> {
     }
 
     pub async fn run(self) -> Result<()> {
+        let settings = Settings::get();
         *self.file_locks.lock().await = self
             .files
             .iter()
@@ -185,6 +186,41 @@ impl<'a> StepScheduler<'a> {
                             .await?;
                         }
                         // TODO: abort on first error
+                        while let Some(result) = set.join_next().await {
+                            match result {
+                                Ok(Ok(r)) => rsp.extend(r),
+                                Ok(Err(e)) => return Err(e),
+                                Err(e) => return Err(e).wrap_err(step.name.clone()),
+                            }
+                        }
+                        Ok(rsp)
+                    });
+                } else if step.batch {
+                    let step = (*step).clone();
+                    let semaphore = self.semaphore.clone();
+                    let failed = self.failed.clone();
+                    let files_in_contention = files_in_contention.clone();
+                    let jobs = settings.jobs().get();
+                    set.spawn(async move {
+                        let mut rsp = StepResponse::default();
+                        // split files into jobs count chunks
+                        let chunks = ctx.files.chunks(jobs);
+                        let mut set = JoinSet::new();
+                        for chunk in chunks {
+                            let mut ctx = ctx.clone();
+                            ctx.files = chunk.to_vec();
+                            StepScheduler::run_step(
+                                semaphore.clone(),
+                                failed.clone(),
+                                ctx.clone(),
+                                tctx.clone(),
+                                depends.clone(),
+                                &step,
+                                &mut set,
+                                files_in_contention.clone(),
+                            )
+                            .await?;
+                        }
                         while let Some(result) = set.join_next().await {
                             match result {
                                 Ok(Ok(r)) => rsp.extend(r),

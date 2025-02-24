@@ -2,6 +2,7 @@ import "../Config.pkl"
 
 class Prettier extends Config.Linter {
     glob = List("**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,css,scss,less,html,json,jsonc,yaml,markdown,markdown.mdx,graphql,handlebars,svelte,astro,htmlangular}")
+    batch = true
     check = "prettier --check {{ files }}"
     check_list_files = "prettier --list-different {{ files }}"
     fix = "prettier --write {{ files }}"

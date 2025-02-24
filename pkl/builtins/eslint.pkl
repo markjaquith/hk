@@ -2,6 +2,7 @@ import "../Config.pkl"
 
 class Eslint extends Config.Linter {
     glob = List("**/*.{js,jsx,ts,tsx}")
+    batch = true
     check = "eslint {{ files }}"
     fix = "eslint --fix {{ files }}"
 } 
