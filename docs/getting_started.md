@@ -3,7 +3,7 @@
 A tool for running hooks on files in a git repository.
 
 ::: danger
-This is a work in progress. Everything about this project including the docs is probably going to change. **You may encouter bugs that result in local data loss.**
+This is a work in progress. You may encounter bugs and breaking changes until 1.x.
 :::
 
 ## Installation
