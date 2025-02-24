@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.4.5](https://github.com/jdx/hk/compare/v0.4.4..0.4.5) - 2025-02-23
+## [0.4.6](https://github.com/jdx/hk/compare/v0.4.5..0.4.6) - 2025-02-24
+
+### 🚀 Features
+
+- batch by [@jdx](https://github.com/jdx) in [9f0e3f6](https://github.com/jdx/hk/commit/9f0e3f6c8277c73e58f4f3ea621a75bae0e2f522)
+
+## [0.4.5](https://github.com/jdx/hk/compare/v0.4.4..v0.4.5) - 2025-02-23
 
 ### 🚀 Features
 

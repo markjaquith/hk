@@ -40,8 +40,8 @@ hk generate
 This will generate a `hk.pkl` file in the root of the repository, here's an example `hk.pkl` with eslint and prettier linters:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v0.4.5/hk@0.4.5#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.4.5/hk@0.4.5#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.4.6/hk@0.4.6#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.4.6/hk@0.4.6#/builtins/prettier.pkl"
 
 linters {
     // linters can be manually defined
