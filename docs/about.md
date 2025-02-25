@@ -9,7 +9,8 @@ existing tools that integrated well enough with linters to actually perform as
 fast as they could.
 
 I recognized that in order for git hooks to perform fast, they need to run in parallel. That said, since linters also often (but not always) modify files, it's
-not possible to naively run them in parallel or they will stomp on each other.
+not possible to naively run them in parallel or they could stomp on each other if modifying the same files at the same time. E.g.: you may run eslint and prettier
+on the same `.js` file.
 
 That doesn't mean we have to run everything in series though. A lint manager which
 was aware of how linters will behave could grab read/write locks and only grab
