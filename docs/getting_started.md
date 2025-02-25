@@ -27,6 +27,11 @@ Or install from source with `cargo`:
 cargo install hk
 ```
 
+Other installation methods:
+
+- [`brew install hk`](https://formulae.brew.sh/formula/hk)
+- [`aqua g -i jdx/hk`](https://github.com/aquaproj/aqua-registry/blob/main/pkgs/jdx/hk/registry.yaml)
+
 ## Project Setup
 
 Use `hk generate` to generate a `hk.pkl` file:
