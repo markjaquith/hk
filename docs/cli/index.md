@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.4.6
+**Version**: 0.5.0
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -38,7 +38,7 @@ Suppresses all output
 - [`hk check [FLAGS]`](/cli/check.md)
 - [`hk completion <SHELL>`](/cli/completion.md)
 - [`hk config`](/cli/config.md)
-- [`hk fix [-a --all] [--linter... <LINTER>]`](/cli/fix.md)
+- [`hk fix [FLAGS]`](/cli/fix.md)
 - [`hk generate [--mise]`](/cli/generate.md)
 - [`hk install [--mise]`](/cli/install.md)
 - [`hk run <SUBCOMMAND>`](/cli/run.md)

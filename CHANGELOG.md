@@ -1,6 +1,21 @@
 # Changelog
 
-## [0.4.6](https://github.com/jdx/hk/compare/v0.4.5..0.4.6) - 2025-02-24
+## [0.5.0](https://github.com/jdx/hk/compare/v0.4.6..0.5.0) - 2025-02-25
+
+### 🚀 Features
+
+- --from-ref/--to-ref by [@jdx](https://github.com/jdx) in [de47fa4](https://github.com/jdx/hk/commit/de47fa4d107d4edb580d7e6cbc744999f29bd06e)
+
+### 📚 Documentation
+
+- data-loss bug has been resolved by [@jdx](https://github.com/jdx) in [bc4390e](https://github.com/jdx/hk/commit/bc4390ea4f75215f65ed57ffbd78dd0e25f203dd)
+- update all docs by [@jdx](https://github.com/jdx) in [d42f97b](https://github.com/jdx/hk/commit/d42f97b2e87dc0efeb58d99d5bbb1c0295c48e16)
+
+### 🔍 Other Changes
+
+- Update README.md by [@jdx](https://github.com/jdx) in [a56321d](https://github.com/jdx/hk/commit/a56321d68ae945cf7bd1ec6f801d25dce21c8867)
+
+## [0.4.6](https://github.com/jdx/hk/compare/v0.4.5..v0.4.6) - 2025-02-24
 
 ### 🚀 Features
 

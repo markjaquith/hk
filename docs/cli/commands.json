@@ -78,6 +78,40 @@
             "long": ["stash"],
             "hide": false,
             "global": false
+          },
+          {
+            "name": "from-ref",
+            "usage": "--from-ref <FROM_REF>",
+            "help": "Start reference for checking files (requires --to-ref)",
+            "help_first_line": "Start reference for checking files (requires --to-ref)",
+            "short": [],
+            "long": ["from-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "FROM_REF",
+              "usage": "<FROM_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "to-ref",
+            "usage": "--to-ref <TO_REF>",
+            "help": "End reference for checking files (requires --from-ref)",
+            "help_first_line": "End reference for checking files (requires --from-ref)",
+            "short": [],
+            "long": ["to-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "TO_REF",
+              "usage": "<TO_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
           }
         ],
         "mounts": [],
@@ -128,7 +162,7 @@
       },
       "fix": {
         "full_cmd": ["fix"],
-        "usage": "fix [-a --all] [--linter... <LINTER>]",
+        "usage": "fix [FLAGS]",
         "subcommands": {},
         "args": [],
         "flags": [
@@ -155,6 +189,40 @@
             "arg": {
               "name": "LINTER",
               "usage": "<LINTER>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "from-ref",
+            "usage": "--from-ref <FROM_REF>",
+            "help": "Start reference for fixing files (requires --to-ref)",
+            "help_first_line": "Start reference for fixing files (requires --to-ref)",
+            "short": [],
+            "long": ["from-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "FROM_REF",
+              "usage": "<FROM_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "to-ref",
+            "usage": "--to-ref <TO_REF>",
+            "help": "End reference for fixing files (requires --from-ref)",
+            "help_first_line": "End reference for fixing files (requires --from-ref)",
+            "short": [],
+            "long": ["to-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "TO_REF",
+              "usage": "<TO_REF>",
               "required": true,
               "double_dash": "Optional",
               "hide": false
@@ -288,6 +356,40 @@
                 "long": ["stash"],
                 "hide": false,
                 "global": false
+              },
+              {
+                "name": "from-ref",
+                "usage": "--from-ref <FROM_REF>",
+                "help": "Start reference for checking files (requires --to-ref)",
+                "help_first_line": "Start reference for checking files (requires --to-ref)",
+                "short": [],
+                "long": ["from-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "FROM_REF",
+                  "usage": "<FROM_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "to-ref",
+                "usage": "--to-ref <TO_REF>",
+                "help": "End reference for checking files (requires --from-ref)",
+                "help_first_line": "End reference for checking files (requires --from-ref)",
+                "short": [],
+                "long": ["to-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "TO_REF",
+                  "usage": "<TO_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
               }
             ],
             "mounts": [],
@@ -380,6 +482,40 @@
                 "long": ["stash"],
                 "hide": false,
                 "global": false
+              },
+              {
+                "name": "from-ref",
+                "usage": "--from-ref <FROM_REF>",
+                "help": "Start reference for checking files (requires --to-ref)",
+                "help_first_line": "Start reference for checking files (requires --to-ref)",
+                "short": [],
+                "long": ["from-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "FROM_REF",
+                  "usage": "<FROM_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "to-ref",
+                "usage": "--to-ref <TO_REF>",
+                "help": "End reference for checking files (requires --from-ref)",
+                "help_first_line": "End reference for checking files (requires --from-ref)",
+                "short": [],
+                "long": ["to-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "TO_REF",
+                  "usage": "<TO_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
               }
             ],
             "mounts": [],
@@ -522,7 +658,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.4.6",
+  "version": "0.5.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

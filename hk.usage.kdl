@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.4.6"
+version "0.5.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -23,6 +23,12 @@ cmd check help="Fixes code" {
         arg <LINTER>
     }
     flag --stash help="Force stashing even if it's disabled via HK_STASH"
+    flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+        arg <FROM_REF>
+    }
+    flag --to-ref help="End reference for checking files (requires --from-ref)" {
+        arg <TO_REF>
+    }
 }
 cmd completion help="Generates shell completion scripts" {
     arg <SHELL> help="The shell to generate completion for"
@@ -35,6 +41,12 @@ cmd fix help="Fixes code" {
     flag "-a --all" help="Run on all files instead of just staged files"
     flag --linter help="Run on specific linter(s)" var=#true {
         arg <LINTER>
+    }
+    flag --from-ref help="Start reference for fixing files (requires --to-ref)" {
+        arg <FROM_REF>
+    }
+    flag --to-ref help="End reference for fixing files (requires --from-ref)" {
+        arg <TO_REF>
     }
 }
 cmd generate help="Generates a new hk.pkl file for a project" {
@@ -61,6 +73,12 @@ cmd run subcommand_required=#true help="Run a hook" {
             arg <LINTER>
         }
         flag --stash help="Force stashing even if it's disabled via HK_STASH"
+        flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+            arg <FROM_REF>
+        }
+        flag --to-ref help="End reference for checking files (requires --from-ref)" {
+            arg <TO_REF>
+        }
     }
     cmd pre-push help="Sets up git hooks to run hk" {
         alias ph
@@ -71,6 +89,12 @@ cmd run subcommand_required=#true help="Run a hook" {
             arg <LINTER>
         }
         flag --stash help="Force stashing even if it's disabled via HK_STASH"
+        flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+            arg <FROM_REF>
+        }
+        flag --to-ref help="End reference for checking files (requires --from-ref)" {
+            arg <TO_REF>
+        }
         arg <REMOTE> help="Remote name"
         arg <URL> help="Remote URL"
     }
