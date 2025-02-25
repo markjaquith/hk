@@ -5,4 +5,5 @@ class CargoClippy extends Config.Linter {
     workspace_indicator = "Cargo.toml"
     check = "cargo clippy --manifest-path {{workspace_indicator}}"
     fix = "cargo clippy --manifest-path {{workspace_indicator}} --fix --allow-dirty --allow-staged"
+    check_first = false
 } 

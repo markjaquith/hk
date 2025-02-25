@@ -2,6 +2,7 @@ import "../Config.pkl"
 
 class CargoCheck extends Config.Linter {
     glob = List("**/*.rs")
-    check = "cargo check --all-features --all-targets"
-    fix = "cargo check --all-features --all-targets --fix --allow-dirty"
+    check = "cargo check"
+    fix = "cargo check --fix --allow-dirty"
+    check_first = false
 } 
