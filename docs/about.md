@@ -19,7 +19,7 @@ lint a codebase or set of changes very quickly.
 
 It takes a bit more time to implement linters in hk than it does with similar tools
 in order to take advantage of this benefit which is one reason why it comes with
-many [builtins](https://github.com/jdx/hk/tree/main/pkl/builtins) to get you started with common tools.
+many [builtins](https://github.com/jdx/hk/tree/main/pkl/builtins) to get you started with common tools. See [hooks](/hooks) for more details on how this works under the hood.
 
 To compare with 2 other popular tools in this space: I like that [lefthook](https://github.com/evilmartians/lefthook) is pretty lightweight and fast. I don't like how you need to write all the logic to integrate with
 linters yourself and that it lacks any real locking behavior allowing for the advanced parallelism hk provides. I like how [pre-commit](https://pre-commit.com) has
@@ -29,7 +29,7 @@ briefly mentioned in the docs but it explains nothing about it. In hk, parallel 
 Being a Rust CLI, hk is also much faster starting up than other CLIs. This mostly optimizes the no-op use-case—such as running `git commit --amend` with no repo changes or minimal changes which matters in terms of making hk feel very snappy. You likely won't be able to notice hk being used at all if there aren't git changes.
 
 Beyond that, I used my experience building [mise-en-place](https://mise.jdx.dev) incorporating various tricks I've found building that which has resulted in better
-CLI performance such as coding directly to libgit2 rather than shelling out to `git`.
+CLI performance such as coding directly to libgit2 rather than shelling out to `git`. Another technique is that hk can split execution of single-threaded linters (such as eslint and prettier) across multiple processes each linting a different set of files.
 
 ## Benchmarks
 
