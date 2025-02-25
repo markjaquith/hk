@@ -29,6 +29,12 @@ pub struct PreCommit {
     /// Force stashing even if it's disabled via HK_STASH
     #[clap(long)]
     stash: bool,
+    /// Start reference for checking files (requires --to-ref)
+    #[clap(long)]
+    from_ref: Option<String>,
+    /// End reference for checking files (requires --from-ref)
+    #[clap(long)]
+    to_ref: Option<String>,
 }
 
 impl PreCommit {
@@ -44,13 +50,31 @@ impl PreCommit {
         } else {
             RunType::Check(CheckType::Check)
         };
+
+        // Check if both from_ref and to_ref are provided or neither
+        if (self.from_ref.is_some() && self.to_ref.is_none())
+            || (self.from_ref.is_none() && self.to_ref.is_some())
+        {
+            return Err(eyre::eyre!(
+                "Both --from-ref and --to-ref must be provided together"
+            ));
+        }
+
         if !self.all {
             repo.stash_unstaged(self.stash)?;
         }
         static HOOK: LazyLock<IndexMap<String, Step>> = LazyLock::new(Default::default);
         let hook = config.hooks.get("pre-commit").unwrap_or(&HOOK);
         let mut result = config
-            .run_hook(self.all, hook, run_type, &repo, &self.linter)
+            .run_hook(
+                self.all,
+                hook,
+                run_type,
+                &repo,
+                &self.linter,
+                self.from_ref.as_deref(),
+                self.to_ref.as_deref(),
+            )
             .await;
 
         if let Err(err) = repo.pop_stash() {

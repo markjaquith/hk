@@ -21,6 +21,12 @@ pub struct Check {
     /// Force stashing even if it's disabled via HK_STASH
     #[clap(long)]
     stash: bool,
+    /// Start reference for checking files (requires --to-ref)
+    #[clap(long)]
+    from_ref: Option<String>,
+    /// End reference for checking files (requires --from-ref)
+    #[clap(long)]
+    to_ref: Option<String>,
 }
 
 impl Check {
@@ -28,6 +34,16 @@ impl Check {
         let config = Config::get()?;
         let repo = Git::new()?; // TODO: remove repo
         let hook = once(("check".to_string(), Step::check())).collect();
+
+        // Check if both from_ref and to_ref are provided or neither
+        if (self.from_ref.is_some() && self.to_ref.is_none())
+            || (self.from_ref.is_none() && self.to_ref.is_some())
+        {
+            return Err(eyre::eyre!(
+                "Both --from-ref and --to-ref must be provided together"
+            ));
+        }
+
         config
             .run_hook(
                 self.all,
@@ -35,6 +51,8 @@ impl Check {
                 RunType::Check(CheckType::Check),
                 &repo,
                 &self.linter,
+                self.from_ref.as_deref(),
+                self.to_ref.as_deref(),
             )
             .await
     }

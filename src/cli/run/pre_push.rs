@@ -33,14 +33,17 @@ pub struct PrePush {
     stash: bool,
     /// Remote URL
     url: String,
+    /// Start reference for checking files (requires --to-ref)
+    #[clap(long)]
+    from_ref: Option<String>,
+    /// End reference for checking files (requires --from-ref)
+    #[clap(long)]
+    to_ref: Option<String>,
 }
 
 #[allow(unreachable_code)]
 impl PrePush {
     pub async fn run(&self) -> Result<()> {
-        unimplemented!(
-            "pre-push is not yet implemented. We need support for --from-ref and --to-ref"
-        );
         let config = Config::get()?;
         if env::HK_SKIP_HOOK.contains("pre-push") {
             warn!("pre-push: skipping hook due to HK_SKIP_HOOK");
@@ -48,13 +51,30 @@ impl PrePush {
         }
         let mut repo = Git::new()?;
         let run_type = RunType::Check(CheckType::Check);
+
+        if (self.from_ref.is_some() && self.to_ref.is_none())
+            || (self.from_ref.is_none() && self.to_ref.is_some())
+        {
+            return Err(eyre::eyre!(
+                "Both --from-ref and --to-ref must be provided together"
+            ));
+        }
+
         if !self.all {
             repo.stash_unstaged(self.stash)?;
         }
         static HOOK: LazyLock<IndexMap<String, Step>> = LazyLock::new(Default::default);
         let hook = config.hooks.get("pre-push").unwrap_or(&HOOK);
         let mut result = config
-            .run_hook(self.all, hook, run_type, &repo, &self.linter)
+            .run_hook(
+                self.all,
+                hook,
+                run_type,
+                &repo,
+                &self.linter,
+                self.from_ref.as_deref(),
+                self.to_ref.as_deref(),
+            )
             .await;
 
         if let Err(err) = repo.pop_stash() {

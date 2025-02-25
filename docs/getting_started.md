@@ -2,8 +2,8 @@
 
 A tool for running hooks on files in a git repository.
 
-::: danger
-This is a work in progress. You may encounter bugs and breaking changes until 1.x.
+::: warning
+hk is in an early beta stage. You may encounter bugs and breaking changes until 1.x.
 :::
 
 ## Installation

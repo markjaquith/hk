@@ -60,13 +60,13 @@ run = [
 depends = ["build"]
 run = [
   "hk check --all",
-  "hk check --all --profile slow",
+  "hk check --all --slow",
 ]
 [tasks.lint-fix]
 depends = ["build"]
 run = [
   "hk fix --all",
-  "hk fix --all --profile slow",
+  "hk fix --all --slow",
 ]
 [tasks.docs]
 dir = "docs"

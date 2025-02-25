@@ -231,4 +231,46 @@ impl Git {
         index.write().wrap_err("failed to write index")?;
         Ok(())
     }
+
+    pub fn files_between_refs(&self, from_ref: &str, to_ref: &str) -> Result<Vec<PathBuf>> {
+        let from_obj = self
+            .repo
+            .revparse_single(from_ref)
+            .wrap_err(format!("Failed to parse reference: {}", from_ref))?;
+        let to_obj = self
+            .repo
+            .revparse_single(to_ref)
+            .wrap_err(format!("Failed to parse reference: {}", to_ref))?;
+
+        let from_tree = from_obj
+            .peel_to_tree()
+            .wrap_err(format!("Failed to get tree for reference: {}", from_ref))?;
+        let to_tree = to_obj
+            .peel_to_tree()
+            .wrap_err(format!("Failed to get tree for reference: {}", to_ref))?;
+
+        let diff = self
+            .repo
+            .diff_tree_to_tree(Some(&from_tree), Some(&to_tree), None)
+            .wrap_err("Failed to get diff between references")?;
+
+        let mut files = Vec::new();
+        diff.foreach(
+            &mut |_, _| true,
+            None,
+            None,
+            Some(&mut |diff_delta, _, _| {
+                if let Some(path) = diff_delta.new_file().path() {
+                    let path_buf = PathBuf::from(path);
+                    if path_buf.exists() {
+                        files.push(path_buf);
+                    }
+                }
+                true
+            }),
+        )
+        .wrap_err("Failed to process diff")?;
+
+        Ok(files)
+    }
 }

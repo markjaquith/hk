@@ -3,7 +3,7 @@
 The fastest git hook manager on the planet.
 
 > [!CAUTION]
-> This is a work in progress. This project _does_ function and I think it's worth your time to play with but just understand breaking changes and bugs will be a reality until 1.x.
+> hk is in an early beta stage. You may encounter bugs and breaking changes until 1.x.
 
 See docs: https://hk.jdx.dev/
 

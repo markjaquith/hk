@@ -173,6 +173,7 @@ impl std::fmt::Display for Config {
 }
 
 impl Config {
+    #[allow(clippy::too_many_arguments)]
     pub async fn run_hook(
         &self,
         all: bool,
@@ -180,8 +181,12 @@ impl Config {
         run_type: RunType,
         repo: &Git,
         linters: &[String],
+        from_ref: Option<&str>,
+        to_ref: Option<&str>,
     ) -> Result<()> {
-        let files = if all {
+        let files = if let (Some(from), Some(to)) = (from_ref, to_ref) {
+            repo.files_between_refs(from, to)?
+        } else if all {
             repo.all_files()?
         } else {
             repo.staged_files()?
