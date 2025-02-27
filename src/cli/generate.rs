@@ -6,6 +6,9 @@ use crate::{Result, env, version};
 #[derive(Debug, clap::Args)]
 #[clap(visible_alias = "g", alias = "init")]
 pub struct Generate {
+    /// Overwrite existing hk.pkl file
+    #[clap(short, long)]
+    force: bool,
     /// Generate a mise.toml file with hk configured
     ///
     /// Set HK_MISE=1 to make this default behavior.
@@ -80,7 +83,7 @@ hk = "latest"
 pre-commit = "hk run pre-commit"
 "#;
             if mise_toml.exists() {
-                warn!("mise.toml already exists");
+                warn!("mise.toml already exists, run with --force to overwrite");
             } else {
                 xx::file::write(mise_toml, mise_content)?;
                 println!("Generated mise.toml");
