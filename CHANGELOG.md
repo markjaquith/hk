@@ -1,6 +1,25 @@
 # Changelog
 
-## [0.5.0](https://github.com/jdx/hk/compare/v0.4.6..0.5.0) - 2025-02-25
+## [0.5.1](https://github.com/jdx/hk/compare/v0.5.0..0.5.1) - 2025-03-20
+
+### 🚀 Features
+
+- added --force flag to generate by [@jdx](https://github.com/jdx) in [09b63ff](https://github.com/jdx/hk/commit/09b63ff1a220cfbc804624270c31fa60155dc102)
+
+### 🐛 Bug Fixes
+
+- disable check_first for cargo-check/clippy by [@jdx](https://github.com/jdx) in [5546426](https://github.com/jdx/hk/commit/5546426fc3809ab6a11c2e7280eed5e585fb8ac3)
+- make pre-push hook function correctly by [@jdx](https://github.com/jdx) in [#35](https://github.com/jdx/hk/pull/35)
+
+### 🔍 Other Changes
+
+- Update about.md by [@jdx](https://github.com/jdx) in [aba3525](https://github.com/jdx/hk/commit/aba3525bc9eb27260ed19c377091de35a5c5b90a)
+- Update about.md by [@jdx](https://github.com/jdx) in [c320d35](https://github.com/jdx/hk/commit/c320d35065fea507fdfd8d1d835e230c4430d18d)
+- Update about.md by [@jdx](https://github.com/jdx) in [84a3d96](https://github.com/jdx/hk/commit/84a3d96a90aa730ca9147ede22947645a1d9a229)
+- remove `rustup up` by [@jdx](https://github.com/jdx) in [#36](https://github.com/jdx/hk/pull/36)
+- added `mise run release` task by [@jdx](https://github.com/jdx) in [ea39789](https://github.com/jdx/hk/commit/ea39789c6604f74bd9cb0963911bf3537ea6c419)
+
+## [0.5.0](https://github.com/jdx/hk/compare/v0.4.6..v0.5.0) - 2025-02-25
 
 ### 🚀 Features
 

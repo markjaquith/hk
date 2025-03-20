@@ -1,11 +1,15 @@
 # `hk generate`
 
-- **Usage**: `hk generate [--mise]`
+- **Usage**: `hk generate [-f --force] [--mise]`
 - **Aliases**: `g`
 
 Generates a new hk.pkl file for a project
 
 ## Flags
+
+### `-f --force`
+
+Overwrite existing hk.pkl file
 
 ### `--mise`
 

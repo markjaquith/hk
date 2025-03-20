@@ -1,17 +1,17 @@
 # `hk run pre-push`
 
-- **Usage**: `hk run pre-push [FLAGS] <REMOTE> <URL>`
+- **Usage**: `hk run pre-push [FLAGS] [REMOTE] [URL]`
 - **Aliases**: `ph`
 
 Sets up git hooks to run hk
 
 ## Arguments
 
-### `<REMOTE>`
+### `[REMOTE]`
 
 Remote name
 
-### `<URL>`
+### `[URL]`
 
 Remote URL
 

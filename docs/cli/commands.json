@@ -239,10 +239,20 @@
       },
       "generate": {
         "full_cmd": ["generate"],
-        "usage": "generate [--mise]",
+        "usage": "generate [-f --force] [--mise]",
         "subcommands": {},
         "args": [],
         "flags": [
+          {
+            "name": "force",
+            "usage": "-f --force",
+            "help": "Overwrite existing hk.pkl file",
+            "help_first_line": "Overwrite existing hk.pkl file",
+            "short": ["f"],
+            "long": ["force"],
+            "hide": false,
+            "global": false
+          },
           {
             "name": "mise",
             "usage": "--mise",
@@ -402,24 +412,24 @@
           },
           "pre-push": {
             "full_cmd": ["run", "pre-push"],
-            "usage": "run pre-push [FLAGS] <REMOTE> <URL>",
+            "usage": "run pre-push [FLAGS] [REMOTE] [URL]",
             "subcommands": {},
             "args": [
               {
                 "name": "REMOTE",
-                "usage": "<REMOTE>",
+                "usage": "[REMOTE]",
                 "help": "Remote name",
                 "help_first_line": "Remote name",
-                "required": true,
+                "required": false,
                 "double_dash": "Optional",
                 "hide": false
               },
               {
                 "name": "URL",
-                "usage": "<URL>",
+                "usage": "[URL]",
                 "help": "Remote URL",
                 "help_first_line": "Remote URL",
-                "required": true,
+                "required": false,
                 "double_dash": "Optional",
                 "hide": false
               }
@@ -658,7 +668,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.5.0",
+  "version": "0.5.1",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
