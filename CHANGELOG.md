@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.5.1](https://github.com/jdx/hk/compare/v0.5.0..0.5.1) - 2025-03-20
+## [0.6.0](https://github.com/jdx/hk/compare/v0.5.1..0.6.0) - 2025-03-21
+
+### 🚀 Features
+
+- prepare-commit-msg by [@jdx](https://github.com/jdx) in [#37](https://github.com/jdx/hk/pull/37)
+
+### 🔍 Other Changes
+
+- added mise deps by [@jdx](https://github.com/jdx) in [d73a13c](https://github.com/jdx/hk/commit/d73a13c6bfc9de2a4180523351ca19a67fceb01a)
+
+## [0.5.1](https://github.com/jdx/hk/compare/v0.5.0..v0.5.1) - 2025-03-20
 
 ### 🚀 Features
 

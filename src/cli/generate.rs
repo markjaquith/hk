@@ -22,8 +22,8 @@ impl Generate {
         let version = version::version();
         let hook_content = format!(
             r#"
-amends "package://github.com/jdx/hk/releases/download/v0.5.1/hk@0.5.1#/Config.pkl"
-// import "package://github.com/jdx/hk/releases/download/v0.5.1/hk@0.5.1#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.6.0/hk@0.6.0#/Config.pkl"
+// import "package://github.com/jdx/hk/releases/download/v0.6.0/hk@0.6.0#/builtins/prettier.pkl"
 
 min_hk_version = "{version}"
 

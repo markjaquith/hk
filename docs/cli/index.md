@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.5.1
+**Version**: 0.6.0
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -44,4 +44,5 @@ Suppresses all output
 - [`hk run <SUBCOMMAND>`](/cli/run.md)
 - [`hk run pre-commit [FLAGS]`](/cli/run/pre-commit.md)
 - [`hk run pre-push [FLAGS] [REMOTE] [URL]`](/cli/run/pre-push.md)
+- [`hk run prepare-commit-msg <ARGS>…`](/cli/run/prepare-commit-msg.md)
 - [`hk version`](/cli/version.md)

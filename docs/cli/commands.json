@@ -535,6 +535,47 @@
             "aliases": ["ph"],
             "hidden_aliases": [],
             "examples": []
+          },
+          "prepare-commit-msg": {
+            "full_cmd": ["run", "prepare-commit-msg"],
+            "usage": "run prepare-commit-msg <ARGS>…",
+            "subcommands": {},
+            "args": [
+              {
+                "name": "COMMIT_MSG_FILE",
+                "usage": "<COMMIT_MSG_FILE>",
+                "help": "The path to the file that contains the commit message so far",
+                "help_first_line": "The path to the file that contains the commit message so far",
+                "required": true,
+                "double_dash": "Optional",
+                "hide": false
+              },
+              {
+                "name": "SOURCE",
+                "usage": "[SOURCE]",
+                "help": "The source of the commit message (e.g., \"message\", \"template\", \"merge\")",
+                "help_first_line": "The source of the commit message (e.g., \"message\", \"template\", \"merge\")",
+                "required": false,
+                "double_dash": "Optional",
+                "hide": false
+              },
+              {
+                "name": "SHA",
+                "usage": "[SHA]",
+                "help": "The SHA of the commit being amended (if applicable)",
+                "help_first_line": "The SHA of the commit being amended (if applicable)",
+                "required": false,
+                "double_dash": "Optional",
+                "hide": false
+              }
+            ],
+            "flags": [],
+            "mounts": [],
+            "hide": false,
+            "name": "prepare-commit-msg",
+            "aliases": ["pcm"],
+            "hidden_aliases": [],
+            "examples": []
           }
         },
         "args": [],
@@ -668,7 +709,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.5.1",
+  "version": "0.6.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
