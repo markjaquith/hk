@@ -8,6 +8,7 @@ _.path = [
 actionlint = "latest"
 cargo-binstall = "latest"
 "cargo:cargo-msrv" = "latest"
+git-cliff = "latest"
 hadolint = "latest"
 ktlint = "latest"
 "npm:prettier" = "latest"
@@ -16,6 +17,7 @@ pkl = "latest"
 shellcheck = "latest"
 swiftlint = "latest"
 yq = "latest"
+"cargo:cargo-release" = "latest"
 
 [tasks.init]
 run = '''

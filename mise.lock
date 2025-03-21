@@ -13,6 +13,14 @@ backend = "aqua:cargo-bins/cargo-binstall"
 version = "0.18.1"
 backend = "cargo:cargo-msrv"
 
+[tools."cargo:cargo-release"]
+version = "0.25.15"
+backend = "cargo:cargo-release"
+
+[tools.git-cliff]
+version = "2.8.0"
+backend = "aqua:orhun/git-cliff"
+
 [tools.hadolint]
 version = "2.12.0"
 backend = "ubi:hadolint/hadolint"
