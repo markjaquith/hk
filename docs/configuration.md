@@ -398,6 +398,15 @@ Default: `true`
 
 If set to `false`, hk will not automatically stash unstaged changes before running hooks.
 
+### `HK_STASH_NO_GIT`
+
+Type: `bool`
+Default: `false`
+
+If set to `true`, hk will not use `git stash` to stash unstaged changed and instead stash with internal diff logic. This gets around
+`index is locked` errors when using `git stash` however it also means
+that if hk crashes it will lose unstaged changes.
+
 ### `HK_STATE_DIR`
 
 Type: `path`

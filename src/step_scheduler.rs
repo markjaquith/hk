@@ -134,6 +134,10 @@ impl<'a> StepScheduler<'a> {
                         debug!("{step}: no matches for step in {dir}");
                         continue;
                     }
+                    for f in files.iter_mut() {
+                        // strip the dir prefix from the file path
+                        *f = f.strip_prefix(dir).unwrap_or(f).to_path_buf();
+                    }
                 }
                 let ctx = StepContext {
                     run_type,
