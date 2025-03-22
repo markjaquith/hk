@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.6.0
+**Version**: 0.6.1
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -42,6 +42,7 @@ Suppresses all output
 - [`hk generate [-f --force] [--mise]`](/cli/generate.md)
 - [`hk install [--mise]`](/cli/install.md)
 - [`hk run <SUBCOMMAND>`](/cli/run.md)
+- [`hk run commit-msg <COMMIT_MSG_FILE>`](/cli/run/commit-msg.md)
 - [`hk run pre-commit [FLAGS]`](/cli/run/pre-commit.md)
 - [`hk run pre-push [FLAGS] [REMOTE] [URL]`](/cli/run/pre-push.md)
 - [`hk run prepare-commit-msg <ARGS>…`](/cli/run/prepare-commit-msg.md)

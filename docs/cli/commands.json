@@ -303,6 +303,29 @@
         "full_cmd": ["run"],
         "usage": "run <SUBCOMMAND>",
         "subcommands": {
+          "commit-msg": {
+            "full_cmd": ["run", "commit-msg"],
+            "usage": "run commit-msg <COMMIT_MSG_FILE>",
+            "subcommands": {},
+            "args": [
+              {
+                "name": "COMMIT_MSG_FILE",
+                "usage": "<COMMIT_MSG_FILE>",
+                "help": "The path to the file that contains the commit message",
+                "help_first_line": "The path to the file that contains the commit message",
+                "required": true,
+                "double_dash": "Optional",
+                "hide": false
+              }
+            ],
+            "flags": [],
+            "mounts": [],
+            "hide": false,
+            "name": "commit-msg",
+            "aliases": ["cm"],
+            "hidden_aliases": [],
+            "examples": []
+          },
           "pre-commit": {
             "full_cmd": ["run", "pre-commit"],
             "usage": "run pre-commit [FLAGS]",
@@ -709,7 +732,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.6.0",
+  "version": "0.6.1",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

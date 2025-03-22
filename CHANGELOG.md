@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.6.0](https://github.com/jdx/hk/compare/v0.5.1..0.6.0) - 2025-03-21
+## [0.6.1](https://github.com/jdx/hk/compare/v0.6.0..0.6.1) - 2025-03-22
+
+### 🚀 Features
+
+- commit-msg hook by [@jdx](https://github.com/jdx) in [aa55aee](https://github.com/jdx/hk/commit/aa55aeec29e0c71db8ff49d9cebd55872d76d32a)
+
+### 🐛 Bug Fixes
+
+- make files relative to dir instead of repo root by [@jdx](https://github.com/jdx) in [8626a46](https://github.com/jdx/hk/commit/8626a468d1bd08a6a4bb467fb6142d701ad2f116)
+
+## [0.6.0](https://github.com/jdx/hk/compare/v0.5.1..v0.6.0) - 2025-03-21
 
 ### 🚀 Features
 
