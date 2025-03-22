@@ -31,4 +31,39 @@ Runs when `git commit` is run before the commit is created.
 
 Runs when `git push` is run before `git push` sends the changes to the remote repository.
 
-TODO
+```pkl
+hooks = new {
+    ["pre-push"] {
+        ["check"] = new Check {}
+    }
+}
+```
+
+## `prepare-commit-msg`
+
+Runs when `git commit` is run before the commit message is created. Useful for rendering a default commit message template.
+
+```pkl
+hooks = new {
+    ["prepare-commit-msg"] {
+        ["render-commit-msg"] {
+            run = "echo 'default commit message' > {{commit_msg_file}}"
+        }
+    }
+}
+
+```
+
+## `commit-msg`
+
+Runs when `git commit` is run after the commit message is created. Useful for validating the commit message.
+
+```pkl
+hooks = new {
+    ["commit-msg"] {
+        ["validate-commit-msg"] {
+            run = "grep -q '^(fix|feat|chore):' {{commit_msg_file}} || exit 1"
+        }
+    }
+}
+```

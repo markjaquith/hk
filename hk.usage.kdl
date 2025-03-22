@@ -105,6 +105,10 @@ cmd run subcommand_required=#true help="Run a hook" {
         arg "[SOURCE]" help="The source of the commit message (e.g., \"message\", \"template\", \"merge\")" required=#false
         arg "[SHA]" help="The SHA of the commit being amended (if applicable)" required=#false
     }
+    cmd commit-msg {
+        alias cm
+        arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message"
+    }
 }
 cmd usage hide=#true help="Generates a usage spec for the CLI" {
     long_help "Generates a usage spec for the CLI\n\nhttps://usage.jdx.dev"

@@ -21,6 +21,9 @@ backend = "cargo:cargo-release"
 version = "2.8.0"
 backend = "aqua:orhun/git-cliff"
 
+[tools.git-cliff.checksums]
+"git-cliff-2.8.0-x86_64-apple-darwin.tar.gz" = "sha512:bc841df00273f011e3a88c1d92b3bcd92482647c6721a31eb79f341f65b663386b22b53fd67dcf967b83ef6d1032d176ff0aa74d86a36c9f5f42272b4289720e"
+
 [tools.hadolint]
 version = "2.12.0"
 backend = "ubi:hadolint/hadolint"
