@@ -136,6 +136,7 @@ impl<'a> StepScheduler<'a> {
                     }
                 }
                 let ctx = StepContext {
+                    semaphore: self.semaphore.clone(),
                     run_type,
                     failed: self.failed.clone(),
                     file_locks: self
@@ -176,7 +177,6 @@ impl<'a> StepScheduler<'a> {
 
                 if let Some(workspaces) = step.workspaces_for_files(&ctx.files)? {
                     let step = (*step).clone();
-                    let semaphore = self.semaphore.clone();
                     let files_in_contention = files_in_contention.clone();
                     set.spawn(async move {
                         let mut rsp = StepResponse::default();
@@ -185,7 +185,6 @@ impl<'a> StepScheduler<'a> {
                             let mut ctx = ctx.clone();
                             ctx.tctx.with_workspace_indicator(&workspace_indicator);
                             StepScheduler::run_step(
-                                semaphore.clone(),
                                 ctx,
                                 depends.clone(),
                                 &step,
@@ -206,7 +205,6 @@ impl<'a> StepScheduler<'a> {
                     });
                 } else if step.batch {
                     let step = (*step).clone();
-                    let semaphore = self.semaphore.clone();
                     let files_in_contention = files_in_contention.clone();
                     let jobs = settings.jobs().get();
                     set.spawn(async move {
@@ -218,7 +216,6 @@ impl<'a> StepScheduler<'a> {
                             let mut ctx = ctx.clone();
                             ctx.files = chunk.to_vec();
                             StepScheduler::run_step(
-                                semaphore.clone(),
                                 ctx.clone(),
                                 depends.clone(),
                                 &step,
@@ -238,7 +235,6 @@ impl<'a> StepScheduler<'a> {
                     });
                 } else {
                     StepScheduler::run_step(
-                        self.semaphore.clone(),
                         ctx,
                         depends,
                         step,
@@ -317,14 +313,13 @@ impl<'a> StepScheduler<'a> {
 
     #[allow(clippy::too_many_arguments)]
     async fn run_step(
-        semaphore: Arc<Semaphore>,
         mut ctx: StepContext,
         depends: IndexMap<String, Arc<RwLock<()>>>,
         step: &Step,
         set: &mut JoinSet<Result<StepResponse>>,
         files_in_contention: Arc<HashSet<PathBuf>>,
     ) -> Result<()> {
-        let permit = semaphore.clone().acquire_owned().await?;
+        let permit = ctx.semaphore.clone().acquire_owned().await?;
 
         trace!("{step}: spawning step");
         let step = step.clone();
@@ -350,7 +345,6 @@ impl<'a> StepScheduler<'a> {
                 debug!("{step}: running check step first due to fix step contention");
                 match run(
                     check_ctx,
-                    semaphore.clone(),
                     &step,
                     permit,
                     &depends,
@@ -378,11 +372,10 @@ impl<'a> StepScheduler<'a> {
                     }
                 }
             }
-            let permit = semaphore.clone().acquire_owned().await?;
+            let permit = ctx.semaphore.clone().acquire_owned().await?;
             let failed = ctx.failed.clone();
             match run(
                 ctx,
-                semaphore,
                 &step,
                 permit,
                 &depends,
@@ -403,12 +396,11 @@ impl<'a> StepScheduler<'a> {
 
 async fn run(
     ctx: StepContext,
-    semaphore: Arc<Semaphore>,
     step: &Step,
     permit: OwnedSemaphorePermit,
     depends: &IndexMap<String, Arc<RwLock<()>>>,
 ) -> Result<StepResponse> {
-    let _locks = StepLocks::lock(step, &ctx, semaphore, permit, depends).await?;
+    let _locks = StepLocks::lock(step, &ctx, permit, depends).await?;
     if *ctx.failed.lock().await {
         trace!("{step}: skipping step due to previous failure");
         return Ok(Default::default());
@@ -426,7 +418,7 @@ async fn run(
 }
 
 #[allow(unused)]
-struct StepLocks {
+pub struct StepLocks {
     read_flocks: Vec<OwnedRwLockReadGuard<()>>,
     write_flocks: Vec<OwnedRwLockWriteGuard<()>>,
     permit: OwnedSemaphorePermit,
@@ -477,7 +469,6 @@ impl StepLocks {
     async fn lock(
         step: &Step,
         ctx: &StepContext,
-        semaphore: Arc<Semaphore>,
         permit: OwnedSemaphorePermit,
         depends: &IndexMap<String, Arc<RwLock<()>>>,
     ) -> Result<Self> {
@@ -502,7 +493,7 @@ impl StepLocks {
         Ok(Self {
             read_flocks,
             write_flocks,
-            permit: semaphore.clone().acquire_owned().await?,
+            permit: ctx.semaphore.clone().acquire_owned().await?,
         })
     }
 }
