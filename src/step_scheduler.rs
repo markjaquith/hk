@@ -141,6 +141,7 @@ impl<'a> StepScheduler<'a> {
                 }
                 let ctx = StepContext {
                     run_type,
+                    failed: self.failed.clone(),
                     file_locks: self
                         .file_locks
                         .lock()
@@ -180,7 +181,6 @@ impl<'a> StepScheduler<'a> {
                 if let Some(workspaces) = step.workspaces_for_files(&ctx.files)? {
                     let step = (*step).clone();
                     let semaphore = self.semaphore.clone();
-                    let failed = self.failed.clone();
                     let files_in_contention = files_in_contention.clone();
                     set.spawn(async move {
                         let mut rsp = StepResponse::default();
@@ -190,7 +190,6 @@ impl<'a> StepScheduler<'a> {
                             tctx.with_workspace_indicator(&workspace_indicator);
                             StepScheduler::run_step(
                                 semaphore.clone(),
-                                failed.clone(),
                                 ctx.clone(),
                                 tctx,
                                 depends.clone(),
@@ -213,7 +212,6 @@ impl<'a> StepScheduler<'a> {
                 } else if step.batch {
                     let step = (*step).clone();
                     let semaphore = self.semaphore.clone();
-                    let failed = self.failed.clone();
                     let files_in_contention = files_in_contention.clone();
                     let jobs = settings.jobs().get();
                     set.spawn(async move {
@@ -226,7 +224,6 @@ impl<'a> StepScheduler<'a> {
                             ctx.files = chunk.to_vec();
                             StepScheduler::run_step(
                                 semaphore.clone(),
-                                failed.clone(),
                                 ctx.clone(),
                                 tctx.clone(),
                                 depends.clone(),
@@ -248,7 +245,6 @@ impl<'a> StepScheduler<'a> {
                 } else {
                     StepScheduler::run_step(
                         self.semaphore.clone(),
-                        self.failed.clone(),
                         ctx,
                         tctx,
                         depends,
@@ -329,7 +325,6 @@ impl<'a> StepScheduler<'a> {
     #[allow(clippy::too_many_arguments)]
     async fn run_step(
         semaphore: Arc<Semaphore>,
-        failed: Arc<Mutex<bool>>,
         mut ctx: StepContext,
         tctx: tera::Context,
         depends: IndexMap<String, Arc<RwLock<()>>>,
@@ -366,7 +361,6 @@ impl<'a> StepScheduler<'a> {
                     tctx.clone(),
                     semaphore.clone(),
                     &step,
-                    failed.clone(),
                     permit,
                     &depends,
                 )
@@ -394,12 +388,12 @@ impl<'a> StepScheduler<'a> {
                 }
             }
             let permit = semaphore.clone().acquire_owned().await?;
+            let failed = ctx.failed.clone();
             match run(
                 ctx,
                 tctx,
                 semaphore,
                 &step,
-                failed.clone(),
                 permit,
                 &depends,
             )
@@ -422,12 +416,11 @@ async fn run(
     tctx: tera::Context,
     semaphore: Arc<Semaphore>,
     step: &Step,
-    failed: Arc<Mutex<bool>>,
     permit: OwnedSemaphorePermit,
     depends: &IndexMap<String, Arc<RwLock<()>>>,
 ) -> Result<StepResponse> {
     let _locks = StepLocks::lock(step, &ctx, semaphore, permit, depends).await?;
-    if *failed.lock().await {
+    if *ctx.failed.lock().await {
         trace!("{step}: skipping step due to previous failure");
         return Ok(Default::default());
     }

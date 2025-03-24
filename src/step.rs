@@ -8,7 +8,7 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fmt, sync::Arc};
-use tokio::sync::{OwnedRwLockWriteGuard, RwLock};
+use tokio::sync::{Mutex, OwnedRwLockWriteGuard, RwLock};
 
 use serde_with::serde_as;
 
@@ -315,6 +315,7 @@ pub struct StepContext {
     pub run_type: RunType,
     pub files: Vec<PathBuf>,
     pub file_locks: IndexMap<PathBuf, Arc<RwLock<()>>>,
+    pub failed: Arc<Mutex<bool>>,
     #[allow(unused)]
     pub depend_self: Option<OwnedRwLockWriteGuard<()>>,
 }
@@ -325,6 +326,7 @@ impl Clone for StepContext {
             run_type: self.run_type,
             files: self.files.clone(),
             file_locks: self.file_locks.clone(),
+            failed: self.failed.clone(),
             depend_self: None,
         }
     }
