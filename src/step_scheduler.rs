@@ -136,6 +136,7 @@ impl<'a> StepScheduler<'a> {
                     }
                 }
                 let ctx = StepContext {
+                    step: (*step).clone(),
                     semaphore: self.semaphore.clone(),
                     run_type,
                     failed: self.failed.clone(),
@@ -187,7 +188,6 @@ impl<'a> StepScheduler<'a> {
                             StepScheduler::run_step(
                                 ctx,
                                 depends.clone(),
-                                &step,
                                 &mut set,
                                 files_in_contention.clone(),
                             )
@@ -218,7 +218,6 @@ impl<'a> StepScheduler<'a> {
                             StepScheduler::run_step(
                                 ctx.clone(),
                                 depends.clone(),
-                                &step,
                                 &mut set,
                                 files_in_contention.clone(),
                             )
@@ -234,14 +233,8 @@ impl<'a> StepScheduler<'a> {
                         Ok(rsp)
                     });
                 } else {
-                    StepScheduler::run_step(
-                        ctx,
-                        depends,
-                        step,
-                        &mut set,
-                        files_in_contention.clone(),
-                    )
-                    .await?;
+                    StepScheduler::run_step(ctx, depends, &mut set, files_in_contention.clone())
+                        .await?;
                 }
             }
 
@@ -314,14 +307,13 @@ impl<'a> StepScheduler<'a> {
     async fn run_step(
         mut ctx: StepContext,
         depends: IndexMap<String, Arc<RwLock<()>>>,
-        step: &Step,
         set: &mut JoinSet<Result<StepResponse>>,
         files_in_contention: Arc<HashSet<PathBuf>>,
     ) -> Result<()> {
         let permit = ctx.semaphore.clone().acquire_owned().await?;
+        let step = ctx.step.clone();
 
         trace!("{step}: spawning step");
-        let step = step.clone();
         set.spawn(async move {
             let depends = depends;
             if *env::HK_CHECK_FIRST
@@ -344,7 +336,6 @@ impl<'a> StepScheduler<'a> {
                 debug!("{step}: running check step first due to fix step contention");
                 match run(
                     check_ctx,
-                    &step,
                     permit,
                     &depends,
                 )
@@ -375,7 +366,6 @@ impl<'a> StepScheduler<'a> {
             let failed = ctx.failed.clone();
             match run(
                 ctx,
-                &step,
                 permit,
                 &depends,
             )
@@ -395,11 +385,11 @@ impl<'a> StepScheduler<'a> {
 
 async fn run(
     ctx: StepContext,
-    step: &Step,
     permit: OwnedSemaphorePermit,
     depends: &IndexMap<String, Arc<RwLock<()>>>,
 ) -> Result<StepResponse> {
-    let _locks = StepLocks::lock(step, &ctx, permit, depends).await?;
+    let _locks = StepLocks::lock(&ctx, permit, depends).await?;
+    let step = ctx.step.clone(); // TODO: remove this clone somehow
     if *ctx.failed.lock().await {
         trace!("{step}: skipping step due to previous failure");
         return Ok(Default::default());
@@ -425,11 +415,11 @@ pub struct StepLocks {
 
 impl StepLocks {
     fn try_lock(
-        step: &Step,
         ctx: &StepContext,
         depends: &IndexMap<String, Arc<RwLock<()>>>,
         permit: OwnedSemaphorePermit,
     ) -> Option<Self> {
+        let step = &ctx.step;
         let mut read_flocks = vec![];
         let mut write_flocks = vec![];
         for (name, depends) in depends.iter() {
@@ -440,7 +430,7 @@ impl StepLocks {
         }
         for (path, lock) in ctx.file_locks.iter() {
             let lock = lock.clone();
-            match (step.stomp, ctx.run_type) {
+            match (ctx.step.stomp, ctx.run_type) {
                 (_, RunType::Run) => {}
                 (true, _) | (_, RunType::Check(_)) => match lock.clone().try_read_owned() {
                     Ok(lock) => read_flocks.push(lock),
@@ -466,12 +456,11 @@ impl StepLocks {
     }
 
     async fn lock(
-        step: &Step,
         ctx: &StepContext,
         permit: OwnedSemaphorePermit,
         depends: &IndexMap<String, Arc<RwLock<()>>>,
     ) -> Result<Self> {
-        if let Some(locks) = Self::try_lock(step, ctx, depends, permit) {
+        if let Some(locks) = Self::try_lock(ctx, depends, permit) {
             return Ok(locks);
         }
         let mut read_flocks = vec![];
@@ -481,7 +470,7 @@ impl StepLocks {
         }
         for (_path, lock) in ctx.file_locks.iter() {
             let lock = lock.clone();
-            match (step.stomp, ctx.run_type) {
+            match (ctx.step.stomp, ctx.run_type) {
                 (_, RunType::Run) => {}
                 (true, _) | (_, RunType::Check(_)) => {
                     read_flocks.push(lock.clone().read_owned().await)

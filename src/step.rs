@@ -308,6 +308,7 @@ impl Step {
 }
 
 pub struct StepContext {
+    pub step: Step,
     pub run_type: RunType,
     pub files: Vec<PathBuf>,
     pub file_locks: IndexMap<PathBuf, Arc<RwLock<()>>>,
@@ -321,6 +322,7 @@ pub struct StepContext {
 impl Clone for StepContext {
     fn clone(&self) -> Self {
         Self {
+            step: self.step.clone(),
             run_type: self.run_type,
             files: self.files.clone(),
             file_locks: self.file_locks.clone(),
