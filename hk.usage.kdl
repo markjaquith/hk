@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.6.1"
+version "0.6.2"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -63,8 +63,9 @@ cmd install help="Sets up git hooks to run hk" {
         long_help "Use `mise x` to execute hooks. With this, it won't\nbe necessary to activate mise in order to run hooks\nwith mise tools.\n\nSet HK_MISE=1 to make this default behavior."
     }
 }
-cmd run subcommand_required=#true help="Run a hook" {
+cmd run help="Run a hook" {
     alias r
+    arg "[OTHER]" required=#false hide=#true
     cmd commit-msg {
         alias cm
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message"

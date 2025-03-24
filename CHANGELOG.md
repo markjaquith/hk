@@ -1,6 +1,28 @@
 # Changelog
 
-## [0.6.1](https://github.com/jdx/hk/compare/v0.6.0..0.6.1) - 2025-03-22
+## [0.6.2](https://github.com/jdx/hk/compare/v0.6.1..0.6.2) - 2025-03-24
+
+### 🚀 Features
+
+- allow specifying any git hooks by [@jdx](https://github.com/jdx) in [#42](https://github.com/jdx/hk/pull/42)
+
+### 🐛 Bug Fixes
+
+- glob after dir by [@jdx](https://github.com/jdx) in [dd26b0a](https://github.com/jdx/hk/commit/dd26b0a497c357a61da997ea131bf25a6d18f97a)
+
+### 🚜 Refactor
+
+- move failed mutex to ctx by [@jdx](https://github.com/jdx) in [1d9074b](https://github.com/jdx/hk/commit/1d9074b9a3d0ffcb21c7b0c6e94b40ff9c4d533b)
+- move tctx into ctx by [@jdx](https://github.com/jdx) in [d7b6bbd](https://github.com/jdx/hk/commit/d7b6bbd6fa8008d05a5199a0ebd8d074cb9b843c)
+- move semaphore to ctx by [@jdx](https://github.com/jdx) in [1399920](https://github.com/jdx/hk/commit/1399920df0b9fe38cdaaf25550c6c28008a89188)
+- remove lint by [@jdx](https://github.com/jdx) in [331507c](https://github.com/jdx/hk/commit/331507c055b9575aa71ba28ea67f4072d57730f5)
+- move step to ctx by [@jdx](https://github.com/jdx) in [3300747](https://github.com/jdx/hk/commit/3300747f984a656c39f6e1fa585cc3a02ec3c2c4)
+- remove files_in_contention from run_step by [@jdx](https://github.com/jdx) in [9ce5c44](https://github.com/jdx/hk/commit/9ce5c44f5be8759bfeb0a4c7dba3edce0751ab30)
+- break step classes into separate files by [@jdx](https://github.com/jdx) in [f47b38d](https://github.com/jdx/hk/commit/f47b38d56ddc6f77989ef3f28356051af1419cef)
+- remove unnecessary file_locks mutex by [@jdx](https://github.com/jdx) in [c7bf181](https://github.com/jdx/hk/commit/c7bf1810739599ea5ee696c72321cbc33c45a7a6)
+- added queue by [@jdx](https://github.com/jdx) in [#41](https://github.com/jdx/hk/pull/41)
+
+## [0.6.1](https://github.com/jdx/hk/compare/v0.6.0..v0.6.1) - 2025-03-22
 
 ### 🚀 Features
 

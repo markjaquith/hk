@@ -601,11 +601,18 @@
             "examples": []
           }
         },
-        "args": [],
+        "args": [
+          {
+            "name": "OTHER",
+            "usage": "[OTHER]",
+            "required": false,
+            "double_dash": "Optional",
+            "hide": true
+          }
+        ],
         "flags": [],
         "mounts": [],
         "hide": false,
-        "subcommand_required": true,
         "help": "Run a hook",
         "name": "run",
         "aliases": ["r"],
@@ -732,7 +739,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.6.1",
+  "version": "0.6.2",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
