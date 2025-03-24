@@ -28,7 +28,6 @@ pub struct StepScheduler<'a> {
     tctx: Context,
     failed: Arc<Mutex<bool>>,
     semaphore: Arc<Semaphore>,
-    file_locks: Mutex<IndexMap<PathBuf, Arc<RwLock<()>>>>,
 }
 
 impl<'a> StepScheduler<'a> {
@@ -54,7 +53,6 @@ impl<'a> StepScheduler<'a> {
             tctx: Default::default(),
             failed: Arc::new(Mutex::new(false)),
             semaphore: Arc::new(Semaphore::new(settings.jobs().get())),
-            file_locks: Default::default(),
         }
     }
 
@@ -83,11 +81,11 @@ impl<'a> StepScheduler<'a> {
 
     pub async fn run(self) -> Result<()> {
         let settings = Settings::get();
-        *self.file_locks.lock().await = self
+        let file_locks = self
             .files
             .iter()
             .map(|file| (file.clone(), Arc::new(RwLock::new(()))))
-            .collect();
+            .collect::<IndexMap<PathBuf, _>>();
         // groups is a list of list of steps which are separated by exclusive steps
         // any exclusive step will be in a group by itself
         let groups = self.steps.iter().fold(vec![], |mut groups, step| {
@@ -138,10 +136,7 @@ impl<'a> StepScheduler<'a> {
                     semaphore: self.semaphore.clone(),
                     run_type,
                     failed: self.failed.clone(),
-                    file_locks: self
-                        .file_locks
-                        .lock()
-                        .await
+                    file_locks: file_locks
                         .iter()
                         .filter(|(k, _)| files.contains(k))
                         .map(|(k, v)| (k.clone(), v.clone()))
