@@ -110,16 +110,7 @@ impl<'a> StepScheduler<'a> {
                     debug!("{step}: skipping step due to no available run type");
                     continue;
                 };
-                let mut files = if let Some(glob) = &step.glob {
-                    let matches = glob::get_matches(glob, &self.files)?;
-                    if matches.is_empty() {
-                        debug!("{step}: no matches for step");
-                        continue;
-                    }
-                    matches
-                } else {
-                    self.files.clone()
-                };
+                let mut files = self.files.clone();
                 if let Some(dir) = &step.dir {
                     files.retain(|f| f.starts_with(dir));
                     if files.is_empty() {
@@ -129,6 +120,13 @@ impl<'a> StepScheduler<'a> {
                     for f in files.iter_mut() {
                         // strip the dir prefix from the file path
                         *f = f.strip_prefix(dir).unwrap_or(f).to_path_buf();
+                    }
+                }
+                if let Some(glob) = &step.glob {
+                    files = glob::get_matches(glob, &files)?;
+                    if files.is_empty() {
+                        debug!("{step}: no matches for step");
+                        continue;
                     }
                 }
                 let ctx = StepContext {
