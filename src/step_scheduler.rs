@@ -106,7 +106,7 @@ impl<'a> StepScheduler<'a> {
                 .iter()
                 .map(|s| (s.name.clone(), Arc::new(RwLock::new(()))))
                 .collect();
-            let files_in_contention = Arc::new(self.files_in_contention(&group, &self.files)?);
+            let files_in_contention = self.files_in_contention(&group, &self.files)?;
 
             // Spawn all tasks
             for step in &group {
@@ -150,6 +150,7 @@ impl<'a> StepScheduler<'a> {
                         .collect(),
                     files,
                     tctx: self.tctx.clone(),
+                    has_files_in_contention: false,
                     depend_self: Some(
                         depend_locks
                             .get(&step.name)
@@ -178,20 +179,16 @@ impl<'a> StepScheduler<'a> {
 
                 if let Some(workspaces) = step.workspaces_for_files(&ctx.files)? {
                     let step = (*step).clone();
-                    let files_in_contention = files_in_contention.clone();
+                    let files_in_contention = files_in_contention.clone(); // TODO: no clone
                     set.spawn(async move {
                         let mut rsp = StepResponse::default();
                         let mut set = JoinSet::new();
                         for workspace_indicator in workspaces {
                             let mut ctx = ctx.clone();
+                            ctx.has_files_in_contention =
+                                ctx.files.iter().any(|f| files_in_contention.contains(f));
                             ctx.tctx.with_workspace_indicator(&workspace_indicator);
-                            StepScheduler::run_step(
-                                ctx,
-                                depends.clone(),
-                                &mut set,
-                                files_in_contention.clone(),
-                            )
-                            .await?;
+                            StepScheduler::run_step(ctx, depends.clone(), &mut set).await?;
                         }
                         // TODO: abort on first error
                         while let Some(result) = set.join_next().await {
@@ -205,8 +202,8 @@ impl<'a> StepScheduler<'a> {
                     });
                 } else if step.batch {
                     let step = (*step).clone();
-                    let files_in_contention = files_in_contention.clone();
                     let jobs = settings.jobs().get();
+                    let files_in_contention = files_in_contention.clone(); // TODO: no clone
                     set.spawn(async move {
                         let mut rsp = StepResponse::default();
                         // split files into jobs count chunks
@@ -215,13 +212,9 @@ impl<'a> StepScheduler<'a> {
                         for chunk in chunks {
                             let mut ctx = ctx.clone();
                             ctx.files = chunk.to_vec();
-                            StepScheduler::run_step(
-                                ctx.clone(),
-                                depends.clone(),
-                                &mut set,
-                                files_in_contention.clone(),
-                            )
-                            .await?;
+                            ctx.has_files_in_contention =
+                                ctx.files.iter().any(|f| files_in_contention.contains(f));
+                            StepScheduler::run_step(ctx.clone(), depends.clone(), &mut set).await?;
                         }
                         while let Some(result) = set.join_next().await {
                             match result {
@@ -233,8 +226,10 @@ impl<'a> StepScheduler<'a> {
                         Ok(rsp)
                     });
                 } else {
-                    StepScheduler::run_step(ctx, depends, &mut set, files_in_contention.clone())
-                        .await?;
+                    let mut ctx = ctx.clone();
+                    ctx.has_files_in_contention =
+                        ctx.files.iter().any(|f| files_in_contention.contains(f));
+                    StepScheduler::run_step(ctx, depends, &mut set).await?;
                 }
             }
 
@@ -308,7 +303,6 @@ impl<'a> StepScheduler<'a> {
         mut ctx: StepContext,
         depends: IndexMap<String, Arc<RwLock<()>>>,
         set: &mut JoinSet<Result<StepResponse>>,
-        files_in_contention: Arc<HashSet<PathBuf>>,
     ) -> Result<()> {
         let permit = ctx.semaphore.clone().acquire_owned().await?;
         let step = ctx.step.clone();
@@ -319,10 +313,7 @@ impl<'a> StepScheduler<'a> {
             if *env::HK_CHECK_FIRST
                 && step.check_first
                 && matches!(ctx.run_type, RunType::Fix)
-                && ctx
-                    .files
-                    .iter()
-                    .any(|file| files_in_contention.contains(file))
+                && ctx.has_files_in_contention
             {
                 let mut check_ctx = ctx.clone();
                 check_ctx.run_type = match ctx.run_type {

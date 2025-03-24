@@ -315,6 +315,7 @@ pub struct StepContext {
     pub semaphore: Arc<Semaphore>,
     pub failed: Arc<Mutex<bool>>,
     pub tctx: tera::Context,
+    pub has_files_in_contention: bool,
     #[allow(unused)]
     pub depend_self: Option<OwnedRwLockWriteGuard<()>>,
 }
@@ -329,6 +330,7 @@ impl Clone for StepContext {
             semaphore: self.semaphore.clone(),
             failed: self.failed.clone(),
             tctx: self.tctx.clone(),
+            has_files_in_contention: self.has_files_in_contention,
             depend_self: None,
         }
     }
