@@ -311,7 +311,6 @@ impl<'a> StepScheduler<'a> {
         Ok(files_in_contention)
     }
 
-    #[allow(clippy::too_many_arguments)]
     async fn run_step(
         mut ctx: StepContext,
         depends: IndexMap<String, Arc<RwLock<()>>>,
