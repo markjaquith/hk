@@ -95,14 +95,10 @@ impl Step {
             ..Default::default()
         }
     }
-    pub(crate) async fn run(
-        &self,
-        ctx: StepContext,
-        mut tctx: tera::Context,
-    ) -> Result<StepResponse> {
+    pub(crate) async fn run(&self, mut ctx: StepContext) -> Result<StepResponse> {
         let mut rsp = StepResponse::default();
-        tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
-        tctx.with_files(&ctx.files);
+        ctx.tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
+        ctx.tctx.with_files(&ctx.files);
         let file_msg = |files: &[PathBuf]| {
             format!(
                 "{} file{}",
@@ -138,7 +134,7 @@ impl Step {
             if let Some(stage) = &self.stage {
                 let stage = stage
                     .iter()
-                    .map(|s| tera::render(s, &tctx).unwrap())
+                    .map(|s| tera::render(s, &ctx.tctx).unwrap())
                     .collect_vec();
                 glob::get_matches(&stage, &ctx.files)?
             } else if self.glob.is_some() {
@@ -159,7 +155,7 @@ impl Step {
         } else {
             vec![]
         };
-        let run = tera::render(&run, &tctx).unwrap();
+        let run = tera::render(&run, &ctx.tctx).unwrap();
         pr.set_message(format!(
             "{} – {} – {}",
             file_msg(&ctx.files),
@@ -316,6 +312,7 @@ pub struct StepContext {
     pub files: Vec<PathBuf>,
     pub file_locks: IndexMap<PathBuf, Arc<RwLock<()>>>,
     pub failed: Arc<Mutex<bool>>,
+    pub tctx: tera::Context,
     #[allow(unused)]
     pub depend_self: Option<OwnedRwLockWriteGuard<()>>,
 }
@@ -327,6 +324,7 @@ impl Clone for StepContext {
             files: self.files.clone(),
             file_locks: self.file_locks.clone(),
             failed: self.failed.clone(),
+            tctx: self.tctx.clone(),
             depend_self: None,
         }
     }

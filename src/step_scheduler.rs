@@ -1,8 +1,4 @@
-use crate::{
-    error::Error,
-    step::StepResponse,
-    tera::{self, Context},
-};
+use crate::{error::Error, step::StepResponse, tera::Context};
 use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
@@ -151,6 +147,7 @@ impl<'a> StepScheduler<'a> {
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect(),
                     files,
+                    tctx: self.tctx.clone(),
                     depend_self: Some(
                         depend_locks
                             .get(&step.name)
@@ -177,7 +174,6 @@ impl<'a> StepScheduler<'a> {
                     continue;
                 }
 
-                let tctx = self.tctx.clone();
                 if let Some(workspaces) = step.workspaces_for_files(&ctx.files)? {
                     let step = (*step).clone();
                     let semaphore = self.semaphore.clone();
@@ -186,12 +182,11 @@ impl<'a> StepScheduler<'a> {
                         let mut rsp = StepResponse::default();
                         let mut set = JoinSet::new();
                         for workspace_indicator in workspaces {
-                            let mut tctx = tctx.clone();
-                            tctx.with_workspace_indicator(&workspace_indicator);
+                            let mut ctx = ctx.clone();
+                            ctx.tctx.with_workspace_indicator(&workspace_indicator);
                             StepScheduler::run_step(
                                 semaphore.clone(),
-                                ctx.clone(),
-                                tctx,
+                                ctx,
                                 depends.clone(),
                                 &step,
                                 &mut set,
@@ -225,7 +220,6 @@ impl<'a> StepScheduler<'a> {
                             StepScheduler::run_step(
                                 semaphore.clone(),
                                 ctx.clone(),
-                                tctx.clone(),
                                 depends.clone(),
                                 &step,
                                 &mut set,
@@ -246,7 +240,6 @@ impl<'a> StepScheduler<'a> {
                     StepScheduler::run_step(
                         self.semaphore.clone(),
                         ctx,
-                        tctx,
                         depends,
                         step,
                         &mut set,
@@ -326,7 +319,6 @@ impl<'a> StepScheduler<'a> {
     async fn run_step(
         semaphore: Arc<Semaphore>,
         mut ctx: StepContext,
-        tctx: tera::Context,
         depends: IndexMap<String, Arc<RwLock<()>>>,
         step: &Step,
         set: &mut JoinSet<Result<StepResponse>>,
@@ -358,7 +350,6 @@ impl<'a> StepScheduler<'a> {
                 debug!("{step}: running check step first due to fix step contention");
                 match run(
                     check_ctx,
-                    tctx.clone(),
                     semaphore.clone(),
                     &step,
                     permit,
@@ -391,7 +382,6 @@ impl<'a> StepScheduler<'a> {
             let failed = ctx.failed.clone();
             match run(
                 ctx,
-                tctx,
                 semaphore,
                 &step,
                 permit,
@@ -413,7 +403,6 @@ impl<'a> StepScheduler<'a> {
 
 async fn run(
     ctx: StepContext,
-    tctx: tera::Context,
     semaphore: Arc<Semaphore>,
     step: &Step,
     permit: OwnedSemaphorePermit,
@@ -424,7 +413,7 @@ async fn run(
         trace!("{step}: skipping step due to previous failure");
         return Ok(Default::default());
     }
-    match step.run(ctx, tctx).await {
+    match step.run(ctx).await {
         Ok(rsp) => {
             trace!("{step}: successfully ran step");
             Ok(rsp)
