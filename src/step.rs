@@ -1,6 +1,6 @@
-use crate::tera;
-use crate::{Result, error::Error};
+use crate::{Result, error::Error, step_response::StepResponse};
 use crate::{glob, settings::Settings};
+use crate::{step_context::StepContext, tera};
 use ensembler::CmdLineRunner;
 use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
@@ -8,7 +8,6 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fmt, sync::Arc};
-use tokio::sync::{Mutex, OwnedRwLockWriteGuard, RwLock, Semaphore};
 
 use serde_with::serde_as;
 
@@ -304,45 +303,5 @@ impl Step {
             }
         }
         Ok(Some(workspaces))
-    }
-}
-
-pub struct StepContext {
-    pub step: Step,
-    pub run_type: RunType,
-    pub files: Vec<PathBuf>,
-    pub file_locks: IndexMap<PathBuf, Arc<RwLock<()>>>,
-    pub semaphore: Arc<Semaphore>,
-    pub failed: Arc<Mutex<bool>>,
-    pub tctx: tera::Context,
-    pub has_files_in_contention: bool,
-    #[allow(unused)]
-    pub depend_self: Option<OwnedRwLockWriteGuard<()>>,
-}
-
-impl Clone for StepContext {
-    fn clone(&self) -> Self {
-        Self {
-            step: self.step.clone(),
-            run_type: self.run_type,
-            files: self.files.clone(),
-            file_locks: self.file_locks.clone(),
-            semaphore: self.semaphore.clone(),
-            failed: self.failed.clone(),
-            tctx: self.tctx.clone(),
-            has_files_in_contention: self.has_files_in_contention,
-            depend_self: None,
-        }
-    }
-}
-
-#[derive(Debug, Default)]
-pub struct StepResponse {
-    pub files_to_add: Vec<PathBuf>,
-}
-
-impl StepResponse {
-    pub fn extend(&mut self, other: StepResponse) {
-        self.files_to_add.extend(other.files_to_add);
     }
 }
