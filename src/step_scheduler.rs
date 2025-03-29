@@ -1,4 +1,5 @@
 use crate::{
+    env,
     error::Error,
     step_depends::StepDepends,
     step_job::{StepJob, StepJobStatus},
@@ -151,7 +152,7 @@ impl<'a> StepScheduler<'a> {
                 }
                 progress::flush();
                 if !log::log_enabled!(log::Level::Debug) {
-                    if let Some(ensembler::Error::ScriptFailed(bin, args, output, _result)) =
+                    if let Some(ensembler::Error::ScriptFailed(bin, args, output, result)) =
                         e.chain().find_map(|e| e.downcast_ref::<ensembler::Error>())
                     {
                         let mut cmd = format!("{} {}", bin, args.join(" "));
@@ -159,6 +160,9 @@ impl<'a> StepScheduler<'a> {
                             cmd = cmd[6..].to_string();
                         }
                         eprintln!("{}\n{output}", style::ered(format!("Error running {cmd}")));
+                        if let Err(e) = write_output_file(result) {
+                            eprintln!("Error writing output file: {e:?}");
+                        }
                         std::process::exit(1);
                     }
                 }
@@ -260,6 +264,15 @@ impl<'a> StepScheduler<'a> {
         });
         Ok(())
     }
+}
+
+fn write_output_file(result: &ensembler::CmdResult) -> Result<()> {
+    let path = env::HK_STATE_DIR.join("output.log");
+    std::fs::create_dir_all(path.parent().unwrap())?;
+    let output = console::strip_ansi_codes(&result.combined_output);
+    std::fs::write(&path, output.to_string())?;
+    eprintln!("\nSee {} for full command output", path.display());
+    Ok(())
 }
 
 async fn run(ctx: &StepContext, mut job: StepJob) -> Result<StepResponse> {
