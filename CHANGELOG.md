@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.6.2](https://github.com/jdx/hk/compare/v0.6.1..0.6.2) - 2025-03-24
+## [0.6.3](https://github.com/jdx/hk/compare/v0.6.2..0.6.3) - 2025-03-29
+
+### 🚀 Features
+
+- clx v2 by [@jdx](https://github.com/jdx) in [#45](https://github.com/jdx/hk/pull/45)
+
+## [0.6.2](https://github.com/jdx/hk/compare/v0.6.1..v0.6.2) - 2025-03-24
 
 ### 🚀 Features
 

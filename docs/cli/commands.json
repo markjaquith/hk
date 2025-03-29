@@ -739,7 +739,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.6.2",
+  "version": "0.6.3",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
