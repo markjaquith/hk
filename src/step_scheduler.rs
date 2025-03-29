@@ -153,7 +153,7 @@ impl<'a> StepScheduler<'a> {
                     .collect_vec()
             };
 
-            let total_progress = if progress::output() == ProgressOutput::Text && total_jobs > jobs
+            let total_progress = if progress::output() == ProgressOutput::Text || total_jobs <= jobs
             {
                 None
             } else {

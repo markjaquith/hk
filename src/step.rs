@@ -231,7 +231,7 @@ impl Step {
                     .to_string(),
             ])
             .body_text(Some(vec![
-                "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
+                "{% if ensembler_stdout %}  {{name}} – {{ensembler_stdout}}{% elif message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
             ]))
             .on_done(ProgressJobDoneBehavior::Hide)
             .build();
