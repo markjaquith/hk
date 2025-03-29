@@ -9,7 +9,7 @@ use crate::{
     tera::Context,
     ui::style,
 };
-use clx::progress;
+use clx::progress::{self, ProgressJob, ProgressJobBuilder, ProgressOutput};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use std::{
@@ -96,7 +96,7 @@ impl<'a> StepScheduler<'a> {
             .collect::<IndexMap<PathBuf, _>>();
         let queue = StepQueueBuilder::new(self.steps, self.files, self.run_type).build()?;
 
-        for group in queue.groups {
+        for (i, group) in queue.groups.iter().enumerate() {
             let mut set = JoinSet::new();
             let step_contexts: HashMap<String, Arc<StepContext>> = group
                 .iter()
@@ -114,7 +114,7 @@ impl<'a> StepScheduler<'a> {
                             failed: self.failed.clone(),
                             file_locks: file_locks.clone(),
                             tctx: self.tctx.clone(),
-                            depends: Arc::new(StepDepends::new(&group)),
+                            depends: Arc::new(StepDepends::new(group)),
                             progress: step.build_step_progress(),
                             files_added: Arc::new(std::sync::Mutex::new(0)),
                             jobs_total,
@@ -123,10 +123,36 @@ impl<'a> StepScheduler<'a> {
                     )
                 })
                 .collect();
+
+            let mut future_group_progress_jobs = if progress::output() == ProgressOutput::Text {
+                vec![]
+            } else {
+                queue
+                    .groups
+                    .iter()
+                    .skip(i + 1)
+                    .map(|group| {
+                        ProgressJobBuilder::new()
+                            .status(progress::ProgressStatus::RunningCustom(
+                                style::eyellow("❯").dim().to_string(),
+                            ))
+                            .prop(
+                                "message",
+                                &group
+                                    .iter()
+                                    .map(|j| j.step.name.clone())
+                                    .unique()
+                                    .join(", "),
+                            )
+                            .start()
+                    })
+                    .collect_vec()
+            };
+
             for job in group {
                 StepScheduler::run_step(
                     step_contexts.get(&job.step.name).unwrap().clone(),
-                    job,
+                    job.clone(),
                     &mut set,
                 )
                 .await?;
@@ -134,8 +160,13 @@ impl<'a> StepScheduler<'a> {
 
             // Wait for tasks and abort on first error
             let mut files_to_stage = IndexSet::new();
-            let abort = |set: &mut JoinSet<Result<StepResponse>>, e: eyre::Error| {
+            let abort = |set: &mut JoinSet<Result<StepResponse>>,
+                         future_group_progress_jobs: &mut Vec<Arc<ProgressJob>>,
+                         e: eyre::Error| {
                 set.abort_all();
+                for job in future_group_progress_jobs.iter_mut() {
+                    job.remove();
+                }
                 for p in step_contexts.values().map(|ctx| &ctx.progress) {
                     if p.is_running() {
                         p.set_status(clx::progress::ProgressStatus::DoneCustom(
@@ -175,13 +206,16 @@ impl<'a> StepScheduler<'a> {
                     }
                     Ok(Err(e)) => {
                         // Task failed to execute
-                        return abort(&mut set, e);
+                        return abort(&mut set, &mut future_group_progress_jobs, e);
                     }
                     Err(e) => {
                         // JoinError occurred
-                        return abort(&mut set, e.into());
+                        return abort(&mut set, &mut future_group_progress_jobs, e.into());
                     }
                 }
+            }
+            for job in future_group_progress_jobs.iter_mut() {
+                job.remove();
             }
 
             if !files_to_stage.is_empty() {

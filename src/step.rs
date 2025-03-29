@@ -227,7 +227,8 @@ impl Step {
             .prop("files", &job.files.iter().map(|f| f.display()).join(" "))
             .body(vec![
                 // TODO: truncate properly
-                "{{spinner()}} {{message}}".to_string(),
+                "{{spinner()}} {% if ensembler_cmd %}{{ensembler_cmd}}\n{{ensembler_stdout}}{% else %}{{message}}{% endif %}"
+                    .to_string(),
             ])
             .body_text(Some(vec![
                 "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),

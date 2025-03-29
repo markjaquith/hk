@@ -48,9 +48,13 @@ impl StepQueueBuilder {
                     groups.push(vec![]);
                 }
                 groups.last_mut().unwrap().push(step);
+                if step.exclusive {
+                    groups.push(vec![]);
+                }
                 groups
             })
             .into_iter()
+            .filter(|group| !group.is_empty())
             .map(|group| self.build_queue_for_group(&group))
             .collect::<Result<_>>()?;
 

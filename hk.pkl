@@ -37,10 +37,14 @@ linters = new {
 hooks = new {
     ["pre-commit"] {
         ["prelint"] {
-            run = "mise run prelint"
+            run = "mise run prelint && sleep 1"
             exclusive = true
         }
         ["fix"] = new Fix {}
+        ["postlint"] {
+            run = "echo postlint && sleep 1"
+            exclusive = true
+        }
     }
     ["pre-push"] {
         ["check"] = new Check {}
