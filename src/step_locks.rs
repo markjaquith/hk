@@ -7,6 +7,7 @@ use tokio::sync::{OwnedRwLockReadGuard, OwnedRwLockWriteGuard, OwnedSemaphorePer
 use crate::step_context::StepContext;
 
 #[allow(unused)]
+#[derive(Debug)]
 pub struct StepLocks {
     read_flocks: Vec<OwnedRwLockReadGuard<()>>,
     write_flocks: Vec<OwnedRwLockWriteGuard<()>>,

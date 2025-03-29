@@ -279,9 +279,9 @@ dependencies = [
 
 [[package]]
 name = "clx"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7497859a4efddb29925c1dd83ff3a3726cbeb18a4d29f57c5db8360cbf36e6f1"
+checksum = "e639dfdc91a25cee085bdbd1afcbdf2404d296f7cfe7c5d273f2e4729819c2e2"
 dependencies = [
  "console",
  "indicatif",

@@ -11,6 +11,7 @@ use crate::step::{RunType, Step};
 ///
 /// * Multiple workspace_indicators to run step in different workspaces
 /// * Batch step that needs to run multiple batches of different files
+#[derive(Debug)]
 pub struct StepJob {
     pub step: Arc<Step>,
     pub files: Vec<PathBuf>,
@@ -22,7 +23,7 @@ pub struct StepJob {
     pub status: StepJobStatus,
 }
 
-#[derive(strum::EnumIs, strum::Display)]
+#[derive(Debug, strum::EnumIs, strum::Display)]
 pub enum StepJobStatus {
     Pending,
     // Ready(StepLocks),
@@ -30,6 +31,12 @@ pub enum StepJobStatus {
     // Finished,
     // Errored,
 }
+
+// impl StepJobStatus {
+//     pub fn is_complete(&self) -> bool {
+//         matches!(self, StepJobStatus::Finished | StepJobStatus::Errored)
+//     }
+// }
 
 impl StepJob {
     pub fn new(step: Arc<Step>, files: Vec<PathBuf>, run_type: RunType) -> Self {

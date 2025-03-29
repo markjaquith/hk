@@ -89,12 +89,16 @@ impl<'a> StepScheduler<'a> {
     }
 
     pub async fn run(self) -> Result<()> {
+        let settings = Settings::get();
+        let jobs = settings.jobs().get();
         let file_locks = self
             .files
             .iter()
             .map(|file| (file.clone(), Arc::new(RwLock::new(()))))
             .collect::<IndexMap<PathBuf, _>>();
         let queue = StepQueueBuilder::new(self.steps, self.files, self.run_type).build()?;
+        let total_jobs = queue.groups.iter().flatten().count();
+        let mut remaining_jobs = total_jobs;
 
         for (i, group) in queue.groups.iter().enumerate() {
             let mut set = JoinSet::new();
@@ -149,6 +153,19 @@ impl<'a> StepScheduler<'a> {
                     .collect_vec()
             };
 
+            let total_progress = if progress::output() == ProgressOutput::Text && total_jobs > jobs
+            {
+                None
+            } else {
+                Some(
+                    ProgressJobBuilder::new()
+                        .progress_total(total_jobs)
+                        .progress_current(total_jobs - remaining_jobs)
+                        .body(vec!["{{progress_bar()}}".to_string()])
+                        .start(),
+                )
+            };
+
             for job in group {
                 StepScheduler::run_step(
                     step_contexts.get(&job.step.name).unwrap().clone(),
@@ -200,6 +217,10 @@ impl<'a> StepScheduler<'a> {
                 Err(e)
             };
             while let Some(result) = set.join_next().await {
+                remaining_jobs -= 1;
+                if let Some(total_progress) = &total_progress {
+                    total_progress.progress_current(total_jobs - remaining_jobs);
+                }
                 match result {
                     Ok(Ok(ctx)) => {
                         files_to_stage.extend(ctx.files_to_add);
@@ -216,6 +237,9 @@ impl<'a> StepScheduler<'a> {
             }
             for job in future_group_progress_jobs.iter_mut() {
                 job.remove();
+            }
+            if let Some(total_progress) = &total_progress {
+                total_progress.remove();
             }
 
             if !files_to_stage.is_empty() {
