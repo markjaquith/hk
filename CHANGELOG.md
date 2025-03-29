@@ -1,6 +1,18 @@
 # Changelog
 
-## [0.6.3](https://github.com/jdx/hk/compare/v0.6.2..0.6.3) - 2025-03-29
+## [0.6.4](https://github.com/jdx/hk/compare/v0.6.3..0.6.4) - 2025-03-29
+
+### 🐛 Bug Fixes
+
+- clean up output when empty by [@jdx](https://github.com/jdx) in [0e01b92](https://github.com/jdx/hk/commit/0e01b92aa668f391a0b3256e0d7635c4b2b6e26e)
+- more output tweaks by [@jdx](https://github.com/jdx) in [6bfaae8](https://github.com/jdx/hk/commit/6bfaae830dc59e93b392f3d6141f9f5dc277601b)
+- show output file on error by [@jdx](https://github.com/jdx) in [c413a03](https://github.com/jdx/hk/commit/c413a03d1e9b5c45c2fd0d7f6c5e47a2ad847bb6)
+
+### 🔍 Other Changes
+
+- wip by [@jdx](https://github.com/jdx) in [f2cd324](https://github.com/jdx/hk/commit/f2cd32465e473f13f1c54e567efd4f3b6a730fed)
+
+## [0.6.3](https://github.com/jdx/hk/compare/v0.6.2..v0.6.3) - 2025-03-29
 
 ### 🚀 Features
 

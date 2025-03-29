@@ -1,4 +1,4 @@
-// amends "package://github.com/jdx/hk/releases/download/v0.6.3/hk@0.6.3#/Config.pkl"
+// amends "package://github.com/jdx/hk/releases/download/v0.6.4/hk@0.6.4#/Config.pkl"
 amends "pkl/Config.pkl"
 import "pkl/builtins/actionlint.pkl"
 import "pkl/builtins/cargo_clippy.pkl"
