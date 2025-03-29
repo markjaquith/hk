@@ -116,7 +116,7 @@ impl<'a> StepScheduler<'a> {
                             progress: ProgressJobBuilder::new()
                                 .body(vec!["{{spinner()}} {{name}} {{message}}".to_string()])
                                 .body_text(Some(vec![
-                                    "{{spinner()}} {{name}} – {{message}}".to_string(),
+                                    "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
                                 ]))
                                 .prop("name", &step.name)
                                 .start(),

@@ -225,10 +225,10 @@ impl Step {
             .prop("files", &job.files.iter().map(|f| f.display()).join(" "))
             .body(vec![
                 // TODO: truncate properly
-                "{{spinner()}} {{files | truncate(length=30)}} {{message}}".to_string(),
+                "{{spinner()}} {{message}}".to_string(),
             ])
             .body_text(Some(vec![
-                "{{spinner()}} {{name}} – {{message}}".to_string(),
+                "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
             ]))
             .on_done(ProgressJobDoneBehavior::Hide)
             .build();
