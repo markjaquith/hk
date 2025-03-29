@@ -1,4 +1,4 @@
-use crate::{step_depends::StepDepends, tera};
+use crate::{step_depends::StepDepends, tera, ui::style};
 use clx::progress::{ProgressJob, ProgressStatus};
 use indexmap::IndexMap;
 use std::path::PathBuf;
@@ -49,7 +49,7 @@ impl StepContext {
         self.progress.set_status(if jobs_remaining == 0 {
             ProgressStatus::Done
         } else {
-            ProgressStatus::Running
+            ProgressStatus::RunningCustom(style::edim("❯").to_string())
         });
     }
 }

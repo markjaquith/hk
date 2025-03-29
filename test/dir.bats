@@ -25,7 +25,7 @@ EOF
     git add ui/subdir/test.html ui/test.ts root.ts
     run hk check -v
     assert_failure
-    assert_output --partial '[warn] subdir/test.html
-[warn] test.ts
-[warn] Code style issues found in 2 files. Run Prettier with --write to fix.'
+    assert_output --partial '[warn] subdir/test.html'
+    assert_output --partial '[warn] test.ts'
+    assert_output --partial '[warn] Code style issues found in 2 files. Run Prettier with --write to fix.'
 }

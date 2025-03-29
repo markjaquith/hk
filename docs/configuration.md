@@ -413,3 +413,10 @@ Type: `path`
 Default: `~/.local/state/hk`
 
 The state directory to use.
+
+### `HK_HIDE_WHEN_DONE`
+
+Type: `bool`
+Default: `false`
+
+If set to `true`, hk will hide the progress output when the hook finishes if there are no errors.

@@ -6,8 +6,9 @@ use crate::{
     step_queue::StepQueueBuilder,
     step_response::StepResponse,
     tera::Context,
+    ui::style,
 };
-use clx::progress::ProgressJobBuilder;
+use clx::progress;
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use std::{
@@ -113,13 +114,7 @@ impl<'a> StepScheduler<'a> {
                             file_locks: file_locks.clone(),
                             tctx: self.tctx.clone(),
                             depends: Arc::new(StepDepends::new(&group)),
-                            progress: ProgressJobBuilder::new()
-                                .body(vec!["{{spinner()}} {{name}} {{message}}".to_string()])
-                                .body_text(Some(vec![
-                                    "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
-                                ]))
-                                .prop("name", &step.name)
-                                .start(),
+                            progress: step.build_step_progress(),
                             files_added: Arc::new(std::sync::Mutex::new(0)),
                             jobs_total,
                             jobs_remaining: Arc::new(std::sync::Mutex::new(jobs_total)),
@@ -138,6 +133,37 @@ impl<'a> StepScheduler<'a> {
 
             // Wait for tasks and abort on first error
             let mut files_to_stage = IndexSet::new();
+            let abort = |set: &mut JoinSet<Result<StepResponse>>, e: eyre::Error| {
+                set.abort_all();
+                for p in step_contexts.values().map(|ctx| &ctx.progress) {
+                    if p.is_running() {
+                        p.set_status(clx::progress::ProgressStatus::DoneCustom(
+                            style::eyellow("▲").to_string(),
+                        ));
+                    }
+                    for child in p.children() {
+                        if child.is_running() {
+                            child.set_status(clx::progress::ProgressStatus::DoneCustom(
+                                style::eyellow("▲").to_string(),
+                            ));
+                        }
+                    }
+                }
+                progress::flush();
+                if !log::log_enabled!(log::Level::Debug) {
+                    if let Some(ensembler::Error::ScriptFailed(bin, args, output, _result)) =
+                        e.chain().find_map(|e| e.downcast_ref::<ensembler::Error>())
+                    {
+                        let mut cmd = format!("{} {}", bin, args.join(" "));
+                        if cmd.starts_with("sh -c ") {
+                            cmd = cmd[6..].to_string();
+                        }
+                        eprintln!("{}\n{output}", style::ered(format!("Error running {cmd}")));
+                        std::process::exit(1);
+                    }
+                }
+                Err(e)
+            };
             while let Some(result) = set.join_next().await {
                 match result {
                     Ok(Ok(ctx)) => {
@@ -145,13 +171,11 @@ impl<'a> StepScheduler<'a> {
                     }
                     Ok(Err(e)) => {
                         // Task failed to execute
-                        set.abort_all();
-                        return Err(e);
+                        return abort(&mut set, e);
                     }
                     Err(e) => {
                         // JoinError occurred
-                        set.abort_all();
-                        return Err(e.into());
+                        return abort(&mut set, e.into());
                     }
                 }
             }

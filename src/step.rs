@@ -1,3 +1,5 @@
+use crate::env;
+use crate::ui::style;
 use crate::{Result, error::Error, step_job::StepJob, step_response::StepResponse};
 use crate::{glob, settings::Settings};
 use crate::{step_context::StepContext, tera};
@@ -96,7 +98,6 @@ impl Step {
         }
     }
     pub(crate) async fn run(&self, ctx: &StepContext, job: &StepJob) -> Result<StepResponse> {
-        ctx.progress.set_status(ProgressStatus::Running);
         let mut rsp = StepResponse::default();
         let mut tctx = job.tctx(&ctx.tctx);
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
@@ -108,7 +109,7 @@ impl Step {
                 if files.len() == 1 { "" } else { "s" }
             )
         };
-        let pr = self.build_pj(ctx, job);
+        let pr = self.build_job_progress(ctx, job);
         let (Some(mut run), extra) = (match job.run_type {
             RunType::Check(CheckType::Check) => {
                 (self.check.clone(), self.check_extra_args.as_ref())
@@ -176,7 +177,8 @@ impl Step {
         let mut cmd = CmdLineRunner::new("sh")
             .arg("-c")
             .arg(&run)
-            .with_pr(pr.clone());
+            .with_pr(pr.clone())
+            .show_stderr_on_error(false);
         if let Some(dir) = &self.dir {
             cmd = cmd.current_dir(dir);
         }
@@ -186,7 +188,7 @@ impl Step {
         match cmd.execute().await {
             Ok(_) => {}
             Err(err) => {
-                if let ensembler::Error::ScriptFailed(_, _, result) = &err {
+                if let ensembler::Error::ScriptFailed(_bin, _args, _output, result) = &err {
                     if let RunType::Check(CheckType::ListFiles) = job.run_type {
                         let stdout = result.stdout.clone();
                         return Err(Error::CheckListFailed {
@@ -219,7 +221,7 @@ impl Step {
         Ok(rsp)
     }
 
-    fn build_pj(&self, ctx: &StepContext, job: &StepJob) -> Arc<ProgressJob> {
+    fn build_job_progress(&self, ctx: &StepContext, job: &StepJob) -> Arc<ProgressJob> {
         let job = ProgressJobBuilder::new()
             .prop("name", &self.name)
             .prop("files", &job.files.iter().map(|f| f.display()).join(" "))
@@ -233,6 +235,24 @@ impl Step {
             .on_done(ProgressJobDoneBehavior::Hide)
             .build();
         ctx.progress.add(job)
+    }
+
+    pub(crate) fn build_step_progress(&self) -> Arc<ProgressJob> {
+        ProgressJobBuilder::new()
+            .body(vec![
+                "{{spinner()}} {{name}} {% if message %}– {{message}}{% endif %}".to_string(),
+            ])
+            .body_text(Some(vec![
+                "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
+            ]))
+            .prop("name", &self.name)
+            .status(ProgressStatus::RunningCustom(style::edim("❯").to_string()))
+            .on_done(if *env::HK_HIDE_WHEN_DONE {
+                ProgressJobDoneBehavior::Hide
+            } else {
+                ProgressJobDoneBehavior::Keep
+            })
+            .start()
     }
 
     pub fn available_run_type(&self, run_type: RunType) -> Option<RunType> {
