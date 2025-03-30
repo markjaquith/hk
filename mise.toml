@@ -20,6 +20,7 @@ swiftlint = "latest"
 yq = "latest"
 "cargo:cargo-release" = "latest"
 bun = "latest"
+ripgrep = "latest"
 
 [tasks.init]
 run = '''

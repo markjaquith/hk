@@ -57,6 +57,10 @@ backend = "aqua:apple/pkl"
 [tools.pkl.checksums]
 pkl-macos-aarch64 = "sha256:e5d3ceaa776cbd43423c564e7ee1997a39ac219608ed86250c5be6298674fa9a"
 
+[tools.ripgrep]
+version = "14.1.1"
+backend = "aqua:BurntSushi/ripgrep"
+
 [tools.shellcheck]
 version = "0.10.0"
 backend = "ubi:koalaman/shellcheck"
