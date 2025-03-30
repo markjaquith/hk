@@ -23,7 +23,7 @@ linters = new {
     ["dbg"] {
         // ensure no dbg! macros are used
         glob = List("**/*.rs")
-        check = "sleep 10; ! rg -e 'dbg!' {{files}}"
+        check = "sleep 1.5; ! rg -e 'dbg!' {{files}}"
     }
     ["eslint"] = new eslint.Eslint {
         dir = "docs"
