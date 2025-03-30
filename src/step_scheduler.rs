@@ -204,8 +204,8 @@ impl<'a> StepScheduler<'a> {
                         e.chain().find_map(|e| e.downcast_ref::<ensembler::Error>())
                     {
                         let mut cmd = format!("{} {}", bin, args.join(" "));
-                        if cmd.starts_with("sh -c ") {
-                            cmd = cmd[6..].to_string();
+                        if cmd.starts_with("sh -o errexit -o pipefail -c ") {
+                            cmd = cmd[32..].to_string();
                         }
                         eprintln!("{}\n{output}", style::ered(format!("Error running {cmd}")));
                         if let Err(e) = write_output_file(result) {

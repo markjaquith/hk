@@ -175,6 +175,10 @@ impl Step {
             }
         }
         let mut cmd = CmdLineRunner::new("sh")
+            .arg("-o")
+            .arg("errexit")
+            .arg("-o")
+            .arg("pipefail")
             .arg("-c")
             .arg(&run)
             .with_pr(pr.clone())
