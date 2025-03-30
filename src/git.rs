@@ -1,4 +1,7 @@
-use std::{collections::BTreeSet, path::PathBuf};
+use std::{
+    collections::BTreeSet,
+    path::{Path, PathBuf},
+};
 
 use crate::Result;
 use eyre::{WrapErr, eyre};
@@ -15,6 +18,11 @@ pub struct Git {
 
 impl Git {
     pub fn new() -> Result<Self> {
+        let cwd = std::env::current_dir()?;
+        let root = xx::file::find_up(&cwd, &[".git"])
+            .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+            .ok_or(eyre!("failed to find git repository"))?;
+        std::env::set_current_dir(root)?;
         let repo = Repository::open(".").wrap_err("failed to open repository")?;
         Ok(Self {
             root: repo.workdir().unwrap().to_path_buf(),
