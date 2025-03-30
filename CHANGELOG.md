@@ -1,6 +1,35 @@
 # Changelog
 
-## [0.6.4](https://github.com/jdx/hk/compare/v0.6.3..0.6.4) - 2025-03-29
+## [0.6.5](https://github.com/jdx/hk/compare/v0.6.4..0.6.5) - 2025-03-30
+
+### 🚀 Features
+
+- show pending groups by [@jdx](https://github.com/jdx) in [497fa7e](https://github.com/jdx/hk/commit/497fa7e3af17805e645533a44b51786ea35df6ab)
+- progress bar by [@jdx](https://github.com/jdx) in [4e91410](https://github.com/jdx/hk/commit/4e914109f11cdaf8a7f4bf69c146dc2b13afcba6)
+- show progress of git actions by [@jdx](https://github.com/jdx) in [01f66dc](https://github.com/jdx/hk/commit/01f66dcf47c2e375d665dc312a589d11df783ece)
+- show progress of git stashing by [@jdx](https://github.com/jdx) in [56f1353](https://github.com/jdx/hk/commit/56f135303bb14848397065b2980feaa141b4e72c)
+
+### 🐛 Bug Fixes
+
+- tests by [@jdx](https://github.com/jdx) in [3f97453](https://github.com/jdx/hk/commit/3f97453a4c6e9b8c2cbc8c912803295973293e7f)
+- truncation by [@jdx](https://github.com/jdx) in [57c49c2](https://github.com/jdx/hk/commit/57c49c209a6e3f355de2c8b4e400f5fc1917cab6)
+- use repo root as cwd by [@jdx](https://github.com/jdx) in [0e7b1a7](https://github.com/jdx/hk/commit/0e7b1a721d14d57bbd9255f6e74f1fef0c9257d0)
+- correct generated hk.pkl by [@jdx](https://github.com/jdx) in [1dd67e4](https://github.com/jdx/hk/commit/1dd67e4f18a771b0d4250571960cfc06189685e4)
+- set errexit by [@jdx](https://github.com/jdx) in [3c45fb7](https://github.com/jdx/hk/commit/3c45fb77e0bf42b3e25a402fe4504042c1cc669b)
+- set errexit by [@jdx](https://github.com/jdx) in [b7635c3](https://github.com/jdx/hk/commit/b7635c314ceda4a1bb3fe1d66cf5121a2d8864f1)
+- set errexit by [@jdx](https://github.com/jdx) in [eaf7dd0](https://github.com/jdx/hk/commit/eaf7dd0d2dc6cf83f21b8efe528b8fa5563667e7)
+- remove test code from actionlint by [@jdx](https://github.com/jdx) in [db07406](https://github.com/jdx/hk/commit/db074062e47d0446605256c73b7d9ceeed689931)
+
+### 🧪 Testing
+
+- tweak by [@jdx](https://github.com/jdx) in [035adca](https://github.com/jdx/hk/commit/035adca93646c2e5a0c4fd09f627cbf05debb6f1)
+
+### 🔍 Other Changes
+
+- bump deps by [@jdx](https://github.com/jdx) in [625df04](https://github.com/jdx/hk/commit/625df04ca2b2c7b95555200ba4ff7384640a3523)
+- bump deps by [@jdx](https://github.com/jdx) in [4d257f9](https://github.com/jdx/hk/commit/4d257f96e7a8d8c4f87be0591e505db646d555e7)
+
+## [0.6.4](https://github.com/jdx/hk/compare/v0.6.3..v0.6.4) - 2025-03-29
 
 ### 🐛 Bug Fixes
 

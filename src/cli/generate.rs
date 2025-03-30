@@ -20,8 +20,8 @@ impl Generate {
     pub async fn run(&self) -> Result<()> {
         let hk_file = PathBuf::from("hk.pkl");
         let hook_content = r#"
-amends "package://github.com/jdx/hk/releases/download/v0.6.4/hk@0.6.4#/Config.pkl"
-// import "package://github.com/jdx/hk/releases/download/v0.6.4/hk@0.6.4#/builtins/prettier.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.6.5/hk@0.6.5#/Config.pkl"
+// import "package://github.com/jdx/hk/releases/download/v0.6.5/hk@0.6.5#/builtins/prettier.pkl"
 
 // example hk config is defined below
 //
