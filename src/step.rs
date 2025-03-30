@@ -227,7 +227,7 @@ impl Step {
             .prop("files", &job.files.iter().map(|f| f.display()).join(" "))
             .body(vec![
                 // TODO: truncate properly
-                "{{spinner()}} {% if ensembler_cmd %}{{ensembler_cmd}}\n{{ensembler_stdout}}{% else %}{{message}}{% endif %}"
+                "{{spinner()}} {% if ensembler_cmd %}{{ensembler_cmd | flex}}\n{{ensembler_stdout | flex}}{% else %}{{message | flex}}{% endif %}"
                     .to_string(),
             ])
             .body_text(Some(vec![
@@ -241,7 +241,8 @@ impl Step {
     pub(crate) fn build_step_progress(&self) -> Arc<ProgressJob> {
         ProgressJobBuilder::new()
             .body(vec![
-                "{{spinner()}} {{name}} {% if message %}– {{message}}{% endif %}".to_string(),
+                "{{spinner()}} {{name}} {% if message %}– {{message | flex}}{% endif %}"
+                    .to_string(),
             ])
             .body_text(Some(vec![
                 "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
