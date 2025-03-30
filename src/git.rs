@@ -1,10 +1,16 @@
-use std::{collections::BTreeSet, path::PathBuf, sync::Arc};
+use std::{
+    cell::OnceCell,
+    collections::BTreeSet,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use crate::Result;
 use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use eyre::{WrapErr, eyre};
 use git2::{Oid, Repository, StatusOptions, StatusShow, Tree};
 use itertools::{Either, Itertools};
+use xx::file::display_path;
 
 use crate::env;
 
@@ -12,6 +18,7 @@ pub struct Git {
     repo: Repository,
     stash: Option<Either<String, Oid>>,
     root: PathBuf,
+    patch_file: OnceCell<PathBuf>,
 }
 
 impl Git {
@@ -22,10 +29,34 @@ impl Git {
             .ok_or(eyre!("failed to find git repository"))?;
         std::env::set_current_dir(root)?;
         let repo = Repository::open(".").wrap_err("failed to open repository")?;
+        let root = repo.workdir().unwrap().to_path_buf();
         Ok(Self {
-            root: repo.workdir().unwrap().to_path_buf(),
+            root: root.clone(),
             repo,
             stash: None,
+            patch_file: OnceCell::new(),
+        })
+    }
+
+    pub fn patch_file(&self) -> &Path {
+        self.patch_file.get_or_init(|| {
+            let name = self
+                .root
+                .parent()
+                .unwrap()
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap();
+            let rand = getrandom::u32()
+                .unwrap_or_default()
+                .to_string()
+                .chars()
+                .take(8)
+                .collect::<String>();
+            env::HK_STATE_DIR
+                .join("patches")
+                .join(format!("{name}-{rand}.patch"))
         })
     }
 
@@ -141,6 +172,7 @@ impl Git {
         // let intent_to_add = self.intent_to_add_files()?;
         // see https://github.com/pre-commit/pre-commit/blob/main/pre_commit/staged_files_only.py
         if self.unstaged_files()?.is_empty() {
+            job.prop("message", "stash – No unstaged changes to stash");
             job.set_status(ProgressStatus::Done);
             return Ok(());
         }
@@ -151,13 +183,19 @@ impl Git {
         //     }
         // }
         self.stash = if *env::HK_STASH_USE_GIT {
-            job.prop("message", "stash – Creating git diff patch");
-            job.update();
-            self.build_diff()?.map(Either::Left)
-        } else {
-            job.prop("message", "stash – Creating internal stash");
+            job.prop("message", "stash – Running git stash");
             job.update();
             self.push_stash()?.map(Either::Right)
+        } else {
+            job.prop(
+                "message",
+                &format!(
+                    "stash – Creating git diff patch – {}",
+                    display_path(self.patch_file())
+                ),
+            );
+            job.update();
+            self.build_diff()?.map(Either::Left)
         };
         if self.stash.is_none() {
             job.prop("message", "stash – No unstaged files to stash");
@@ -209,7 +247,12 @@ impl Git {
         if idx.write().is_err() || diff_bytes.is_empty() {
             Ok(None)
         } else {
-            Ok(Some(String::from_utf8_lossy(&diff_bytes).to_string()))
+            let patch = String::from_utf8_lossy(&diff_bytes).to_string();
+            let patch_file = self.patch_file();
+            if let Err(err) = xx::file::write(patch_file, &patch) {
+                warn!("failed to write patch file: {:?}", err);
+            }
+            Ok(Some(patch))
         }
     }
 
@@ -237,13 +280,21 @@ impl Git {
         match diff {
             Either::Left(diff) => {
                 job = ProgressJobBuilder::new()
-                    .prop("message", "stash – Applying git diff patch")
+                    .prop(
+                        "message",
+                        &format!(
+                            "stash – Applying git diff patch – {}",
+                            display_path(self.patch_file())
+                        ),
+                    )
                     .start();
                 let diff = git2::Diff::from_buffer(diff.as_bytes())?;
                 let mut apply_opts = git2::ApplyOptions::new();
                 self.repo
                     .apply(&diff, git2::ApplyLocation::WorkDir, Some(&mut apply_opts))
-                    .wrap_err("failed to apply diff")?;
+                    .wrap_err_with(|| {
+                        format!("failed to apply diff {}", display_path(self.patch_file()))
+                    })?;
             }
             Either::Right(_oid) => {
                 job = ProgressJobBuilder::new()
