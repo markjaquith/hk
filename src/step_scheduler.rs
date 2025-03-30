@@ -205,7 +205,7 @@ impl<'a> StepScheduler<'a> {
                     {
                         let mut cmd = format!("{} {}", bin, args.join(" "));
                         if cmd.starts_with("sh -o errexit -c ") {
-                            cmd = cmd[24..].to_string();
+                            cmd = cmd[17..].to_string();
                         }
                         eprintln!("{}\n{output}", style::ered(format!("Error running {cmd}")));
                         if let Err(e) = write_output_file(result) {
