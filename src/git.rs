@@ -1,8 +1,9 @@
-use std::{collections::BTreeSet, path::PathBuf};
+use std::{collections::BTreeSet, path::PathBuf, sync::Arc};
 
 use crate::Result;
+use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use eyre::{WrapErr, eyre};
-use git2::{Commit, Oid, Repository, StatusOptions, StatusShow, Tree};
+use git2::{Oid, Repository, StatusOptions, StatusShow, Tree};
 use itertools::{Either, Itertools};
 
 use crate::env;
@@ -54,21 +55,21 @@ impl Git {
         Ok(head)
     }
 
-    fn head_commit(&self) -> Result<Commit<'_>> {
-        let head = self.repo.head().wrap_err("failed to get head")?;
-        let commit = head
-            .peel_to_commit()
-            .wrap_err("failed to peel head to commit")?;
-        Ok(commit)
-    }
+    // fn head_commit(&self) -> Result<Commit<'_>> {
+    //     let head = self.repo.head().wrap_err("failed to get head")?;
+    //     let commit = head
+    //         .peel_to_commit()
+    //         .wrap_err("failed to peel head to commit")?;
+    //     Ok(commit)
+    // }
 
-    fn head_commit_message(&self) -> Result<String> {
-        let commit = self.head_commit()?;
-        let message = commit
-            .message()
-            .ok_or(eyre!("failed to get commit message"))?;
-        Ok(message.to_string())
-    }
+    // fn head_commit_message(&self) -> Result<String> {
+    //     let commit = self.head_commit()?;
+    //     let message = commit
+    //         .message()
+    //         .ok_or(eyre!("failed to get commit message"))?;
+    //     Ok(message.to_string())
+    // }
 
     pub fn all_files(&self) -> Result<Vec<PathBuf>> {
         let head = self.head_tree()?;
@@ -132,29 +133,40 @@ impl Git {
         if (!force && !*env::HK_STASH) || self.repo.head().is_err() {
             return Ok(());
         }
+        let job = ProgressJobBuilder::new()
+            .prop("message", "stash – Fetching unstaged files")
+            .start();
 
         // TODO: if any intent_to_add files exist, run `git rm --cached -- <file>...` then `git add --intent-to-add -- <file>...` when unstashing
         // let intent_to_add = self.intent_to_add_files()?;
         // see https://github.com/pre-commit/pre-commit/blob/main/pre_commit/staged_files_only.py
         if self.unstaged_files()?.is_empty() {
+            job.set_status(ProgressStatus::Done);
             return Ok(());
         }
 
-        if let Ok(msg) = self.head_commit_message() {
-            if msg.contains("Merge") {
-                return Ok(());
-            }
-        }
-        self.stash = if *env::HK_STASH_NO_GIT {
+        // if let Ok(msg) = self.head_commit_message() {
+        //     if msg.contains("Merge") {
+        //         return Ok(());
+        //     }
+        // }
+        self.stash = if *env::HK_STASH_USE_GIT {
+            job.prop("message", "stash – Creating git diff patch");
+            job.update();
             self.build_diff()?.map(Either::Left)
         } else {
+            job.prop("message", "stash – Creating internal stash");
+            job.update();
             self.push_stash()?.map(Either::Right)
         };
         if self.stash.is_none() {
+            job.prop("message", "stash – No unstaged files to stash");
+            job.set_status(ProgressStatus::Done);
             return Ok(());
         }
 
-        debug!("removing unstaged files");
+        job.prop("message", "stash – Removing unstaged changes");
+        job.update();
 
         let mut checkout_opts = git2::build::CheckoutBuilder::new();
         checkout_opts.allow_conflicts(true);
@@ -165,6 +177,9 @@ impl Git {
             .checkout_index(None, Some(&mut checkout_opts))
             .wrap_err("failed to reset to head")?;
 
+        job.prop("message", "stash – Stashed unstaged changes");
+        job.set_status(ProgressStatus::Done);
+        // return Err(eyre!("failed to reset to head"));
         Ok(())
     }
 
@@ -217,9 +232,13 @@ impl Git {
         let Some(diff) = self.stash.take() else {
             return Ok(());
         };
+        let job: Arc<ProgressJob>;
 
         match diff {
             Either::Left(diff) => {
+                job = ProgressJobBuilder::new()
+                    .prop("message", "stash – Applying git diff patch")
+                    .start();
                 let diff = git2::Diff::from_buffer(diff.as_bytes())?;
                 let mut apply_opts = git2::ApplyOptions::new();
                 self.repo
@@ -227,6 +246,9 @@ impl Git {
                     .wrap_err("failed to apply diff")?;
             }
             Either::Right(_oid) => {
+                job = ProgressJobBuilder::new()
+                    .prop("message", "stash – Applying git stash")
+                    .start();
                 let mut opts = git2::StashApplyOptions::new();
                 let mut checkout_opts = git2::build::CheckoutBuilder::new();
                 checkout_opts.allow_conflicts(true);
@@ -238,6 +260,7 @@ impl Git {
                     .wrap_err("failed to reset to stash")?;
             }
         }
+        job.set_status(ProgressStatus::Done);
         Ok(())
     }
 

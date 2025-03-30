@@ -16,7 +16,7 @@ teardown() {
 
 @test "hk generate creates hk.pkl" {
     hk g
-    assert_file_contains hk.pkl "min_hk_version"
+    assert_file_contains hk.pkl "linters ="
 }
 
 @test "hk install creates git hooks" {

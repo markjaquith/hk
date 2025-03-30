@@ -1,7 +1,11 @@
+use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use crate::{
     Result,
@@ -186,13 +190,31 @@ impl Config {
         from_ref: Option<&str>,
         to_ref: Option<&str>,
     ) -> Result<()> {
+        let file_progress_builder = ProgressJobBuilder::new().body(vec![
+            "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
+        ]);
+        let file_progress: Arc<ProgressJob>;
         let files = if let (Some(from), Some(to)) = (from_ref, to_ref) {
+            file_progress = file_progress_builder
+                .prop(
+                    "message",
+                    &format!("Fetching files between {} and {}", from, to),
+                )
+                .start();
             repo.files_between_refs(from, to)?
         } else if all {
+            file_progress = file_progress_builder
+                .prop("message", "Fetching all files in repo")
+                .start();
             repo.all_files()?
         } else {
+            file_progress = file_progress_builder
+                .prop("message", "Fetching staged files")
+                .start();
             repo.staged_files()?
         };
+        file_progress.prop("files", &files.len());
+        file_progress.set_status(ProgressStatus::Done);
         StepScheduler::new(hook, run_type, repo)
             .with_files(files)
             .with_linters(linters)

@@ -32,9 +32,7 @@ impl log::Log for Logger {
                     level = self.styled_level(record.level()),
                     args = record.args()
                 );
-                progress::pause();
                 let _ = writeln!(log_file, "{}", console::strip_ansi_codes(&out));
-                progress::resume();
             }
         }
         if record.level() <= self.term_level {
