@@ -1,7 +1,4 @@
-use std::{
-    collections::BTreeSet,
-    path::{Path, PathBuf},
-};
+use std::{collections::BTreeSet, path::PathBuf};
 
 use crate::Result;
 use eyre::{WrapErr, eyre};
