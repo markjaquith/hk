@@ -1,7 +1,6 @@
-# `hk generate`
+# `hk init`
 
-- **Usage**: `hk generate [-f --force] [--mise]`
-- **Aliases**: `g`
+- **Usage**: `hk init [-f --force] [--mise]`
 
 Generates a new hk.pkl file for a project
 

@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.6.5](https://github.com/jdx/hk/compare/v0.6.4..0.6.5) - 2025-03-30
+## [0.7.0](https://github.com/jdx/hk/compare/v0.6.5..0.7.0) - 2025-04-04
+
+### 🚀 Features
+
+- new pkl structure by [@jdx](https://github.com/jdx) in [#56](https://github.com/jdx/hk/pull/56)
+
+## [0.6.5](https://github.com/jdx/hk/compare/v0.6.4..v0.6.5) - 2025-03-30
 
 ### 🚀 Features
 

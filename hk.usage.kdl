@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.6.5"
+version "0.7.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -49,9 +49,8 @@ cmd fix help="Fixes code" {
         arg <TO_REF>
     }
 }
-cmd generate help="Generates a new hk.pkl file for a project" {
-    alias g
-    alias init hide=#true
+cmd init help="Generates a new hk.pkl file for a project" {
+    alias generate hide=#true
     flag "-f --force" help="Overwrite existing hk.pkl file"
     flag --mise help="Generate a mise.toml file with hk configured" {
         long_help "Generate a mise.toml file with hk configured\n\nSet HK_MISE=1 to make this default behavior."
@@ -78,7 +77,6 @@ cmd run help="Run a hook" {
         flag --linter help="Run on specific linter(s)" var=#true {
             arg <LINTER>
         }
-        flag --stash help="Force stashing even if it's disabled via HK_STASH"
         flag --from-ref help="Start reference for checking files (requires --to-ref)" {
             arg <FROM_REF>
         }
@@ -94,7 +92,6 @@ cmd run help="Run a hook" {
         flag --linter help="Run on specific linter(s)" var=#true {
             arg <LINTER>
         }
-        flag --stash help="Force stashing even if it's disabled via HK_STASH"
         flag --from-ref help="Start reference for checking files (requires --to-ref)" {
             arg <FROM_REF>
         }

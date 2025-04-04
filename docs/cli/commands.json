@@ -237,9 +237,9 @@
         "hidden_aliases": [],
         "examples": []
       },
-      "generate": {
-        "full_cmd": ["generate"],
-        "usage": "generate [-f --force] [--mise]",
+      "init": {
+        "full_cmd": ["init"],
+        "usage": "init [-f --force] [--mise]",
         "subcommands": {},
         "args": [],
         "flags": [
@@ -268,9 +268,9 @@
         "mounts": [],
         "hide": false,
         "help": "Generates a new hk.pkl file for a project",
-        "name": "generate",
-        "aliases": ["g"],
-        "hidden_aliases": ["init"],
+        "name": "init",
+        "aliases": [],
+        "hidden_aliases": ["generate"],
         "examples": []
       },
       "install": {
@@ -379,16 +379,6 @@
                   "double_dash": "Optional",
                   "hide": false
                 }
-              },
-              {
-                "name": "stash",
-                "usage": "--stash",
-                "help": "Force stashing even if it's disabled via HK_STASH",
-                "help_first_line": "Force stashing even if it's disabled via HK_STASH",
-                "short": [],
-                "long": ["stash"],
-                "hide": false,
-                "global": false
               },
               {
                 "name": "from-ref",
@@ -505,16 +495,6 @@
                   "double_dash": "Optional",
                   "hide": false
                 }
-              },
-              {
-                "name": "stash",
-                "usage": "--stash",
-                "help": "Force stashing even if it's disabled via HK_STASH",
-                "help_first_line": "Force stashing even if it's disabled via HK_STASH",
-                "short": [],
-                "long": ["stash"],
-                "hide": false,
-                "global": false
               },
               {
                 "name": "from-ref",
@@ -739,7 +719,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.6.5",
+  "version": "0.7.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

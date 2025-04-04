@@ -20,8 +20,8 @@ impl Init {
     pub async fn run(&self) -> Result<()> {
         let hk_file = PathBuf::from("hk.pkl");
         let hook_content = r#"
-amends "package://github.com/jdx/hk/releases/download/v0.6.5/hk@0.6.5#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.6.5/hk@0.6.5#/builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/builtins.pkl"
 
 local linters = new Mapping<String, LinterStep> {
     // uses builtin prettier linter config
