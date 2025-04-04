@@ -1,6 +1,6 @@
 import "../Config.pkl"
 
-class NixpkgsFormat extends Config.Linter {
+nixpkgs_format = new Config.LinterStep {
     glob = List("**/*.nix")
     check = "nixpkgs-fmt --check {{ files }}"
     fix = "nixpkgs-fmt {{ files }}"

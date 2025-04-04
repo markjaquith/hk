@@ -1,8 +1,5 @@
-use std::iter::once;
-
-use crate::step::RunType;
-use crate::{Result, git::Git};
-use crate::{config::Config, step::Step};
+use crate::Result;
+use crate::config::Config;
 
 /// Fixes code
 #[derive(Debug, clap::Args)]
@@ -25,24 +22,13 @@ pub struct Fix {
 impl Fix {
     pub async fn run(&self) -> Result<()> {
         let config = Config::get()?;
-        let repo = Git::new()?; // TODO: remove repo
-        let hook = once(("fix".to_string(), Step::fix())).collect();
-
-        // Check if both from_ref and to_ref are provided or neither
-        if (self.from_ref.is_some() && self.to_ref.is_none())
-            || (self.from_ref.is_none() && self.to_ref.is_some())
-        {
-            return Err(eyre::eyre!(
-                "Both --from-ref and --to-ref must be provided together"
-            ));
+        if config.hooks.get("fix").is_none() {
+            eyre::bail!("fix hook not found in hk.pkl");
         }
-
         config
             .run_hook(
                 self.all,
-                &hook,
-                RunType::Fix,
-                &repo,
+                "fix",
                 &self.linter,
                 Default::default(),
                 self.from_ref.as_deref(),

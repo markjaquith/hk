@@ -1,11 +1,4 @@
-use std::iter::once;
-
-use crate::{
-    Result,
-    git::Git,
-    step::{CheckType, RunType, Step},
-};
-
+use crate::Result;
 use crate::config::Config;
 
 /// Fixes code
@@ -32,24 +25,13 @@ pub struct Check {
 impl Check {
     pub async fn run(&self) -> Result<()> {
         let config = Config::get()?;
-        let repo = Git::new()?; // TODO: remove repo
-        let hook = once(("check".to_string(), Step::check())).collect();
-
-        // Check if both from_ref and to_ref are provided or neither
-        if (self.from_ref.is_some() && self.to_ref.is_none())
-            || (self.from_ref.is_none() && self.to_ref.is_some())
-        {
-            return Err(eyre::eyre!(
-                "Both --from-ref and --to-ref must be provided together"
-            ));
+        if config.hooks.get("check").is_none() {
+            eyre::bail!("check hook not found in hk.pkl");
         }
-
         config
             .run_hook(
                 self.all,
-                &hook,
-                RunType::Check(CheckType::Check),
-                &repo,
+                "check",
                 &self.linter,
                 Default::default(),
                 self.from_ref.as_deref(),

@@ -1,11 +1,12 @@
-use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
+use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressJobDoneBehavior, ProgressStatus};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
 use std::{
+    fmt,
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{Arc, LazyLock},
 };
+use tokio::sync::Mutex;
 
 use crate::{
     Result,
@@ -13,9 +14,13 @@ use crate::{
     env,
     git::Git,
     hash,
-    step::{RunType, Step},
+    step::{CheckType, LinterStep, RunStep, RunType, exec_step},
+    step_context::StepContext,
+    step_job::StepJob,
+    step_response::StepResponse,
     step_scheduler::StepScheduler,
     tera::Context,
+    ui::style,
     version,
 };
 use eyre::{WrapErr, bail};
@@ -86,13 +91,15 @@ impl Config {
         if let Some(min_hk_version) = &config.min_hk_version {
             version::version_cmp_or_bail(min_hk_version)?;
         }
-        for steps in config.hooks.values_mut() {
-            for (name, step) in steps.iter_mut() {
-                step.name = name.clone();
+        for (name, hook) in config.hooks.iter_mut() {
+            hook.name = name.clone();
+            for (name, step) in hook.steps.iter_mut() {
+                match step {
+                    Steps::Run(step) => step.name = name.clone(),
+                    Steps::Linter(step) => step.name = name.clone(),
+                    Steps::Stash(step) => step.name = name.clone(),
+                }
             }
-        }
-        for (name, linter) in config.linters.iter_mut() {
-            linter.name = name.clone();
         }
         Ok(config)
     }
@@ -104,71 +111,185 @@ impl Config {
 pub struct Config {
     pub min_hk_version: Option<String>,
     #[serde(default)]
-    pub linters: IndexMap<String, Linter>,
-    #[serde(default)]
-    pub hooks: IndexMap<String, IndexMap<String, Step>>,
+    pub hooks: IndexMap<String, Hook>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[serde(deny_unknown_fields)]
-#[serde_as]
-pub struct Linter {
+pub struct Hook {
     #[serde(default)]
     pub name: String,
-    #[serde_as(as = "Option<OneOrMany<_>>")]
-    pub glob: Option<Vec<String>>,
-    #[serde_as(as = "Option<OneOrMany<_>>")]
-    pub profiles: Option<Vec<String>>,
-    pub exclusive: bool,
-    pub check_first: bool,
-    pub batch: bool,
-    pub stomp: bool,
-    pub check: Option<String>,
-    pub check_diff: Option<String>,
-    pub check_list_files: Option<String>,
-    pub check_extra_args: Option<String>,
-    pub fix: Option<String>,
-    pub fix_extra_args: Option<String>,
-    pub workspace_indicator: Option<String>,
-    pub prefix: Option<String>,
-    pub dir: Option<String>,
-    pub env: IndexMap<String, String>,
-    #[serde_as(as = "Option<OneOrMany<_>>")]
-    pub stage: Option<Vec<String>>,
-    pub depends: Vec<String>,
     #[serde(default)]
-    pub linter_dependencies: IndexMap<String, Vec<String>>,
+    pub steps: IndexMap<String, Steps>,
+    #[serde(default)]
+    pub fix: bool,
 }
 
-impl From<Linter> for Step {
-    fn from(linter: Linter) -> Self {
-        Step {
-            r#type: Some("linter".to_string()),
-            glob: linter.glob,
-            profiles: linter.profiles,
-            exclusive: linter.exclusive,
-            check_first: linter.check_first,
-            batch: linter.batch,
-            stomp: linter.stomp,
-            check: linter.check,
-            check_diff: linter.check_diff,
-            check_list_files: linter.check_list_files,
-            check_extra_args: linter.check_extra_args,
-            fix: linter.fix,
-            fix_extra_args: linter.fix_extra_args,
-            workspace_indicator: linter.workspace_indicator,
-            prefix: linter.prefix,
-            dir: linter.dir,
-            env: linter.env,
-            stage: linter.stage,
-            name: linter.name,
-            depends: linter.depends,
-            run: None,
-            root: None,
-            linter_dependencies: linter.linter_dependencies,
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case", tag = "type")]
+pub enum Steps {
+    Run(Box<RunStep>),
+    Linter(Box<LinterStep>),
+    Stash(Box<Stash>),
+}
+
+impl Steps {
+    pub fn name(&self) -> &str {
+        match self {
+            Steps::Linter(step) => &step.name,
+            Steps::Run(step) => &step.name,
+            Steps::Stash(step) => &step.name,
         }
     }
+
+    pub fn dir(&self) -> Option<&str> {
+        match self {
+            Steps::Linter(step) => step.dir.as_deref(),
+            Steps::Run(step) => step.dir.as_deref(),
+            Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn env(&self) -> &IndexMap<String, String> {
+        static EMPTY: LazyLock<IndexMap<String, String>> = LazyLock::new(Default::default);
+        match self {
+            Steps::Linter(step) => &step.env,
+            Steps::Run(step) => &step.env,
+            Steps::Stash(_) => &EMPTY,
+        }
+    }
+
+    pub fn glob(&self) -> Option<&Vec<String>> {
+        match self {
+            Steps::Linter(step) => step.glob.as_ref(),
+            Steps::Run(step) => step.glob.as_ref(),
+            Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn prefix(&self) -> Option<&str> {
+        match self {
+            Steps::Linter(step) => step.prefix.as_deref(),
+            Steps::Run(_step) => None,
+            Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn stage(&self) -> Option<&Vec<String>> {
+        match self {
+            Steps::Linter(step) => step.stage.as_ref(),
+            Steps::Run(step) => step.stage.as_ref(),
+            Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn run_cmd(&self, run_type: RunType) -> Option<&str> {
+        match self {
+            Steps::Linter(step) => step.run_cmd(run_type),
+            Steps::Run(step) => Some(&step.run),
+            Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn stomp(&self) -> bool {
+        match self {
+            Steps::Linter(step) => step.stomp,
+            _ => false,
+        }
+    }
+
+    pub fn depends(&self) -> &Vec<String> {
+        static EMPTY: Vec<String> = vec![];
+        match self {
+            Steps::Linter(step) => &step.depends,
+            Steps::Run(step) => &step.depends,
+            _ => &EMPTY,
+        }
+    }
+
+    pub fn available_run_type(&self, run_type: RunType) -> Option<RunType> {
+        match self {
+            Steps::Linter(step) => step.available_run_type(run_type),
+            _ => Some(run_type),
+        }
+    }
+
+    pub fn is_profile_enabled(&self) -> bool {
+        match self {
+            Steps::Linter(step) => step.is_profile_enabled(),
+            Steps::Run(step) => step.is_profile_enabled(),
+            _ => true,
+        }
+    }
+
+    pub async fn run(&self, ctx: &StepContext, job: &StepJob) -> Result<StepResponse> {
+        match self {
+            Steps::Linter(_step) => exec_step(self, ctx, job).await,
+            Steps::Run(_step) => exec_step(self, ctx, job).await,
+            Steps::Stash(step) => step.run(ctx, job).await,
+        }
+    }
+
+    pub(crate) fn build_step_progress(&self) -> Arc<ProgressJob> {
+        ProgressJobBuilder::new()
+            .body(vec![
+                "{{spinner()}} {{name}} {% if message %}– {{message | flex}}{% endif %}"
+                    .to_string(),
+            ])
+            .body_text(Some(vec![
+                "{% if message %}{{spinner()}} {{name}} – {{message}}{% endif %}".to_string(),
+            ]))
+            .prop("name", self.name())
+            .status(ProgressStatus::RunningCustom(style::edim("❯").to_string()))
+            .on_done(if *env::HK_HIDE_WHEN_DONE {
+                ProgressJobDoneBehavior::Hide
+            } else {
+                ProgressJobDoneBehavior::Keep
+            })
+            .start()
+    }
+}
+
+impl fmt::Display for Steps {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Steps::Linter(step) => write!(f, "{}", step),
+            Steps::Run(step) => write!(f, "{}", step),
+            Steps::Stash(step) => write!(f, "{}", step),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
+pub struct Stash {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub method: StashMethod,
+}
+
+impl Stash {
+    pub async fn run(&self, ctx: &StepContext, _job: &StepJob) -> Result<StepResponse> {
+        let mut repo = ctx.git.lock().await;
+        repo.stash_unstaged(false)?;
+        Ok(Default::default())
+    }
+}
+
+impl fmt::Display for Stash {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}
+
+#[derive(Debug, Clone, Eq, Default, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+pub enum StashMethod {
+    #[default]
+    GitDiff,
+    GitStash,
 }
 
 impl std::fmt::Display for Config {
@@ -178,18 +299,34 @@ impl std::fmt::Display for Config {
 }
 
 impl Config {
-    #[allow(clippy::too_many_arguments)]
     pub async fn run_hook(
         &self,
         all: bool,
-        hook: &IndexMap<String, Step>,
-        run_type: RunType,
-        repo: &Git,
+        hook: &str,
         linters: &[String],
         tctx: Context,
         from_ref: Option<&str>,
         to_ref: Option<&str>,
     ) -> Result<()> {
+        if env::HK_SKIP_HOOK.contains(hook) {
+            warn!("{}: skipping hook due to HK_SKIP_HOOK", hook);
+            return Ok(());
+        }
+        static HOOK: LazyLock<Hook> = LazyLock::new(Default::default);
+        let hook = self.hooks.get(hook).unwrap_or(&HOOK);
+        let run_type = if *env::HK_FIX && hook.fix {
+            RunType::Fix
+        } else {
+            RunType::Check(CheckType::Check)
+        };
+        // Check if both from_ref and to_ref are provided or neither
+        if from_ref.is_some() != to_ref.is_some() {
+            return Err(eyre::eyre!(
+                "Both --from-ref and --to-ref must be provided together"
+            ));
+        }
+
+        let repo = Git::new()?;
         let file_progress_builder = ProgressJobBuilder::new().body(vec![
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
         ]);
@@ -207,6 +344,12 @@ impl Config {
                 .prop("message", "Fetching all files in repo")
                 .start();
             repo.all_files()?
+        } else if hook.name == "check" || hook.name == "fix" {
+            // TODO: this should probably be customizable on the hook like `fix = true` is
+            file_progress = file_progress_builder
+                .prop("message", "Fetching modified files")
+                .start();
+            repo.modified_files()?
         } else {
             file_progress = file_progress_builder
                 .prop("message", "Fetching staged files")
@@ -215,11 +358,22 @@ impl Config {
         };
         file_progress.prop("files", &files.len());
         file_progress.set_status(ProgressStatus::Done);
-        StepScheduler::new(hook, run_type, repo)
+        let repo = Arc::new(Mutex::new(repo));
+
+        let mut result = StepScheduler::new(hook, run_type, repo.clone())
             .with_files(files)
             .with_linters(linters)
             .with_tctx(tctx)
             .run()
-            .await
+            .await;
+
+        if let Err(err) = repo.lock().await.pop_stash() {
+            if result.is_ok() {
+                result = Err(err);
+            } else {
+                warn!("Failed to pop stash: {}", err);
+            }
+        }
+        result
     }
 }
