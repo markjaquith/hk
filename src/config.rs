@@ -92,14 +92,7 @@ impl Config {
             version::version_cmp_or_bail(min_hk_version)?;
         }
         for (name, hook) in config.hooks.iter_mut() {
-            hook.name = name.clone();
-            for (name, step) in hook.steps.iter_mut() {
-                match step {
-                    Steps::Run(step) => step.name = name.clone(),
-                    Steps::Linter(step) => step.name = name.clone(),
-                    Steps::Stash(step) => step.name = name.clone(),
-                }
-            }
+            hook.init(name);
         }
         Ok(config)
     }
@@ -126,6 +119,15 @@ pub struct Hook {
     pub fix: bool,
 }
 
+impl Hook {
+    fn init(&mut self, hook_name: &str) {
+        self.name = hook_name.to_string();
+        for (name, step) in self.steps.iter_mut() {
+            step.init(name);
+        }
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Steps {
@@ -135,6 +137,14 @@ pub enum Steps {
 }
 
 impl Steps {
+    fn init(&mut self, name: &str) {
+        match self {
+            Steps::Linter(step) => step.init(name),
+            Steps::Run(step) => step.init(name),
+            Steps::Stash(step) => step.init(name),
+        }
+    }
+
     pub fn name(&self) -> &str {
         match self {
             Steps::Linter(step) => &step.name,
@@ -181,6 +191,14 @@ impl Steps {
             Steps::Linter(step) => step.stage.as_ref(),
             Steps::Run(step) => step.stage.as_ref(),
             Steps::Stash(_) => None,
+        }
+    }
+
+    pub fn interactive(&self) -> bool {
+        match self {
+            Steps::Linter(step) => step.interactive,
+            Steps::Run(step) => step.interactive,
+            Steps::Stash(_) => false,
         }
     }
 
@@ -271,6 +289,10 @@ pub struct Stash {
 }
 
 impl Stash {
+    fn init(&mut self, name: &str) {
+        self.name = name.to_string();
+    }
+
     pub async fn run(&self, ctx: &StepContext, _job: &StepJob) -> Result<StepResponse> {
         let mut repo = ctx.git.lock().await;
         repo.stash_unstaged(false)?;

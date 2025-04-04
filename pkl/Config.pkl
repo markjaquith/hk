@@ -14,6 +14,9 @@ class RunStep {
     /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
     exclusive = false
 
+    /// Connects stdin/stdout/stderr to the hk's execution. Implies `exclusive`.
+    interactive = false
+
     /// Wait for sibling steps to finish before starting this step.
     depends: List<String> = List()
     
@@ -46,6 +49,9 @@ class LinterStep {
     
     /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
     exclusive = false
+
+    /// Connects stdin/stdout/stderr to the hk's execution. Implies `exclusive`.
+    interactive = false
     
     /// Wait for sibling steps to finish before starting this step.
     depends: List<String> = List()

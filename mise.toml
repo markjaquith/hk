@@ -70,7 +70,7 @@ run = [
   "hk check --all --slow",
 ]
 [tasks.lint-fix]
-alias = "format"
+alias = ["fix", "format"]
 depends = ["build"]
 run = [
   "hk fix --all",

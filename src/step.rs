@@ -7,8 +7,8 @@ use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 use std::path::PathBuf;
+use std::{fmt, process::Stdio};
 
 use serde_with::serde_as;
 
@@ -27,6 +27,8 @@ pub struct RunStep {
     pub run: String,
     #[serde(default)]
     pub exclusive: bool,
+    #[serde(default)]
+    pub interactive: bool,
     pub depends: Vec<String>,
     pub env: IndexMap<String, String>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
@@ -34,6 +36,13 @@ pub struct RunStep {
 }
 
 impl RunStep {
+    pub(crate) fn init(&mut self, name: &str) {
+        self.name = name.to_string();
+        if self.interactive {
+            self.exclusive = true;
+        }
+    }
+
     pub fn is_profile_enabled(&self) -> bool {
         is_profile_enabled(
             &self.name,
@@ -80,6 +89,8 @@ pub struct LinterStep {
     pub profiles: Option<Vec<String>>,
     #[serde(default)]
     pub exclusive: bool,
+    #[serde(default)]
+    pub interactive: bool,
     pub depends: Vec<String>,
     #[serde(default)]
     pub check_first: bool,
@@ -135,6 +146,13 @@ pub enum CheckType {
 }
 
 impl LinterStep {
+    pub(crate) fn init(&mut self, name: &str) {
+        self.name = name.to_string();
+        if self.interactive {
+            self.exclusive = true;
+        }
+    }
+
     pub fn run_cmd(&self, run_type: RunType) -> Option<&str> {
         match run_type {
             RunType::Check(CheckType::Check) => self.check.as_deref(),
@@ -310,6 +328,13 @@ pub(crate) async fn exec_step(
         .arg(&run)
         .with_pr(pr.clone())
         .show_stderr_on_error(false);
+    if step.interactive() {
+        clx::progress::pause();
+        cmd = cmd
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit());
+    }
     if let Some(dir) = step.dir() {
         cmd = cmd.current_dir(dir);
     }
@@ -319,6 +344,9 @@ pub(crate) async fn exec_step(
     match cmd.execute().await {
         Ok(_) => {}
         Err(err) => {
+            if step.interactive() {
+                clx::progress::resume();
+            }
             if let ensembler::Error::ScriptFailed(_bin, _args, _output, result) = &err {
                 if let RunType::Check(CheckType::ListFiles) = job.run_type {
                     let stdout = result.stdout.clone();
@@ -331,6 +359,9 @@ pub(crate) async fn exec_step(
             ctx.progress.set_status(ProgressStatus::Failed);
             return Err(err).wrap_err(run);
         }
+    }
+    if step.interactive() {
+        clx::progress::resume();
     }
     rsp.files_to_add = files_to_add
         .into_iter()
