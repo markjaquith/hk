@@ -45,8 +45,8 @@ hk generate
 This will generate a `hk.pkl` file in the root of the repository, here's an example `hk.pkl` with eslint and prettier linters:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.7.1/hk@0.7.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.7.1/hk@0.7.1#/builtins.pkl"
 
 local linters = new Mapping<String, Step> {
     // linters can be manually defined

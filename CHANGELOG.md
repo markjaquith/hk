@@ -1,6 +1,22 @@
 # Changelog
 
-## [0.7.0](https://github.com/jdx/hk/compare/v0.6.5..0.7.0) - 2025-04-04
+## [0.7.1](https://github.com/jdx/hk/compare/v0.7.0..0.7.1) - 2025-04-09
+
+### 🚀 Features
+
+- interactive option by [@jdx](https://github.com/jdx) in [63dd3fd](https://github.com/jdx/hk/commit/63dd3fd733f7b7f7fffe085601acaa54e94e151e)
+- exclude by [@jdx](https://github.com/jdx) in [6e68927](https://github.com/jdx/hk/commit/6e689271fcd7655de04c5532ce4a1fbb586453c1)
+- allow disabling libgit2 by [@jdx](https://github.com/jdx) in [#67](https://github.com/jdx/hk/pull/67)
+
+### 📚 Documentation
+
+- clarify LinterStep by [@jdx](https://github.com/jdx) in [58ad9e9](https://github.com/jdx/hk/commit/58ad9e9f660aa8da6fb7a8b4265d1c3b73e9fc64)
+
+### 🔍 Other Changes
+
+- updated deps by [@jdx](https://github.com/jdx) in [5b8f1a3](https://github.com/jdx/hk/commit/5b8f1a3cbd2bdcc9caef1844f5af636ec6f6f631)
+
+## [0.7.0](https://github.com/jdx/hk/compare/v0.6.5..v0.7.0) - 2025-04-04
 
 ### 🚀 Features
 
