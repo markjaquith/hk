@@ -14,9 +14,9 @@ Here's a basic `hk.pkl` file:
 amends "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/builtins.pkl"
 
-local linters = new {
+local linters = new Mapping<String, Step> {
     // linters can be manually defined
-    ["eslint"] {
+    ["eslint"] = new LinterStep {
         // the files to run the linter on, if no files are matched, the linter will be skipped
         // this will filter the staged files and return the subset matching these globs
         glob = List("*.js", "*.ts")
@@ -100,7 +100,7 @@ A command to run that modifies files. This typically is a "fix" command like `es
 
 ```pkl
 local linters = new Mapping<String, Step> {
-    ["prettier"] {
+    ["prettier"] = new LinterStep {
         fix = "prettier --write {{files}}"
     }
 }
@@ -122,7 +122,7 @@ If true, hk will run the linter on batches of files instead of all files at once
 
 ```pkl
 local linters = new Mapping<String, Step> {
-    ["eslint"] {
+    ["eslint"] = new LinterStep {
         batch = true
     }
 }
@@ -140,7 +140,7 @@ If set, run the linter on workspaces only which are parent directories containin
 
 ```pkl
 local linters = new Mapping<String, Step> {
-    ["cargo-clippy"] {
+    ["cargo-clippy"] = new LinterStep {
         workspace_indicator = "Cargo.toml"
     }
 }
@@ -152,7 +152,7 @@ If set, run the linter scripts with this prefix, e.g.: "mise exec --" or "npm ru
 
 ```pkl
 local linters = new Mapping<String, Step> {
-    ["eslint"] {
+    ["eslint"] = new LinterStep {
         prefix = "npm run"
     }
 }
@@ -199,8 +199,10 @@ A list of steps that must finish before this step can run.
 ```pkl
 hooks {
     ["pre-commit"] {
-        ["prettier"] {
-            depends = List("eslint")
+        steps = new Mapping<String, Step> {
+            ["prettier"] = new LinterStep {
+                depends = List("eslint")
+            }
         }
     }
 }
@@ -225,8 +227,10 @@ A list of steps that must finish before this step can run.
 ```pkl
 hooks {
     ["pre-commit"] {
-        ["prettier"] {
-            depends = List("eslint")
+        steps = new Mapping<String, Step> {
+            ["prettier"] = new LinterStep {
+                depends = List("eslint")
+            }
         }
     }
 }
@@ -239,8 +243,10 @@ A list of globs of files to add to the git index after running a fix step.
 ```pkl
 hooks {
     ["pre-commit"] {
-        ["prettier"] {
-            stage = List("*.js", "*.ts")
+        steps = new Mapping<String, Step> {
+            ["prettier"] {
+                stage = List("*.js", "*.ts")
+            }
         }
     }
 }
@@ -257,14 +263,16 @@ If true, this step will wait for any previous steps to finish before running. No
 ```pkl
 hooks {
     ["pre-commit"] {
-        ["prelint"] {
-            exclusive = true // blocks other steps from starting until this one finishes
-            run = "mise run prelint"
-        }
-        // ... other steps will run in parallel ...
-        ["postlint"] {
-            exclusive = true // wait for all previous steps to finish before starting
-            run = "mise run postlint"
+        steps = new Mapping<String, Step> {
+            ["prelint"] {
+                exclusive = true // blocks other steps from starting until this one finishes
+                run = "mise run prelint"
+            }
+            // ... other steps will run in parallel ...
+            ["postlint"] {
+                exclusive = true // wait for all previous steps to finish before starting
+                run = "mise run postlint"
+            }
         }
     }
 }

@@ -23,12 +23,12 @@ impl Init {
 amends "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/builtins.pkl"
 
-local linters = new Mapping<String, LinterStep> {
+local linters = new Mapping<String, Step> {
     // uses builtin prettier linter config
     ["prettier"] = builtins.prettier
 
     // uses custom pkl linter config
-    ["pkl"] {
+    ["pkl"] = new LinterStep {
         glob = List("*.pkl")
         check = "pkl eval {{files}} >/dev/null"
     }

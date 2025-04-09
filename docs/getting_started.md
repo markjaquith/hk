@@ -50,7 +50,7 @@ import "package://github.com/jdx/hk/releases/download/v0.7.0/hk@0.7.0#/builtins.
 
 local linters = new Mapping<String, Step> {
     // linters can be manually defined
-    ["eslint"] {
+    ["eslint"] = new LinterStep {
         // the files to run the linter on, if no files are matched, the linter will be skipped
         // this will filter the staged files and return the subset matching these globs
         glob = new { "*.js"; "*.ts" }
@@ -67,7 +67,9 @@ local linters = new Mapping<String, Step> {
 
 hooks {
     ["pre-commit"] {
-        ["fix"] = new Fix {}
+        steps = new Mapping<String, Step> {
+            ["fix"] = new Fix {}
+        }
     }
 }
 ```
