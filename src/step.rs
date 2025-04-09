@@ -23,6 +23,8 @@ pub struct RunStep {
     pub profiles: Option<Vec<String>>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
+    pub exclude: Option<Vec<String>>,
     pub dir: Option<String>,
     pub run: String,
     #[serde(default)]
@@ -100,6 +102,8 @@ pub struct LinterStep {
     pub stomp: bool,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub glob: Option<Vec<String>>,
+    #[serde_as(as = "Option<OneOrMany<_>>")]
+    pub exclude: Option<Vec<String>>,
     pub check: Option<String>,
     pub check_diff: Option<String>,
     pub check_list_files: Option<String>,

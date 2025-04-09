@@ -121,6 +121,12 @@ impl StepQueueBuilder {
                     continue;
                 }
             }
+            if let Some(exclude) = step.exclude() {
+                let excluded = glob::get_matches(exclude, &files)?
+                    .into_iter()
+                    .collect::<HashSet<_>>();
+                files.retain(|f| !excluded.contains(f));
+            }
             let jobs = match &*step {
                 Steps::Linter(s) => {
                     if let Some(workspace_indicators) = s.workspaces_for_files(&files)? {

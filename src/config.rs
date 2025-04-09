@@ -178,6 +178,14 @@ impl Steps {
         }
     }
 
+    pub fn exclude(&self) -> Option<&Vec<String>> {
+        match self {
+            Steps::Linter(step) => step.exclude.as_ref(),
+            Steps::Run(step) => step.exclude.as_ref(),
+            Steps::Stash(_) => None,
+        }
+    }
+
     pub fn prefix(&self) -> Option<&str> {
         match self {
             Steps::Linter(step) => step.prefix.as_deref(),

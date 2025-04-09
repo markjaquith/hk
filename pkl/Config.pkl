@@ -11,6 +11,9 @@ class RunStep {
     /// Which file patterns to run the step on
     glob: List<String>?
 
+    /// Which file patterns to exclude from the step
+    exclude: List<String>?
+
     /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
     exclusive = false
 
@@ -46,6 +49,9 @@ class LinterStep {
     
     /// Which file patterns to run the step on
     glob: List<String>?
+
+    /// Which file patterns to exclude from the step
+    exclude: List<String>?
     
     /// If true, the step will run by itself, waiting for previous steps to finish before starting and making later steps wait for it to finish
     exclusive = false
