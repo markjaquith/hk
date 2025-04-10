@@ -9,10 +9,7 @@ use std::{
     sync::Arc,
 };
 
-use crate::{
-    glob,
-    step::{LinterStep, RunType},
-};
+use crate::{glob, step::RunType};
 
 /// Takes a list of steps and files as input and builds a queue of jobs that would need to be
 /// executed by StepScheduler
@@ -178,24 +175,24 @@ impl StepQueueBuilder {
     ) -> Result<HashSet<PathBuf>> {
         let steps = steps
             .iter()
-            .filter_map(|s| match s.as_ref() {
-                Steps::Run(_) => unimplemented!("run steps are not supported in step queue"),
-                Steps::Linter(s) => Some(s),
-                Steps::Stash(_) => None,
+            .filter(|s| match s.as_ref() {
+                Steps::Run(_) => true,
+                Steps::Linter(_) => true,
+                Steps::Stash(_) => false,
             })
             .collect::<Vec<_>>();
-        let step_map: HashMap<String, &LinterStep> = steps
+        let step_map: HashMap<&str, &Steps> = steps
             .iter()
-            .map(|step| (step.name.clone(), step.as_ref()))
+            .map(|step| (step.name(), step.as_ref()))
             .collect();
-        let files_by_step: HashMap<String, Vec<PathBuf>> = steps
+        let files_by_step: HashMap<&str, Vec<PathBuf>> = steps
             .iter()
             .map(|step| {
-                let files = glob::get_matches(step.glob.as_ref().unwrap_or(&vec![]), files)?;
-                Ok((step.name.clone(), files))
+                let files = glob::get_matches(step.glob().unwrap_or(&vec![]), files)?;
+                Ok((step.name(), files))
             })
             .collect::<Result<_>>()?;
-        let mut steps_per_file: HashMap<&Path, Vec<&LinterStep>> = Default::default();
+        let mut steps_per_file: HashMap<&Path, Vec<&Steps>> = Default::default();
         for (step_name, files) in files_by_step.iter() {
             for file in files {
                 let step = step_map.get(step_name).unwrap();

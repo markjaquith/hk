@@ -363,6 +363,7 @@ impl Git {
 
         match diff {
             Either::Left(diff) => {
+                let patch_file = self.patch_file();
                 job = ProgressJobBuilder::new()
                     .prop(
                         "message",
@@ -377,10 +378,13 @@ impl Git {
                     let mut apply_opts = git2::ApplyOptions::new();
                     repo.apply(&diff, git2::ApplyLocation::WorkDir, Some(&mut apply_opts))
                         .wrap_err_with(|| {
-                            format!("failed to apply diff {}", display_path(self.patch_file()))
+                            format!("failed to apply diff {}", display_path(patch_file))
                         })?;
                 } else {
-                    xx::process::sh(&format!("git apply {}", display_path(self.patch_file())))?;
+                    xx::process::sh(&format!("git apply {}", display_path(patch_file)))?;
+                }
+                if let Err(err) = xx::file::remove_file(patch_file) {
+                    debug!("failed to remove patch file: {:?}", err);
                 }
             }
             Either::Right(_oid) => {
