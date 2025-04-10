@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.7.2](https://github.com/jdx/hk/compare/v0.7.1..0.7.2) - 2025-04-10
+## [0.7.3](https://github.com/jdx/hk/compare/v0.7.2..0.7.3) - 2025-04-10
+
+### 🐛 Bug Fixes
+
+- added env var for HK_STASH by [@jdx](https://github.com/jdx) in [417e683](https://github.com/jdx/hk/commit/417e68300803492dcb8015239ace7bad1a04fb01)
+
+## [0.7.2](https://github.com/jdx/hk/compare/v0.7.1..v0.7.2) - 2025-04-10
 
 ### 🐛 Bug Fixes
 

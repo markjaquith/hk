@@ -11,8 +11,8 @@ hk is configured via `hk.pkl` which is written in [pkl-lang](https://pkl-lang.or
 Here's a basic `hk.pkl` file:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v0.7.2/hk@0.7.2#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v0.7.2/hk@0.7.2#/builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.7.3/hk@0.7.3#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.7.3/hk@0.7.3#/builtins.pkl"
 
 local linters = new Mapping<String, Step> {
     // linters can be manually defined
