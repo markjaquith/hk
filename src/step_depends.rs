@@ -26,8 +26,11 @@ impl StepDepends {
     }
 
     pub fn is_done(&self, step: &str) -> bool {
-        let remaining = self.remaining_counts.get(step).unwrap();
-        *remaining.lock().unwrap() == 0
+        if let Some(remaining) = self.remaining_counts.get(step) {
+            *remaining.lock().unwrap() == 0
+        } else {
+            true
+        }
     }
 
     pub async fn wait_for(&self, step: &str) -> Result<()> {
