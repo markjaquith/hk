@@ -38,7 +38,7 @@ class RunStep {
 
 class StashStep {
     fixed type = "stash"
-    method: "git-diff" | "git-stash" = "git-diff"
+    method: "git" | "patch-file" = "patch-file"
 }
 
 class LinterStep {

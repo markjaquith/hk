@@ -3,6 +3,8 @@ use std::{num::NonZero, path::PathBuf, sync::LazyLock, thread};
 
 use indexmap::IndexSet;
 
+use crate::config::StashMethod;
+
 // pub static HK_BIN: LazyLock<PathBuf> =
 //     LazyLock::new(|| current_exe().unwrap().canonicalize().unwrap());
 // pub static CWD: LazyLock<PathBuf> = LazyLock::new(|| current_dir().unwrap_or_default());
@@ -36,7 +38,15 @@ pub static HK_LOG_FILE: LazyLock<PathBuf> =
 pub static HK_LIBGIT2: LazyLock<bool> = LazyLock::new(|| !var_false("HK_LIBGIT2"));
 pub static HK_HIDE_WHEN_DONE: LazyLock<bool> = LazyLock::new(|| var_true("HK_HIDE_WHEN_DONE"));
 pub static HK_CHECK_FIRST: LazyLock<bool> = LazyLock::new(|| !var_false("HK_CHECK_FIRST"));
-pub static HK_STASH: LazyLock<bool> = LazyLock::new(|| !var_false("HK_STASH"));
+pub static HK_STASH: LazyLock<StashMethod> = LazyLock::new(|| {
+    if var_false("HK_STASH") {
+        StashMethod::None
+    } else {
+        var("HK_STASH")
+            .map(|v| v.parse().expect("invalid HK_STASH value"))
+            .unwrap_or(StashMethod::PatchFile)
+    }
+});
 pub static HK_FIX: LazyLock<bool> = LazyLock::new(|| !var_false("HK_FIX"));
 pub static HK_MISE: LazyLock<bool> = LazyLock::new(|| var_true("HK_MISE"));
 pub static HK_PROFILE: LazyLock<IndexSet<String>> = LazyLock::new(|| {

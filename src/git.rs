@@ -5,7 +5,7 @@ use std::{
     sync::Arc,
 };
 
-use crate::Result;
+use crate::{Result, config::StashMethod};
 use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use eyre::{WrapErr, eyre};
 use git2::{Oid, Repository, StatusOptions, StatusShow, Tree};
@@ -223,9 +223,9 @@ impl Git {
         }
     }
 
-    pub fn stash_unstaged(&mut self, job: &ProgressJob, force: bool) -> Result<()> {
+    pub fn stash_unstaged(&mut self, job: &ProgressJob) -> Result<()> {
         // Skip stashing if there's no initial commit yet or auto-stash is disabled
-        if !force && !*env::HK_STASH {
+        if *env::HK_STASH == StashMethod::None {
             return Ok(());
         }
         if let Some(repo) = &self.repo {

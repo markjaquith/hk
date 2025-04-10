@@ -384,10 +384,12 @@ Unlike `HK_SKIP_STEPS` which skips individual steps, this skips the entire hook 
 
 ### `HK_STASH`
 
-Type: `bool`
-Default: `true`
+Type: `git` | `patch-file` | `none`
+Default: `patch-file`
 
-If set to `false`, hk will not automatically stash unstaged changes before running hooks.
+- `git`: Use `git stash` to stash unstaged changes before running hooks.
+- `patch-file`: Use an hk generated patch file to stash unstaged changes before running hooks (typically faster and avoids `index is locked` errors).
+- `none`: Do not stash unstaged changes before running hooks. Much faster but will stage unstaged changes if they are in the same file as staged changes with fix modifications.
 
 ### `HK_STASH_NO_GIT`
 

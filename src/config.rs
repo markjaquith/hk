@@ -303,7 +303,7 @@ impl Stash {
 
     pub async fn run(&self, ctx: &StepContext, _job: &StepJob) -> Result<StepResponse> {
         let mut repo = ctx.git.lock().await;
-        repo.stash_unstaged(&ctx.progress, false)?;
+        repo.stash_unstaged(&ctx.progress)?;
         Ok(Default::default())
     }
 }
@@ -314,12 +314,13 @@ impl fmt::Display for Stash {
     }
 }
 
-#[derive(Debug, Clone, Eq, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, Eq, Default, PartialEq, Deserialize, Serialize, strum::EnumString)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub enum StashMethod {
+    Git,
     #[default]
-    GitDiff,
-    GitStash,
+    PatchFile,
+    None,
 }
 
 impl std::fmt::Display for Config {
