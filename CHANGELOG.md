@@ -1,6 +1,20 @@
 # Changelog
 
-## [0.7.1](https://github.com/jdx/hk/compare/v0.7.0..0.7.1) - 2025-04-09
+## [0.7.2](https://github.com/jdx/hk/compare/v0.7.1..0.7.2) - 2025-04-10
+
+### 🐛 Bug Fixes
+
+- bug when depends not running by [@jdx](https://github.com/jdx) in [249cda3](https://github.com/jdx/hk/commit/249cda3718349ca7f49dc9a4f64fae6c847df9de)
+- bugs by [@jdx](https://github.com/jdx) in [c6f8f5a](https://github.com/jdx/hk/commit/c6f8f5a66cf0b36b73d732b994eeb90d378f3f03)
+- many things by [@jdx](https://github.com/jdx) in [df4c426](https://github.com/jdx/hk/commit/df4c42605d0e0f2526573ad8b307ab938179bc9c)
+
+### 🔍 Other Changes
+
+- Update go_fmt.pkl by [@jdx](https://github.com/jdx) in [b376ffc](https://github.com/jdx/hk/commit/b376ffc308a7345b99447d0bf7fa85c24c858a96)
+- Update shfmt.pkl by [@jdx](https://github.com/jdx) in [a45b08c](https://github.com/jdx/hk/commit/a45b08cbcbdd7d06b2239c6b780475ef32b2c4e4)
+- Update terraform.pkl by [@jdx](https://github.com/jdx) in [8357957](https://github.com/jdx/hk/commit/835795774dd3dd7871f495bb6c069cfea31b1619)
+
+## [0.7.1](https://github.com/jdx/hk/compare/v0.7.0..v0.7.1) - 2025-04-09
 
 ### 🚀 Features
 
