@@ -11,7 +11,16 @@ pub fn render(input: &str, ctx: &Context) -> Result<String> {
     Ok(output)
 }
 
-static BASE_CONTEXT: LazyLock<tera::Context> = LazyLock::new(tera::Context::new);
+static BASE_CONTEXT: LazyLock<tera::Context> = LazyLock::new(|| {
+    let mut ctx = tera::Context::new();
+    let cwd = std::env::current_dir().expect("failed to get current directory");
+    let root = xx::file::find_up(&cwd, &[".git"])
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+        .unwrap_or(cwd);
+    ctx.insert("color", &console::colors_enabled_stderr());
+    ctx.insert("root", &root.display().to_string());
+    ctx
+});
 
 #[derive(Clone)]
 pub struct Context {

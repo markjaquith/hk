@@ -279,9 +279,9 @@ dependencies = [
 
 [[package]]
 name = "clx"
-version = "0.2.8"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d38c70dfd06d5fb3d0ef25f81a3b3184cf6514cf70f75c007b081bd096f5dd8"
+checksum = "0f8c22b249ea164dea7b98ee54b49018ce080c042d0c90958b88badccbe0491c"
 dependencies = [
  "console",
  "indicatif",
@@ -2098,9 +2098,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.25"
+version = "0.23.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "822ee9188ac4ec04a2f0531e55d035fb2de73f18b41a63c70c2712503b6fb13c"
+checksum = "df51b5869f3a441595eac5e8ff14d486ff285f7b8c0df8770e49c3b56351f0f0"
 dependencies = [
  "once_cell",
  "ring",

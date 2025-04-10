@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use crate::{Result, step::RunType, step_job::StepJob};
 
+use eyre::OptionExt;
 use tokio::sync::{OwnedRwLockReadGuard, OwnedRwLockWriteGuard, OwnedSemaphorePermit};
 
 use crate::step_context::StepContext;
@@ -76,11 +77,17 @@ impl StepLocks {
             };
             match (step.stomp(), job.run_type) {
                 (true, _) | (_, RunType::Check(_)) => {
-                    let lock = file_locks.get(&path).unwrap().clone();
+                    let lock = file_locks
+                        .get(&path)
+                        .ok_or_eyre(eyre::eyre!("file lock not found for {}", path.display()))?
+                        .clone();
                     read_flocks.push(lock.read_owned().await)
                 }
                 (_, RunType::Fix) => {
-                    let lock = file_locks.get(&path).unwrap().clone();
+                    let lock = file_locks
+                        .get(&path)
+                        .ok_or_eyre(eyre::eyre!("file lock not found for {}", path.display()))?
+                        .clone();
                     write_flocks.push(lock.write_owned().await)
                 }
             }

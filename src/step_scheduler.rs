@@ -10,7 +10,7 @@ use crate::{
     tera::Context,
     ui::style,
 };
-use clx::progress::{self, ProgressJob, ProgressJobBuilder, ProgressOutput};
+use clx::progress::{self, ProgressJobBuilder, ProgressOutput};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use std::{
@@ -89,7 +89,7 @@ impl StepScheduler {
         let total_jobs = queue.groups.iter().flatten().count();
         let mut remaining_jobs = total_jobs;
 
-        for (i, group) in queue.groups.iter().enumerate() {
+        for group in queue.groups.iter() {
             let mut set = JoinSet::new();
             let step_contexts: HashMap<String, Arc<StepContext>> = group
                 .iter()
@@ -118,27 +118,6 @@ impl StepScheduler {
                 })
                 .collect();
 
-            let mut future_group_progress_jobs = if progress::output() == ProgressOutput::Text {
-                vec![]
-            } else {
-                queue
-                    .groups
-                    .iter()
-                    .skip(i + 1)
-                    .map(|group| {
-                        ProgressJobBuilder::new()
-                            .status(progress::ProgressStatus::RunningCustom(
-                                style::eyellow("❯").dim().to_string(),
-                            ))
-                            .prop(
-                                "message",
-                                &group.iter().map(|j| j.step.name()).unique().join(", "),
-                            )
-                            .start()
-                    })
-                    .collect_vec()
-            };
-
             let total_progress = if progress::output() == ProgressOutput::Text || total_jobs <= jobs
             {
                 None
@@ -163,13 +142,8 @@ impl StepScheduler {
 
             // Wait for tasks and abort on first error
             let mut files_to_stage = IndexSet::new();
-            let abort = |set: &mut JoinSet<Result<StepResponse>>,
-                         future_group_progress_jobs: &mut Vec<Arc<ProgressJob>>,
-                         e: eyre::Error| {
+            let abort = |set: &mut JoinSet<Result<StepResponse>>, e: eyre::Error| {
                 set.abort_all();
-                for job in future_group_progress_jobs.iter_mut() {
-                    job.remove();
-                }
                 for p in step_contexts.values().map(|ctx| &ctx.progress) {
                     if p.is_running() {
                         p.set_status(clx::progress::ProgressStatus::DoneCustom(
@@ -213,16 +187,13 @@ impl StepScheduler {
                     }
                     Ok(Err(e)) => {
                         // Task failed to execute
-                        return abort(&mut set, &mut future_group_progress_jobs, e);
+                        return abort(&mut set, e);
                     }
                     Err(e) => {
                         // JoinError occurred
-                        return abort(&mut set, &mut future_group_progress_jobs, e.into());
+                        return abort(&mut set, eyre::eyre!("join error: {e:?}"));
                     }
                 }
-            }
-            for job in future_group_progress_jobs.iter_mut() {
-                job.remove();
             }
             if let Some(total_progress) = &total_progress {
                 total_progress.remove();
@@ -281,8 +252,23 @@ impl StepScheduler {
                         {
                             debug!("{step}: failed check step first: {source}");
                             let filtered_files: HashSet<PathBuf> =
-                                stdout.lines().map(PathBuf::from).collect();
-                            let files: IndexSet<PathBuf> = job.files.into_iter().filter(|f| filtered_files.contains(f)).collect();
+                                stdout.lines().map(|p| match PathBuf::from(p).canonicalize() {
+                                    Ok(p) => p,
+                                    Err(e) => {
+                                        warn!("{step}: failed to canonicalize file: {e}");
+                                        PathBuf::from(p)
+                                    }
+                                }).collect();
+                            let files: IndexSet<PathBuf> = job.files.into_iter().filter(|f| {
+                                let f = match f.canonicalize() {
+                                    Ok(p) => p,
+                                    Err(e) => {
+                                        warn!("{step}: failed to canonicalize file: {e}");
+                                        f.to_path_buf()
+                                    }
+                                };
+                                filtered_files.contains(&f)
+                            }).collect();
                             for f in filtered_files.into_iter().filter(|f| !files.contains(f)) {
                                 warn!("{step}: file in check_list_files not found in original files: {}", f.display());
                             }

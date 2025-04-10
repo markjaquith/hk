@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate log;
 
+use std::time::Duration;
+
 pub use eyre::Result;
 
 mod cache;
@@ -33,6 +35,7 @@ use tokio::signal::unix::SignalKind;
 async fn main() -> Result<()> {
     #[cfg(unix)]
     handle_epipe();
+    clx::progress::set_interval(Duration::from_millis(200));
     match cli::run().await {
         Ok(()) => {
             clx::progress::flush();

@@ -303,7 +303,7 @@ impl Stash {
 
     pub async fn run(&self, ctx: &StepContext, _job: &StepJob) -> Result<StepResponse> {
         let mut repo = ctx.git.lock().await;
-        repo.stash_unstaged(false)?;
+        repo.stash_unstaged(&ctx.progress, false)?;
         Ok(Default::default())
     }
 }

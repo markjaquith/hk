@@ -223,7 +223,7 @@ impl Git {
         }
     }
 
-    pub fn stash_unstaged(&mut self, force: bool) -> Result<()> {
+    pub fn stash_unstaged(&mut self, job: &ProgressJob, force: bool) -> Result<()> {
         // Skip stashing if there's no initial commit yet or auto-stash is disabled
         if !force && !*env::HK_STASH {
             return Ok(());
@@ -233,10 +233,9 @@ impl Git {
                 return Ok(());
             }
         }
-        let job = ProgressJobBuilder::new()
-            .body(vec!["{{spinner()}} stash – {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string()])
-            .prop("message", "Fetching unstaged files")
-            .start();
+        job.set_body(vec!["{{spinner()}} stash – {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string()]);
+        job.prop("message", "Fetching unstaged files");
+        job.set_status(ProgressStatus::Running);
 
         let unstaged_files = self.unstaged_files()?;
         job.prop("files", &unstaged_files.len());
@@ -287,7 +286,7 @@ impl Git {
             repo.checkout_index(None, Some(&mut checkout_opts))
                 .wrap_err("failed to reset to head")?;
         } else {
-            xx::process::sh("git checkout -- .")?;
+            xx::process::sh("git restore --staged .")?;
         }
 
         job.prop("message", "Stashed unstaged changes");
@@ -363,7 +362,7 @@ impl Git {
 
         match diff {
             Either::Left(diff) => {
-                let patch_file = self.patch_file();
+                let patch_file = self.patch_file().to_path_buf();
                 job = ProgressJobBuilder::new()
                     .prop(
                         "message",
@@ -378,10 +377,10 @@ impl Git {
                     let mut apply_opts = git2::ApplyOptions::new();
                     repo.apply(&diff, git2::ApplyLocation::WorkDir, Some(&mut apply_opts))
                         .wrap_err_with(|| {
-                            format!("failed to apply diff {}", display_path(patch_file))
+                            format!("failed to apply diff {}", display_path(&patch_file))
                         })?;
                 } else {
-                    xx::process::sh(&format!("git apply {}", display_path(patch_file)))?;
+                    xx::process::sh(&format!("git apply {}", display_path(&patch_file)))?;
                 }
                 if let Err(err) = xx::file::remove_file(patch_file) {
                     debug!("failed to remove patch file: {:?}", err);
