@@ -348,9 +348,17 @@ impl Config {
         let hook = self.hooks.get(hook).unwrap_or(&HOOK);
 
         let mut hk_progress = ProgressJobBuilder::new()
-            .body(vec!["{{hk}} {{version}}{{hook}} {{message}}".to_string()])
-            .prop("hk", &style::emagenta("hk").bold().to_string())
-            .prop("version", &style::edim(version::version()).to_string());
+            .body(vec!["{{hk}}{{hook}}{{message}}".to_string()])
+            .prop(
+                "hk",
+                &format!(
+                    "{} {} {}",
+                    style::emagenta("hk").bold(),
+                    style::edim(version::version()),
+                    style::edim("by @jdx")
+                )
+                .to_string(),
+            );
 
         if hook.name == "check" || hook.name == "fix" {
             hk_progress = hk_progress.prop("hook", "");
@@ -362,10 +370,10 @@ impl Config {
         }
 
         let run_type = if *env::HK_FIX && hook.fix {
-            hk_progress = hk_progress.prop("message", &style::edim("– fix").to_string());
+            hk_progress = hk_progress.prop("message", &style::edim(" – fix").to_string());
             RunType::Fix
         } else {
-            hk_progress = hk_progress.prop("message", &style::edim("– check").to_string());
+            hk_progress = hk_progress.prop("message", &style::edim(" – check").to_string());
             RunType::Check(CheckType::Check)
         };
         // Check if both from_ref and to_ref are provided or neither
