@@ -184,47 +184,55 @@ impl Git {
         }
     }
 
-    pub fn staged_files(&self) -> Result<Vec<PathBuf>> {
+    pub fn status(&self) -> Result<GitStatus> {
         if let Some(repo) = &self.repo {
             let mut status_options = StatusOptions::new();
+            status_options.include_untracked(true);
+
+            // Get staged files
             status_options.show(StatusShow::Index);
-            let statuses = repo
+            let staged_statuses = repo
                 .statuses(Some(&mut status_options))
-                .wrap_err("failed to get statuses")?;
-            let paths = statuses
+                .wrap_err("failed to get staged statuses")?;
+            let staged_files = staged_statuses
                 .iter()
                 .filter_map(|s| s.path().map(PathBuf::from))
                 .filter(|p| p.exists())
-                .collect_vec();
-            Ok(paths)
-        } else {
-            let output = xx::process::sh("git diff --name-only --diff-filter=ACRMT --cached")?;
-            Ok(output.lines().map(PathBuf::from).collect())
-        }
-    }
+                .collect();
 
-    pub fn unstaged_files(&self) -> Result<Vec<PathBuf>> {
-        if let Some(repo) = &self.repo {
-            let mut status_options = StatusOptions::new();
-            status_options
-                .include_untracked(true)
-                .show(StatusShow::Workdir);
-            let statuses = repo
+            // Get unstaged files
+            status_options.show(StatusShow::Workdir);
+            let unstaged_statuses = repo
                 .statuses(Some(&mut status_options))
-                .wrap_err("failed to get statuses")?;
-            let paths = statuses
+                .wrap_err("failed to get unstaged statuses")?;
+            let unstaged_files = unstaged_statuses
                 .iter()
                 .filter_map(|s| s.path().map(PathBuf::from))
                 .filter(|p| p.exists())
-                .collect_vec();
-            Ok(paths)
+                .collect();
+
+            Ok(GitStatus {
+                staged_files,
+                unstaged_files,
+            })
         } else {
-            let output = xx::process::sh("git diff --name-only --diff-filter=ACRMT")?;
-            Ok(output.lines().map(PathBuf::from).collect())
+            // Get staged files
+            let staged_output =
+                xx::process::sh("git diff --name-only --diff-filter=ACRMT --cached")?;
+            let staged_files = staged_output.lines().map(PathBuf::from).collect();
+
+            // Get unstaged files
+            let unstaged_output = xx::process::sh("git diff --name-only --diff-filter=ACRMT")?;
+            let unstaged_files = unstaged_output.lines().map(PathBuf::from).collect();
+
+            Ok(GitStatus {
+                staged_files,
+                unstaged_files,
+            })
         }
     }
 
-    pub fn stash_unstaged(&mut self, job: &ProgressJob) -> Result<()> {
+    pub fn stash_unstaged(&mut self, job: &ProgressJob, status: &GitStatus) -> Result<()> {
         // Skip stashing if there's no initial commit yet or auto-stash is disabled
         if *env::HK_STASH == StashMethod::None {
             return Ok(());
@@ -238,12 +246,11 @@ impl Git {
         job.prop("message", "Fetching unstaged files");
         job.set_status(ProgressStatus::Running);
 
-        let unstaged_files = self.unstaged_files()?;
-        job.prop("files", &unstaged_files.len());
+        job.prop("files", &status.unstaged_files.len());
         // TODO: if any intent_to_add files exist, run `git rm --cached -- <file>...` then `git add --intent-to-add -- <file>...` when unstashing
         // let intent_to_add = self.intent_to_add_files()?;
         // see https://github.com/pre-commit/pre-commit/blob/main/pre_commit/staged_files_only.py
-        if unstaged_files.is_empty() {
+        if status.unstaged_files.is_empty() {
             job.prop("message", "No unstaged changes to stash");
             job.set_status(ProgressStatus::Done);
             return Ok(());
@@ -257,7 +264,7 @@ impl Git {
         self.stash = if *env::HK_STASH_USE_GIT {
             job.prop("message", "Running git stash");
             job.update();
-            self.push_stash()?.map(Either::Right)
+            self.push_stash(status)?.map(Either::Right)
         } else {
             job.prop(
                 "message",
@@ -344,8 +351,8 @@ impl Git {
         Ok(Some(patch))
     }
 
-    pub fn push_stash(&mut self) -> Result<Option<Oid>> {
-        if self.unstaged_files()?.is_empty() {
+    pub fn push_stash(&mut self, status: &GitStatus) -> Result<Option<Oid>> {
+        if status.unstaged_files.is_empty() {
             return Ok(None);
         }
         if let Some(repo) = &mut self.repo {
@@ -482,4 +489,9 @@ impl Git {
             Ok(output.lines().map(PathBuf::from).collect())
         }
     }
+}
+
+pub(crate) struct GitStatus {
+    pub unstaged_files: BTreeSet<PathBuf>,
+    pub staged_files: BTreeSet<PathBuf>,
 }

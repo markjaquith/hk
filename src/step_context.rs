@@ -1,4 +1,9 @@
-use crate::{git::Git, step_depends::StepDepends, tera, ui::style};
+use crate::{
+    git::{Git, GitStatus},
+    step_depends::StepDepends,
+    tera,
+    ui::style,
+};
 use clx::progress::{ProgressJob, ProgressStatus};
 use indexmap::IndexMap;
 use std::path::PathBuf;
@@ -14,6 +19,7 @@ pub struct StepContext {
     pub depends: Arc<StepDepends>,
     pub tctx: tera::Context,
     pub progress: Arc<ProgressJob>,
+    pub git_status: Arc<GitStatus>,
     pub files_added: Arc<std::sync::Mutex<usize>>,
     pub jobs_total: usize,
     pub jobs_remaining: Arc<std::sync::Mutex<usize>>,

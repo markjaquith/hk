@@ -305,7 +305,7 @@ impl Stash {
 
     pub async fn run(&self, ctx: &StepContext, _job: &StepJob) -> Result<StepResponse> {
         let mut repo = ctx.git.lock().await;
-        repo.stash_unstaged(&ctx.progress)?;
+        repo.stash_unstaged(&ctx.progress, &ctx.git_status)?;
         Ok(Default::default())
     }
 }
@@ -386,34 +386,28 @@ impl Config {
         let hk_progress = hk_progress.start();
         let repo = Git::new()?;
 
-        let file_progress_builder = ProgressJobBuilder::new().body(vec![
+        let file_progress = ProgressJobBuilder::new().body(vec![
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
-        ]);
-        let file_progress: Arc<ProgressJob>;
+        ])
+        .prop("message", "Fetching git status")
+        .start();
+        let git_status = Arc::new(repo.status()?);
         let files = if let (Some(from), Some(to)) = (from_ref, to_ref) {
-            file_progress = file_progress_builder
-                .prop(
-                    "message",
-                    &format!("Fetching files between {} and {}", from, to),
-                )
-                .start();
+            file_progress.prop(
+                "message",
+                &format!("Fetching files between {} and {}", from, to),
+            );
             repo.files_between_refs(from, to)?
         } else if all {
-            file_progress = file_progress_builder
-                .prop("message", "Fetching all files in repo")
-                .start();
+            file_progress.prop("message", "Fetching all files in repo");
             repo.all_files()?
         } else if hook.name == "check" || hook.name == "fix" {
             // TODO: this should probably be customizable on the hook like `fix = true` is
-            file_progress = file_progress_builder
-                .prop("message", "Fetching modified files")
-                .start();
+            file_progress.prop("message", "Fetching modified files");
             repo.modified_files()?
         } else {
-            file_progress = file_progress_builder
-                .prop("message", "Fetching staged files")
-                .start();
-            repo.staged_files()?
+            file_progress.prop("message", "Fetching staged files");
+            git_status.staged_files.iter().cloned().collect()
         };
         file_progress.prop("files", &files.len());
         file_progress.set_status(ProgressStatus::Done);
@@ -421,7 +415,7 @@ impl Config {
 
         watch_for_ctrl_c(repo.clone());
 
-        let mut result = StepScheduler::new(hook, run_type, repo.clone())
+        let mut result = StepScheduler::new(hook, run_type, repo.clone(), git_status)
             .with_files(files)
             .with_linters(linters)
             .with_tctx(tctx)

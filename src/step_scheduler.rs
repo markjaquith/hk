@@ -2,6 +2,7 @@ use crate::{
     config::{Hook, Steps},
     env,
     error::Error,
+    git::GitStatus,
     step_depends::StepDepends,
     step_job::{StepJob, StepJobStatus},
     step_locks::StepLocks,
@@ -32,6 +33,7 @@ use crate::{
 pub struct StepScheduler {
     run_type: RunType,
     repo: Arc<Mutex<Git>>,
+    git_status: Arc<GitStatus>,
     hook: Hook,
     files: Vec<PathBuf>,
     tctx: Context,
@@ -40,11 +42,17 @@ pub struct StepScheduler {
 }
 
 impl StepScheduler {
-    pub fn new(hook: &Hook, run_type: RunType, repo: Arc<Mutex<Git>>) -> Self {
+    pub fn new(
+        hook: &Hook,
+        run_type: RunType,
+        repo: Arc<Mutex<Git>>,
+        git_status: Arc<GitStatus>,
+    ) -> Self {
         let settings = Settings::get();
         Self {
             run_type,
             repo,
+            git_status,
             hook: hook.clone(),
             files: vec![],
             tctx: Default::default(),
@@ -104,6 +112,7 @@ impl StepScheduler {
                         step.name().to_string(),
                         Arc::new(StepContext {
                             git: self.repo.clone(),
+                            git_status: self.git_status.clone(),
                             semaphore: self.semaphore.clone(),
                             failed: self.failed.clone(),
                             file_locks: file_locks.clone(),
