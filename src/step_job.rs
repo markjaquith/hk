@@ -46,7 +46,7 @@ impl StepJob {
             run_type,
             workspace_indicator: None,
             check_first: *env::HK_CHECK_FIRST
-                && matches!(step.as_ref(), Steps::Linter(s) if s.check_first)
+                && matches!(step.as_ref(), Steps::Linter(s) if s.check_first && (s.check.is_some() || s.check_diff.is_some() || s.check_list_files.is_some()))
                 && matches!(run_type, RunType::Fix),
             step,
             status: StepJobStatus::Pending,

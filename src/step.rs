@@ -34,6 +34,8 @@ pub struct RunStep {
     pub env: IndexMap<String, String>,
     #[serde_as(as = "Option<OneOrMany<_>>")]
     pub stage: Option<Vec<String>>,
+    #[serde(default)]
+    pub stomp: bool,
 }
 
 impl RunStep {
@@ -157,11 +159,13 @@ impl LinterStep {
 
     pub fn run_cmd(&self, run_type: RunType) -> Option<&str> {
         match run_type {
-            RunType::Check(CheckType::Check) => self.check.as_deref(),
-            RunType::Check(CheckType::Diff) => self.check_diff.as_deref().or(self.check.as_deref()),
-            RunType::Check(CheckType::ListFiles) => {
-                self.check_list_files.as_deref().or(self.check.as_deref())
+            RunType::Check(c) => match c {
+                CheckType::Check => self.check.as_deref(),
+                CheckType::Diff => self.check_diff.as_deref(),
+                CheckType::ListFiles => self.check_list_files.as_deref(),
             }
+            .or(self.check.as_deref())
+            .or(self.fix.as_deref()),
             RunType::Fix => self
                 .fix
                 .as_deref()
@@ -358,7 +362,11 @@ pub(crate) async fn exec_step(
                     })?;
                 }
             }
-            ctx.progress.set_status(ProgressStatus::Failed);
+            if job.check_first && matches!(job.run_type, RunType::Check(_)) {
+                ctx.progress.set_status(ProgressStatus::Warn);
+            } else {
+                ctx.progress.set_status(ProgressStatus::Failed);
+            }
             return Err(err).wrap_err(run);
         }
     }

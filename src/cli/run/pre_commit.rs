@@ -3,7 +3,7 @@ use crate::config::Config;
 
 /// Sets up git hooks to run hk
 #[derive(Debug, clap::Args)]
-#[clap(visible_alias = "co")]
+#[clap(visible_alias = "pc")]
 pub struct PreCommit {
     /// Run on all files instead of just staged files
     #[clap(short, long)]

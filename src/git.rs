@@ -57,9 +57,10 @@ impl Git {
                 .chars()
                 .take(8)
                 .collect::<String>();
+            let date = chrono::Local::now().format("%Y-%m-%d").to_string();
             env::HK_STATE_DIR
                 .join("patches")
-                .join(format!("{name}-{rand}.patch"))
+                .join(format!("{name}-{date}-{rand}.patch"))
         })
     }
 
@@ -289,7 +290,15 @@ impl Git {
             xx::process::sh("git restore --staged .")?;
         }
 
-        job.prop("message", "Stashed unstaged changes");
+        if self.stash.as_ref().is_some_and(|s| s.is_left()) {
+            let patch_file = display_path(self.patch_file());
+            job.prop(
+                "message",
+                &format!("Stashed unstaged changes in {patch_file}"),
+            );
+        } else {
+            job.prop("message", "Stashed unstaged changes with git stash");
+        }
         job.set_status(ProgressStatus::Done);
         // return Err(eyre!("failed to reset to head"));
         Ok(())

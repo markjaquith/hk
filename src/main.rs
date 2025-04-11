@@ -26,6 +26,7 @@ mod step_scheduler;
 mod tera;
 mod ui;
 mod version;
+
 #[cfg(unix)]
 use tokio::signal;
 #[cfg(unix)]
@@ -42,6 +43,7 @@ async fn main() -> Result<()> {
             Ok(())
         }
         Err(e) => {
+            clx::progress::flush();
             return Err(e);
         }
     }

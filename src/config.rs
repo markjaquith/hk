@@ -221,6 +221,7 @@ impl Steps {
     pub fn stomp(&self) -> bool {
         match self {
             Steps::Linter(step) => step.stomp,
+            Steps::Run(step) => step.stomp,
             _ => false,
         }
     }
@@ -345,9 +346,26 @@ impl Config {
         }
         static HOOK: LazyLock<Hook> = LazyLock::new(Default::default);
         let hook = self.hooks.get(hook).unwrap_or(&HOOK);
+
+        let mut hk_progress = ProgressJobBuilder::new()
+            .body(vec!["{{hk}} {{version}}{{hook}} {{message}}".to_string()])
+            .prop("hk", &style::emagenta("hk").bold().to_string())
+            .prop("version", &style::edim(version::version()).to_string());
+
+        if hook.name == "check" || hook.name == "fix" {
+            hk_progress = hk_progress.prop("hook", "");
+        } else {
+            hk_progress = hk_progress.prop(
+                "hook",
+                &style::edim(format!(" – {}", hook.name)).to_string(),
+            );
+        }
+
         let run_type = if *env::HK_FIX && hook.fix {
+            hk_progress = hk_progress.prop("message", &style::edim("– fix").to_string());
             RunType::Fix
         } else {
+            hk_progress = hk_progress.prop("message", &style::edim("– check").to_string());
             RunType::Check(CheckType::Check)
         };
         // Check if both from_ref and to_ref are provided or neither
@@ -356,7 +374,7 @@ impl Config {
                 "Both --from-ref and --to-ref must be provided together"
             ));
         }
-
+        let hk_progress = hk_progress.start();
         let repo = Git::new()?;
         let file_progress_builder = ProgressJobBuilder::new().body(vec![
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
@@ -397,6 +415,7 @@ impl Config {
             .with_tctx(tctx)
             .run()
             .await;
+        hk_progress.set_status(ProgressStatus::Done);
 
         if let Err(err) = repo.lock().await.pop_stash() {
             if result.is_ok() {

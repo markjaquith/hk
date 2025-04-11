@@ -69,7 +69,12 @@ impl StepLocks {
         }
         let mut read_flocks = vec![];
         let mut write_flocks = vec![];
-        for path in &job.files {
+        let files = if job.step.stomp() {
+            &job.files
+        } else {
+            &vec![]
+        };
+        for path in files {
             let path = if let Some(dir) = job.step.dir() {
                 PathBuf::from(dir).join(path)
             } else {
@@ -81,14 +86,24 @@ impl StepLocks {
                         .get(&path)
                         .ok_or_eyre(eyre::eyre!("file lock not found for {}", path.display()))?
                         .clone();
-                    read_flocks.push(lock.read_owned().await)
+                    if let Ok(lock) = lock.clone().try_read_owned() {
+                        read_flocks.push(lock);
+                    } else {
+                        debug!("{step}: waiting for {} to finish for read", path.display());
+                        read_flocks.push(lock.read_owned().await);
+                    }
                 }
                 (_, RunType::Fix) => {
                     let lock = file_locks
                         .get(&path)
                         .ok_or_eyre(eyre::eyre!("file lock not found for {}", path.display()))?
                         .clone();
-                    write_flocks.push(lock.write_owned().await)
+                    if let Ok(lock) = lock.clone().try_write_owned() {
+                        write_flocks.push(lock);
+                    } else {
+                        debug!("{step}: waiting for {} to finish for write", path.display());
+                        write_flocks.push(lock.write_owned().await);
+                    }
                 }
             }
         }

@@ -29,6 +29,10 @@ class RunStep {
     /// a shell command to run
     run: String
 
+    /// fetches a read lock instead of a write lock when running fix/fix_all. Use if the tool has its own locking mechanism or you simply don't care if files may be written to
+    /// by multiple steps.
+    stomp = false
+
     /// run the linter scripts with these environment variables
     env = new Mapping<String, String>{}
 

@@ -142,7 +142,7 @@ impl StepScheduler {
 
             // Wait for tasks and abort on first error
             let mut files_to_stage = IndexSet::new();
-            let abort = |set: &mut JoinSet<Result<StepResponse>>, e: eyre::Error| {
+            let abort = async |set: &mut JoinSet<Result<StepResponse>>, e: eyre::Error| {
                 set.abort_all();
                 for p in step_contexts.values().map(|ctx| &ctx.progress) {
                     if p.is_running() {
@@ -163,6 +163,10 @@ impl StepScheduler {
                     if let Some(ensembler::Error::ScriptFailed(bin, args, output, result)) =
                         e.chain().find_map(|e| e.downcast_ref::<ensembler::Error>())
                     {
+                        if let Err(err) = self.repo.lock().await.pop_stash() {
+                            warn!("Failed to pop stash: {:?}", err);
+                        }
+                        clx::progress::flush();
                         let mut cmd = format!("{} {}", bin, args.join(" "));
                         if cmd.starts_with("sh -o errexit -c ") {
                             cmd = cmd[17..].to_string();
@@ -187,11 +191,11 @@ impl StepScheduler {
                     }
                     Ok(Err(e)) => {
                         // Task failed to execute
-                        return abort(&mut set, e);
+                        return abort(&mut set, e).await;
                     }
                     Err(e) => {
                         // JoinError occurred
-                        return abort(&mut set, eyre::eyre!("join error: {e:?}"));
+                        return abort(&mut set, eyre::eyre!("join error: {e:?}")).await;
                     }
                 }
             }
