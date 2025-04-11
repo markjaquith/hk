@@ -1,6 +1,13 @@
 # Changelog
 
-## [0.7.4](https://github.com/jdx/hk/compare/v0.7.3..0.7.4) - 2025-04-11
+## [0.7.5](https://github.com/jdx/hk/compare/v0.7.4..0.7.5) - 2025-04-11
+
+### 🐛 Bug Fixes
+
+- bugs by [@jdx](https://github.com/jdx) in [6b9fc78](https://github.com/jdx/hk/commit/6b9fc78ed033d7a6874f1e0c801af049c0ac9b4d)
+- apply patch on ctrl-c by [@jdx](https://github.com/jdx) in [4bad9a0](https://github.com/jdx/hk/commit/4bad9a0cb147f660e62abad26020065d987d4e9f)
+
+## [0.7.4](https://github.com/jdx/hk/compare/v0.7.3..v0.7.4) - 2025-04-11
 
 ### 🐛 Bug Fixes
 
