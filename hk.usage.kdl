@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.7.3"
+version "0.7.4"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -70,7 +70,7 @@ cmd run help="Run a hook" {
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message"
     }
     cmd pre-commit help="Sets up git hooks to run hk" {
-        alias co
+        alias pc
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
         flag "-c --check" help="Run run command instead of fix command"

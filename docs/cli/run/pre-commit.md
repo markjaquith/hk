@@ -1,7 +1,7 @@
 # `hk run pre-commit`
 
 - **Usage**: `hk run pre-commit [FLAGS]`
-- **Aliases**: `co`
+- **Aliases**: `pc`
 
 Sets up git hooks to run hk
 

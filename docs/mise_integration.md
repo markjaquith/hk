@@ -39,7 +39,7 @@ parsing, parallel execution, and more.
 Just run mise in `hk.pkl` like any other command:
 
 ```pkl
-amends "package://github.com/jdx/hk/releases/download/v0.7.3/hk@0.7.3#/Config.pkl"
+amends "package://github.com/jdx/hk/releases/download/v0.7.4/hk@0.7.4#/Config.pkl"
 
 `pre-commit` {
     ["prelint"] {
