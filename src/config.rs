@@ -6,6 +6,7 @@ use std::{
     path::{Path, PathBuf},
     sync::{Arc, LazyLock},
 };
+use tokio::signal;
 use tokio::sync::Mutex;
 
 use crate::{
@@ -384,6 +385,7 @@ impl Config {
         }
         let hk_progress = hk_progress.start();
         let repo = Git::new()?;
+
         let file_progress_builder = ProgressJobBuilder::new().body(vec![
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
         ]);
@@ -417,6 +419,8 @@ impl Config {
         file_progress.set_status(ProgressStatus::Done);
         let repo = Arc::new(Mutex::new(repo));
 
+        watch_for_ctrl_c(repo.clone());
+
         let mut result = StepScheduler::new(hook, run_type, repo.clone())
             .with_files(files)
             .with_linters(linters)
@@ -434,4 +438,18 @@ impl Config {
         }
         result
     }
+}
+
+fn watch_for_ctrl_c(repo: Arc<Mutex<Git>>) {
+    tokio::spawn(async move {
+        if let Err(err) = signal::ctrl_c().await {
+            warn!("Failed to watch for ctrl-c: {}", err);
+        }
+        if let Err(err) = repo.lock().await.pop_stash() {
+            warn!("Failed to pop stash: {}", err);
+        }
+        clx::progress::flush();
+        // TODO: gracefully stop child processes
+        std::process::exit(1);
+    });
 }
