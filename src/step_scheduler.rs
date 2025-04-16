@@ -32,7 +32,6 @@ pub struct StepScheduler {
     hook_ctx: Arc<HookContext>,
     repo: Arc<Mutex<Git>>,
     hook: Hook,
-    failed: Arc<Mutex<bool>>,
 }
 
 impl StepScheduler {
@@ -41,7 +40,6 @@ impl StepScheduler {
             hook_ctx,
             repo,
             hook: hook.clone(),
-            failed: Arc::new(Mutex::new(false)),
         }
     }
 
@@ -92,7 +90,6 @@ impl StepScheduler {
                         step.name.clone(),
                         Arc::new(StepContext {
                             hook_ctx: self.hook_ctx.clone(),
-                            failed: self.failed.clone(),
                             depends: Arc::new(StepDepends::new(group)),
                             progress: step.build_step_progress(),
                             files_added: Arc::new(std::sync::Mutex::new(0)),
@@ -271,7 +268,7 @@ impl StepScheduler {
                     }
                 }
             }
-            let failed = ctx.failed.clone();
+            let failed = ctx.hook_ctx.failed.clone();
             let result = match run(
                 &ctx,
                 job,
@@ -281,7 +278,7 @@ impl StepScheduler {
                 Ok(rsp) => Ok(rsp),
                 Err(err) => {
                     // Mark as failed to prevent new steps from starting
-                    *failed.lock().await = true;
+                    failed.cancel();
                     Err(err)
                 }
             };
@@ -313,7 +310,7 @@ async fn run(ctx: &StepContext, mut job: StepJob) -> Result<StepResponse> {
         // }
         status => unreachable!("invalid status: {}", status),
     }
-    if *ctx.failed.lock().await {
+    if ctx.hook_ctx.failed.is_cancelled() {
         trace!("{step}: skipping step due to previous failure");
         return Ok(Default::default());
     }

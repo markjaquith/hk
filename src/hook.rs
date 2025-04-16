@@ -11,6 +11,7 @@ use tokio::{
     signal,
     sync::{Mutex, OnceCell, RwLock, Semaphore},
 };
+use tokio_util::sync::CancellationToken;
 
 use crate::{
     Result, env,
@@ -43,6 +44,7 @@ pub struct HookContext {
     // pub files_added: Mutex<usize>,
     pub run_type: RunType,
     pub semaphore: Arc<Semaphore>,
+    pub failed: CancellationToken,
 }
 
 impl HookContext {
@@ -62,6 +64,7 @@ impl HookContext {
             // files_added: Mutex::new(0),
             run_type,
             semaphore: Arc::new(Semaphore::new(Settings::get().jobs().get())),
+            failed: CancellationToken::new(),
         }
     }
 }
