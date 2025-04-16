@@ -1,17 +1,16 @@
 use crate::{
     env,
     error::Error,
-    hook::Hook,
+    hook::{Hook, HookContext},
     step_depends::StepDepends,
     step_job::{StepJob, StepJobStatus},
     step_locks::StepLocks,
     step_queue::StepQueueBuilder,
     step_response::StepResponse,
-    tera::Context,
     ui::style,
 };
 use clx::progress::{self, ProgressJobBuilder, ProgressOutput};
-use indexmap::{IndexMap, IndexSet};
+use indexmap::IndexSet;
 use itertools::Itertools;
 use std::{
     collections::{HashMap, HashSet},
@@ -19,7 +18,7 @@ use std::{
     path::PathBuf,
     sync::Arc,
 };
-use tokio::sync::{Mutex, RwLock, Semaphore};
+use tokio::sync::Mutex;
 use tokio::task::JoinSet;
 
 use crate::{Result, step_context::StepContext};
@@ -30,32 +29,20 @@ use crate::{
 };
 
 pub struct StepScheduler {
-    run_type: RunType,
+    hook_ctx: Arc<HookContext>,
     repo: Arc<Mutex<Git>>,
     hook: Hook,
-    files: Vec<PathBuf>,
-    tctx: Context,
     failed: Arc<Mutex<bool>>,
-    semaphore: Arc<Semaphore>,
 }
 
 impl StepScheduler {
-    pub fn new(hook: &Hook, run_type: RunType, repo: Arc<Mutex<Git>>) -> Self {
-        let settings = Settings::get();
+    pub fn new(hook: &Hook, hook_ctx: Arc<HookContext>, repo: Arc<Mutex<Git>>) -> Self {
         Self {
-            run_type,
+            hook_ctx,
             repo,
             hook: hook.clone(),
-            files: vec![],
-            tctx: Default::default(),
             failed: Arc::new(Mutex::new(false)),
-            semaphore: Arc::new(Semaphore::new(settings.jobs().get())),
         }
-    }
-
-    pub fn with_files(mut self, files: Vec<PathBuf>) -> Self {
-        self.files = files;
-        self
     }
 
     pub fn with_linters(mut self, linters: &[String]) -> Self {
@@ -66,26 +53,27 @@ impl StepScheduler {
         self
     }
 
-    pub fn with_tctx(mut self, tctx: Context) -> Self {
-        self.tctx = tctx;
-        self
-    }
-
     pub async fn run(self) -> Result<()> {
         let settings = Settings::get();
         let jobs = settings.jobs().get();
-        let file_locks = self
-            .files
-            .iter()
-            .map(|file| (file.clone(), Arc::new(RwLock::new(()))))
-            .collect::<IndexMap<PathBuf, _>>();
         let steps = self
             .hook
             .steps
             .into_iter()
             .map(|(_, step)| Arc::new(step))
             .collect::<Vec<_>>();
-        let queue = StepQueueBuilder::new(steps, self.files, self.run_type).build()?;
+        let queue = StepQueueBuilder::new(
+            steps,
+            self.hook_ctx
+                .file_locks
+                .lock()
+                .await
+                .keys()
+                .cloned()
+                .collect(),
+            self.hook_ctx.run_type,
+        )
+        .build()?;
         let total_jobs = queue.groups.iter().flatten().count();
         let mut remaining_jobs = total_jobs;
 
@@ -103,10 +91,8 @@ impl StepScheduler {
                     (
                         step.name.clone(),
                         Arc::new(StepContext {
-                            semaphore: self.semaphore.clone(),
+                            hook_ctx: self.hook_ctx.clone(),
                             failed: self.failed.clone(),
-                            file_locks: file_locks.clone(),
-                            tctx: self.tctx.clone(),
                             depends: Arc::new(StepDepends::new(group)),
                             progress: step.build_step_progress(),
                             files_added: Arc::new(std::sync::Mutex::new(0)),
@@ -319,7 +305,7 @@ async fn run(ctx: &StepContext, mut job: StepJob) -> Result<StepResponse> {
     let step = job.step.clone();
     match job.status {
         StepJobStatus::Pending => {
-            let locks = StepLocks::lock(ctx, &job).await?;
+            let locks = StepLocks::lock(&ctx.hook_ctx, ctx, &job).await?;
             job.status = StepJobStatus::Started(locks);
         }
         // StepJobStatus::Ready(locks) => {

@@ -3,13 +3,13 @@ use indexmap::IndexMap;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{BTreeSet, HashSet},
+    collections::{BTreeMap, BTreeSet, HashSet},
     path::{Path, PathBuf},
     sync::Arc,
 };
 use tokio::{
     signal,
-    sync::{Mutex, OnceCell},
+    sync::{Mutex, OnceCell, RwLock, Semaphore},
 };
 
 use crate::{
@@ -17,6 +17,7 @@ use crate::{
     git::{Git, StashMethod},
     glob,
     hook_options::HookOptions,
+    settings::Settings,
     step::{CheckType, RunType, Step},
     step_scheduler::StepScheduler,
     ui::style,
@@ -34,6 +35,35 @@ pub struct Hook {
     #[serde(default)]
     pub fix: bool,
     pub stash: Option<StashMethod>,
+}
+
+pub struct HookContext {
+    pub file_locks: Mutex<BTreeMap<PathBuf, Arc<RwLock<()>>>>,
+    pub tctx: crate::tera::Context,
+    // pub files_added: Mutex<usize>,
+    pub run_type: RunType,
+    pub semaphore: Arc<Semaphore>,
+}
+
+impl HookContext {
+    pub fn new<P: AsRef<Path>>(
+        files: impl IntoIterator<Item = P>,
+        tctx: crate::tera::Context,
+        run_type: RunType,
+    ) -> Self {
+        Self {
+            file_locks: Mutex::new(
+                files
+                    .into_iter()
+                    .map(|f| (f.as_ref().to_path_buf(), Arc::new(RwLock::new(()))))
+                    .collect(),
+            ),
+            tctx,
+            // files_added: Mutex::new(0),
+            run_type,
+            semaphore: Arc::new(Semaphore::new(Settings::get().jobs().get())),
+        }
+    }
 }
 
 impl Hook {
@@ -142,10 +172,9 @@ impl Hook {
                 .stash_unstaged(&file_progress, stash_method, git_status)?;
         }
 
-        let mut result = StepScheduler::new(self, run_type, repo.clone())
-            .with_files(files.into_iter().collect())
+        let hook_ctx = Arc::new(HookContext::new(files.iter(), opts.tctx, run_type));
+        let mut result = StepScheduler::new(self, hook_ctx, repo.clone())
             .with_linters(&opts.step)
-            .with_tctx(opts.tctx)
             .run()
             .await;
         hk_progress.set_status(ProgressStatus::Done);

@@ -33,12 +33,6 @@ pub enum StepJobStatus {
     // Errored,
 }
 
-// impl StepJobStatus {
-//     pub fn is_complete(&self) -> bool {
-//         matches!(self, StepJobStatus::Finished | StepJobStatus::Errored)
-//     }
-// }
-
 impl StepJob {
     pub fn new(step: Arc<Step>, files: Vec<PathBuf>, run_type: RunType) -> Self {
         Self {

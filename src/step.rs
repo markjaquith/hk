@@ -185,7 +185,7 @@ impl Step {
 
     pub(crate) async fn run(&self, ctx: &StepContext, job: &StepJob) -> Result<StepResponse> {
         let mut rsp = StepResponse::default();
-        let mut tctx = job.tctx(&ctx.tctx);
+        let mut tctx = job.tctx(&ctx.hook_ctx.tctx);
         tctx.with_globs(self.glob.as_ref().unwrap_or(&vec![]));
         tctx.with_files(&job.files);
         let file_msg = |files: &[PathBuf]| {
