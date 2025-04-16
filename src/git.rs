@@ -5,11 +5,12 @@ use std::{
     sync::Arc,
 };
 
-use crate::{Result, hook::StashMethod};
+use crate::Result;
 use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use eyre::{WrapErr, eyre};
 use git2::{Repository, StatusOptions, StatusShow, Tree};
 use itertools::Itertools;
+use serde::{Deserialize, Serialize};
 use xx::file::display_path;
 
 use crate::env;
@@ -25,6 +26,15 @@ enum StashType {
     PatchFile(String, PathBuf),
     LibGit,
     Git,
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize, Serialize, strum::EnumString)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub enum StashMethod {
+    Git,
+    PatchFile,
+    None,
 }
 
 impl Git {

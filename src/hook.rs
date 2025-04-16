@@ -14,7 +14,7 @@ use tokio::{
 
 use crate::{
     Result, env,
-    git::Git,
+    git::{Git, StashMethod},
     glob,
     hook_options::HookOptions,
     step::{CheckType, RunType, Step},
@@ -34,15 +34,6 @@ pub struct Hook {
     #[serde(default)]
     pub fix: bool,
     pub stash: Option<StashMethod>,
-}
-
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Deserialize, Serialize, strum::EnumString)]
-#[serde(rename_all = "kebab-case")]
-#[strum(serialize_all = "kebab-case")]
-pub enum StashMethod {
-    Git,
-    PatchFile,
-    None,
 }
 
 impl Hook {
