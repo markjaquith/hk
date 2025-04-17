@@ -51,6 +51,8 @@ pub struct Step {
     #[serde(default)]
     pub exclusive: bool,
     pub root: Option<PathBuf>,
+    #[serde(default)]
+    pub hide: bool,
 }
 
 impl fmt::Display for Step {
@@ -263,15 +265,15 @@ impl Step {
             ctx.hook_ctx.run_type,
             &ctx.hook_ctx.files_in_contention.lock().unwrap(),
         )?;
-        if jobs.is_empty() {
+        if let Some(job) = jobs.first_mut() {
+            job.semaphore = Some(semaphore);
+        } else {
             ctx.hook_ctx.dec_total_jobs(1);
             debug!("{self}: no jobs to run");
             return Ok(());
         }
-        ctx.status_started();
         ctx.set_jobs_total(jobs.len());
         ctx.hook_ctx.inc_total_jobs(jobs.len() - 1);
-        jobs[0].status_start(&ctx, semaphore).await?;
         let mut set = tokio::task::JoinSet::new();
         for job in jobs {
             let ctx = ctx.clone();
@@ -344,9 +346,13 @@ impl Step {
                     //     ));
                     // }
                 }
-                Err(e) => {
-                    std::panic::resume_unwind(e.into_panic());
-                }
+                Err(e) => match e.try_into_panic() {
+                    Ok(e) => std::panic::resume_unwind(e),
+                    Err(e) => {
+                        ctx.status_errored(&format!("{e}"));
+                        return Err(e.into());
+                    }
+                },
             }
         }
         if ctx.hook_ctx.failed.is_cancelled() {
@@ -400,13 +406,19 @@ impl Step {
             return Ok(());
         }
         if let Some(condition) = &self.condition {
-            if EXPR_ENV.eval(condition, &ctx.hook_ctx.expr_ctx())? == expr::Value::Bool(false) {
+            let val = EXPR_ENV.eval(condition, &ctx.hook_ctx.expr_ctx())?;
+            trace!("{self}: condition: {condition} = {val}");
+            if val == expr::Value::Bool(false) {
                 return Ok(());
             }
         }
         job.progress = Some(job.build_progress(ctx));
         if job.status.is_pending() {
-            let semaphore = ctx.hook_ctx.semaphore().await;
+            let semaphore = if let Some(semaphore) = job.semaphore.take() {
+                semaphore
+            } else {
+                ctx.hook_ctx.semaphore().await
+            };
             job.status_start(ctx, semaphore).await?;
         }
         let mut tctx = job.tctx(&ctx.hook_ctx.tctx);

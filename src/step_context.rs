@@ -1,10 +1,10 @@
-use crate::{hook::HookContext, step_depends::StepDepends, ui::style};
+use crate::{hook::HookContext, step::Step, step_depends::StepDepends, ui::style};
 use clx::progress::{ProgressJob, ProgressStatus};
 use std::{path::PathBuf, sync::Arc};
 
 /// Stores all the information/mutexes needed to run a StepJob
 pub struct StepContext {
-    // pub step: Arc<Step>,
+    pub step: Arc<Step>,
     pub hook_ctx: Arc<HookContext>,
     pub depends: Arc<StepDepends>,
     pub progress: Arc<ProgressJob>,
@@ -80,16 +80,22 @@ impl StepContext {
     pub fn status_finished(&self) {
         let mut status = self.status.lock().unwrap();
         match &*status {
-            StepStatus::Pending | StepStatus::Started => {
+            StepStatus::Started => {
                 *status = StepStatus::Finished;
                 drop(status);
                 self.update_progress();
             }
-            StepStatus::Aborted | StepStatus::Finished | StepStatus::Errored(_) => {}
+            StepStatus::Pending
+            | StepStatus::Aborted
+            | StepStatus::Finished
+            | StepStatus::Errored(_) => {}
         }
     }
 
     fn update_progress(&self) {
+        if self.step.hide {
+            return;
+        }
         let files_added = *self.files_added.lock().unwrap();
         let jobs_remaining = *self.jobs_remaining.lock().unwrap();
         let jobs_total = *self.jobs_total.lock().unwrap();

@@ -75,6 +75,7 @@ impl StepGroup {
                 (
                     s.name.clone(),
                     Arc::new(StepContext {
+                        step: s.clone(),
                         hook_ctx: ctx.hook_ctx.clone(),
                         depends: depends.clone(),
                         progress: s.build_step_progress(),

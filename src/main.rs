@@ -42,21 +42,19 @@ async fn main() -> Result<()> {
     handle_panic();
     let result = cli::run().await;
     clx::progress::flush();
-    if let Err(e) = &result {
-        if !log::log_enabled!(log::Level::Debug) {
-            return friendly_error(e);
-        }
+    if result.is_err() && !log::log_enabled!(log::Level::Debug) {
+        return friendly_error(result.unwrap_err());
     }
     result
 }
 
-fn friendly_error(e: &eyre::Report) -> Result<()> {
+fn friendly_error(e: eyre::Report) -> Result<()> {
     if let Some(ensembler::Error::ScriptFailed(err)) =
         e.chain().find_map(|e| e.downcast_ref::<ensembler::Error>())
     {
         handle_script_failed(&err.0, &err.1, &err.2, &err.3);
     }
-    Ok(())
+    Err(e)
 }
 
 fn handle_script_failed(bin: &str, args: &[String], output: &str, result: &ensembler::CmdResult) {

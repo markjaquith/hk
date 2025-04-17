@@ -21,6 +21,7 @@ pub struct StepJob {
     pub run_type: RunType,
     pub check_first: bool,
     pub progress: Option<Arc<ProgressJob>>,
+    pub semaphore: Option<OwnedSemaphorePermit>,
     workspace_indicator: Option<PathBuf>,
 
     pub status: StepJobStatus,
@@ -50,6 +51,7 @@ impl StepJob {
             step,
             status: StepJobStatus::Pending,
             progress: None,
+            semaphore: None,
         }
     }
 
@@ -104,6 +106,7 @@ impl StepJob {
         }
         let flocks = self.flocks(ctx).await;
         self.status = StepJobStatus::Started(StepLocks::new(flocks, semaphore));
+        ctx.status_started();
         if let Some(progress) = &mut self.progress {
             progress.set_status(ProgressStatus::Running);
         }
@@ -124,7 +127,7 @@ impl StepJob {
 
     pub async fn status_errored(&mut self, ctx: &StepContext, err: String) -> Result<()> {
         match &mut self.status {
-            StepJobStatus::Started(_) => {}
+            StepJobStatus::Pending | StepJobStatus::Started(_) => {}
             _ => unreachable!("invalid status: {:?}", self.status),
         }
         self.status = StepJobStatus::Errored(err.to_string());
@@ -157,6 +160,7 @@ impl Clone for StepJob {
             workspace_indicator: self.workspace_indicator.clone(),
             status: StepJobStatus::Pending,
             progress: self.progress.clone(),
+            semaphore: None,
         }
     }
 }
