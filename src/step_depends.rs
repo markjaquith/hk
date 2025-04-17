@@ -18,12 +18,16 @@ impl StepDepends {
     }
 
     pub fn is_done(&self, step: &str) -> bool {
-        let (_tx, rx) = self.depends.get(step).expect("step not found");
+        let Some((_tx, rx)) = self.depends.get(step) else {
+            return true;
+        };
         *rx.clone().borrow_and_update()
     }
 
     pub async fn wait_for(&self, step: &str) -> Result<()> {
-        let (_tx, rx) = self.depends.get(step).expect("step not found");
+        let Some((_tx, rx)) = self.depends.get(step) else {
+            return Ok(());
+        };
         let mut rx = rx.clone();
         while !*rx.borrow_and_update() {
             rx.changed().await?;

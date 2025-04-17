@@ -269,6 +269,7 @@ impl Step {
             job.semaphore = Some(semaphore);
         } else {
             ctx.hook_ctx.dec_total_jobs(1);
+            ctx.depends.mark_done(&self.name)?;
             debug!("{self}: no jobs to run");
             return Ok(());
         }
