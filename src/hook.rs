@@ -223,7 +223,9 @@ impl Hook {
             debug!("running group: {i}");
             let mut ctx = StepGroupContext::new(hook_ctx.clone());
             if multiple_groups {
-                ctx = ctx.with_progress(group.build_group_progress());
+                if let Some(name) = &group.name {
+                    ctx = ctx.with_progress(group.build_group_progress(name));
+                }
             }
             result = result.and(group.run(ctx).await);
             if result.is_err() {

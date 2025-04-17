@@ -10,7 +10,7 @@ use std::{
 };
 
 pub struct StepGroup {
-    pub name: String,
+    pub name: Option<String>,
     pub steps: Vec<Arc<Step>>,
 }
 
@@ -48,18 +48,14 @@ impl StepGroup {
             })
             .into_iter()
             .filter(|steps| !steps.is_empty())
-            .enumerate()
-            .map(|(i, steps)| Self {
-                name: format!("group-{}", i),
-                steps,
-            })
+            .map(|steps| Self { name: None, steps })
             .collect()
     }
 
-    pub fn build_group_progress(&self) -> Arc<ProgressJob> {
+    pub fn build_group_progress(&self, name: &str) -> Arc<ProgressJob> {
         ProgressJobBuilder::new()
             .body("group: {{group}}")
-            .prop("group", &self.name)
+            .prop("group", &name)
             .start()
     }
 
