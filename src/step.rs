@@ -188,7 +188,7 @@ impl Step {
         if let Some(dir) = &self.dir {
             files.retain(|f| f.starts_with(dir));
             if files.is_empty() {
-                debug!("{self}: no matches for step in {dir}");
+                debug!("{self}: no files in {dir}");
             }
             for f in files.iter_mut() {
                 // strip the dir prefix from the file path
@@ -214,8 +214,9 @@ impl Step {
         files_in_contention: &HashSet<PathBuf>,
     ) -> Result<Vec<StepJob>> {
         let files = self.filter_files(files)?;
-        if files.is_empty() {
-            debug!("{self}: no matches for step");
+        if files.is_empty() && (self.glob.is_some() || self.dir.is_some() || self.exclude.is_some())
+        {
+            debug!("{self}: no file matches for step");
             return Ok(Default::default());
         }
         let mut jobs = if let Some(workspace_indicators) = self.workspaces_for_files(&files)? {
@@ -260,7 +261,7 @@ impl Step {
         )?;
         if jobs.is_empty() {
             ctx.hook_ctx.dec_total_jobs(1);
-            debug!("{self}: no matches for step");
+            debug!("{self}: no jobs to run");
             return Ok(());
         }
         ctx.status_started();
