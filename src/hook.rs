@@ -15,7 +15,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     Result, env,
-    git::{Git, StashMethod},
+    git::{Git, GitStatus, StashMethod},
     glob,
     hook_options::HookOptions,
     settings::Settings,
@@ -92,15 +92,58 @@ impl Hook {
             // TODO: implement to_ref
         }
         let repo = Arc::new(Mutex::new(Git::new()?));
-
+        let git_status = OnceCell::new();
+        let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
+        watch_for_ctrl_c(repo.clone());
         let file_progress = ProgressJobBuilder::new().body(vec![
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}".to_string(),
         ])
         .prop("message", "Fetching git status")
         .start();
-        // TODO: this doesn't necessarily need to be fetched right now, or at least blocking
-        let git_status = OnceCell::new();
-        let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
+        let files = self
+            .file_list(
+                &opts,
+                repo.clone(),
+                &git_status,
+                stash_method,
+                &file_progress,
+            )
+            .await?;
+
+        if stash_method != StashMethod::None {
+            let git_status = git_status
+                .get_or_try_init(async || repo.lock().await.status())
+                .await?;
+            repo.lock()
+                .await
+                .stash_unstaged(&file_progress, stash_method, git_status)?;
+        }
+
+        let hook_ctx = Arc::new(HookContext::new(files.iter(), opts.tctx, run_type));
+        let mut result = StepScheduler::new(self, hook_ctx, repo.clone())
+            .with_linters(&opts.step)
+            .run()
+            .await;
+        hk_progress.set_status(ProgressStatus::Done);
+
+        if let Err(err) = repo.lock().await.pop_stash() {
+            if result.is_ok() {
+                result = Err(err);
+            } else {
+                warn!("Failed to pop stash: {}", err);
+            }
+        }
+        result
+    }
+
+    async fn file_list(
+        &self,
+        opts: &HookOptions,
+        repo: Arc<Mutex<Git>>,
+        git_status: &OnceCell<GitStatus>,
+        stash_method: StashMethod,
+        file_progress: &ProgressJob,
+    ) -> Result<BTreeSet<PathBuf>> {
         let mut files = if let Some(files) = &opts.files {
             files
                 .iter()
@@ -150,7 +193,7 @@ impl Hook {
                 .cloned()
                 .collect()
         };
-        for exclude in opts.exclude.unwrap_or_default() {
+        for exclude in opts.exclude.as_ref().unwrap_or(&vec![]) {
             let exclude = Path::new(&exclude);
             files.retain(|f| !f.starts_with(exclude));
         }
@@ -163,33 +206,7 @@ impl Hook {
         }
         file_progress.prop("files", &files.len());
         file_progress.set_status(ProgressStatus::Done);
-
-        watch_for_ctrl_c(repo.clone());
-
-        if stash_method != StashMethod::None {
-            let git_status = git_status
-                .get_or_try_init(async || repo.lock().await.status())
-                .await?;
-            repo.lock()
-                .await
-                .stash_unstaged(&file_progress, stash_method, git_status)?;
-        }
-
-        let hook_ctx = Arc::new(HookContext::new(files.iter(), opts.tctx, run_type));
-        let mut result = StepScheduler::new(self, hook_ctx, repo.clone())
-            .with_linters(&opts.step)
-            .run()
-            .await;
-        hk_progress.set_status(ProgressStatus::Done);
-
-        if let Err(err) = repo.lock().await.pop_stash() {
-            if result.is_ok() {
-                result = Err(err);
-            } else {
-                warn!("Failed to pop stash: {}", err);
-            }
-        }
-        result
+        Ok(files)
     }
 
     fn start_hk_progress(&self, run_type: RunType) -> Arc<ProgressJob> {
