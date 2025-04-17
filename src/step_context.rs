@@ -32,9 +32,7 @@ impl StepContext {
 
     pub fn add_files(&self, files: &[PathBuf]) {
         *self.files_added.lock().unwrap() += files.len();
-        self.hook_ctx
-            .file_locks
-            .add_files(files.iter().map(|p| p.to_path_buf()));
+        self.hook_ctx.add_files(files);
     }
 
     pub fn decrement_job_count(&self) {

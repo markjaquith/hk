@@ -44,7 +44,6 @@ pub struct HookContext {
     pub git: Arc<Mutex<Git>>,
     pub steps: Vec<Arc<Step>>,
     pub tctx: crate::tera::Context,
-    // pub files_added: Mutex<usize>,
     pub run_type: RunType,
     semaphore: Arc<Semaphore>,
     pub failed: CancellationToken,
@@ -86,6 +85,14 @@ impl HookContext {
 
     pub fn files(&self) -> Vec<PathBuf> {
         self.file_locks.files()
+    }
+
+    pub fn add_files(&self, files: &[PathBuf]) {
+        self.file_locks.add_files(files);
+        // self.expr_ctx
+        //     .lock()
+        //     .unwrap()
+        //     .insert("files", expr::to_value(&files).unwrap());
     }
 
     pub async fn semaphore(&self) -> OwnedSemaphorePermit {
