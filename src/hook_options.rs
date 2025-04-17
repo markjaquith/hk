@@ -3,7 +3,7 @@ use crate::{Result, config::Config, tera::Context};
 #[derive(clap::Args)]
 pub(crate) struct HookOptions {
     /// Run on specific files
-    #[clap(conflicts_with_all = &["all", "fix", "check"])]
+    #[clap(conflicts_with_all = &["all", "fix", "check"], value_hint = clap::ValueHint::FilePath)]
     pub files: Option<Vec<String>>,
     /// Run on all files instead of just staged files
     #[clap(short, long)]
@@ -16,10 +16,10 @@ pub(crate) struct HookOptions {
     #[clap(short, long, overrides_with = "fix")]
     pub check: bool,
     /// Exclude files that otherwise would have been selected
-    #[clap(short, long)]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     pub exclude: Option<Vec<String>>,
     /// Exclude files that match these glob patterns that otherwise would have been selected
-    #[clap(long)]
+    #[clap(long, value_hint = clap::ValueHint::FilePath)]
     pub exclude_glob: Option<Vec<String>>,
     /// Start reference for checking files (requires --to-ref)
     #[clap(long)]
@@ -28,7 +28,7 @@ pub(crate) struct HookOptions {
     #[clap(long)]
     pub to_ref: Option<String>,
     /// Run on files that match these glob patterns
-    #[clap(short, long)]
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
     pub glob: Option<Vec<String>>,
     /// Print the plan instead of running the hook
     #[clap(short = 'P', long)]

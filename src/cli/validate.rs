@@ -2,6 +2,7 @@ use eyre::bail;
 
 use crate::{Result, config::Config};
 
+/// Validate the config file
 #[derive(Debug, clap::Args)]
 pub struct Validate {}
 
