@@ -2,7 +2,7 @@
 
 **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
-**Version**: 0.7.5
+**Version**: 0.8.0
 
 - **Usage**: `hk [FLAGS] <SUBCOMMAND>`
 
@@ -35,15 +35,17 @@ Suppresses all output
 ## Subcommands
 
 - [`hk cache clear`](/cli/cache/clear.md)
-- [`hk check [FLAGS]`](/cli/check.md)
+- [`hk check [FLAGS] [FILES]...`](/cli/check.md)
 - [`hk completion <SHELL>`](/cli/completion.md)
 - [`hk config`](/cli/config.md)
-- [`hk fix [FLAGS]`](/cli/fix.md)
+- [`hk fix [FLAGS] [FILES]...`](/cli/fix.md)
 - [`hk init [-f --force] [--mise]`](/cli/init.md)
 - [`hk install [--mise]`](/cli/install.md)
-- [`hk run <SUBCOMMAND>`](/cli/run.md)
-- [`hk run commit-msg <COMMIT_MSG_FILE>`](/cli/run/commit-msg.md)
-- [`hk run pre-commit [FLAGS]`](/cli/run/pre-commit.md)
-- [`hk run pre-push [FLAGS] [REMOTE] [URL]`](/cli/run/pre-push.md)
-- [`hk run prepare-commit-msg <ARGS>…`](/cli/run/prepare-commit-msg.md)
+- [`hk run [FLAGS] [FILES]... <SUBCOMMAND>`](/cli/run.md)
+- [`hk run commit-msg [FLAGS] <COMMIT_MSG_FILE> [FILES]...`](/cli/run/commit-msg.md)
+- [`hk run pre-commit [FLAGS] [FILES]...`](/cli/run/pre-commit.md)
+- [`hk run pre-push [FLAGS] [ARGS]…`](/cli/run/pre-push.md)
+- [`hk run prepare-commit-msg [FLAGS] <ARGS>…`](/cli/run/prepare-commit-msg.md)
+- [`hk uninstall`](/cli/uninstall.md)
+- [`hk validate`](/cli/validate.md)
 - [`hk version`](/cli/version.md)

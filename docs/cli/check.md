@@ -1,9 +1,15 @@
 # `hk check`
 
-- **Usage**: `hk check [FLAGS]`
+- **Usage**: `hk check [FLAGS] [FILES]...`
 - **Aliases**: `c`
 
 Fixes code
+
+## Arguments
+
+### `[FILES]...`
+
+Run on specific files
 
 ## Flags
 
@@ -11,13 +17,21 @@ Fixes code
 
 Run on all files instead of just staged files
 
-### `--linter... <LINTER>`
+### `-f --fix`
 
-Run on specific linter(s)
+Run fix command instead of run command This is the default behavior unless HK_FIX=0
 
-### `--stash`
+### `-c --check`
 
-Force stashing even if it's disabled via HK_STASH
+Run run command instead of fix command
+
+### `-e --exclude... <EXCLUDE>`
+
+Exclude files that otherwise would have been selected
+
+### `--exclude-glob... <EXCLUDE_GLOB>`
+
+Exclude files that match these glob patterns that otherwise would have been selected
 
 ### `--from-ref <FROM_REF>`
 
@@ -26,3 +40,15 @@ Start reference for checking files (requires --to-ref)
 ### `--to-ref <TO_REF>`
 
 End reference for checking files (requires --from-ref)
+
+### `-g --glob... <GLOB>`
+
+Run on files that match these glob patterns
+
+### `-P --plan`
+
+Print the plan instead of running the hook
+
+### `-S --step... <STEP>`
+
+Run specific step(s)

@@ -1,9 +1,7 @@
 # `hk run pre-push`
 
-- **Usage**: `hk run pre-push [FLAGS] [REMOTE] [URL]`
-- **Aliases**: `ph`
-
-Sets up git hooks to run hk
+- **Usage**: `hk run pre-push [FLAGS] [ARGS]…`
+- **Aliases**: `pp`
 
 ## Arguments
 
@@ -14,6 +12,10 @@ Remote name
 ### `[URL]`
 
 Remote URL
+
+### `[FILES]...`
+
+Run on specific files
 
 ## Flags
 
@@ -27,11 +29,15 @@ Run fix command instead of run command This is the default behavior unless HK_FI
 
 ### `-c --check`
 
-Run check command instead of fix command
+Run run command instead of fix command
 
-### `--linter... <LINTER>`
+### `-e --exclude... <EXCLUDE>`
 
-Run on specific linter(s)
+Exclude files that otherwise would have been selected
+
+### `--exclude-glob... <EXCLUDE_GLOB>`
+
+Exclude files that match these glob patterns that otherwise would have been selected
 
 ### `--from-ref <FROM_REF>`
 
@@ -40,3 +46,15 @@ Start reference for checking files (requires --to-ref)
 ### `--to-ref <TO_REF>`
 
 End reference for checking files (requires --from-ref)
+
+### `-g --glob... <GLOB>`
+
+Run on files that match these glob patterns
+
+### `-P --plan`
+
+Print the plan instead of running the hook
+
+### `-S --step... <STEP>`
+
+Run specific step(s)

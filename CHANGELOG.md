@@ -1,6 +1,54 @@
 # Changelog
 
-## [0.7.5](https://github.com/jdx/hk/compare/v0.7.4..0.7.5) - 2025-04-11
+## [0.8.0](https://github.com/jdx/hk/compare/v0.7.5..0.8.0) - 2025-04-17
+
+### 🚀 Features
+
+- simplify steps to only have 1 type by [@jdx](https://github.com/jdx) in [#74](https://github.com/jdx/hk/pull/74)
+- pkl updates by [@jdx](https://github.com/jdx) in [#77](https://github.com/jdx/hk/pull/77)
+- allow adding files mid-run by [@jdx](https://github.com/jdx) in [#83](https://github.com/jdx/hk/pull/83)
+- cond by [@jdx](https://github.com/jdx) in [#84](https://github.com/jdx/hk/pull/84)
+
+### 🐛 Bug Fixes
+
+- make hk work with `git commit -am` by [@jdx](https://github.com/jdx) in [#76](https://github.com/jdx/hk/pull/76)
+- hide group unless they have name by [@jdx](https://github.com/jdx) in [5eb9c8a](https://github.com/jdx/hk/commit/5eb9c8ab25ab26fe1bac3d7209c20c647d81f2c8)
+- staging new files by [@jdx](https://github.com/jdx) in [#85](https://github.com/jdx/hk/pull/85)
+- things by [@jdx](https://github.com/jdx) in [4dd7947](https://github.com/jdx/hk/commit/4dd7947f8e882dccf1c8d68dd928a10c18a255d3)
+- added "hide" property by [@jdx](https://github.com/jdx) in [a98a2c4](https://github.com/jdx/hk/commit/a98a2c4ef98ccbd24413abaa3017d84905e22a8a)
+
+### 🚜 Refactor
+
+- LinterStep -> Step by [@jdx](https://github.com/jdx) in [#80](https://github.com/jdx/hk/pull/80)
+- move hook to hook.rs by [@jdx](https://github.com/jdx) in [#81](https://github.com/jdx/hk/pull/81)
+- stash_method by [@jdx](https://github.com/jdx) in [1e92a9b](https://github.com/jdx/hk/commit/1e92a9b4120a15f3979410f717e452b0472b2711)
+- hook_ctx by [@jdx](https://github.com/jdx) in [56936d9](https://github.com/jdx/hk/commit/56936d97331b64ccf6a8168e2a028fefba94a9aa)
+- use CancellationToken by [@jdx](https://github.com/jdx) in [64a8866](https://github.com/jdx/hk/commit/64a8866b314e45b821592b111cd85b33a5793542)
+- build_step_jobs by [@jdx](https://github.com/jdx) in [0b1aafe](https://github.com/jdx/hk/commit/0b1aafe0ddbd22b151305956467469acbea73922)
+- file listing by [@jdx](https://github.com/jdx) in [486d0dd](https://github.com/jdx/hk/commit/486d0dd210a85ad8260bb6ccf969d60a48bab22f)
+- file adding by [@jdx](https://github.com/jdx) in [ffa9be7](https://github.com/jdx/hk/commit/ffa9be71c829a98932cfb0584e3e3b6a39e0bac3)
+
+### 📚 Documentation
+
+- add pkl intro by [@jdx](https://github.com/jdx) in [fb3eccc](https://github.com/jdx/hk/commit/fb3eccc474d5f7f087c412ad781f3a800fb3d91a)
+
+### ⚡ Performance
+
+- fetch unstaged/staged file lists in parallel by [@jdx](https://github.com/jdx) in [0f6fa56](https://github.com/jdx/hk/commit/0f6fa56031f797a1881a97898e70c3b9f4755091)
+
+### 🧪 Testing
+
+- ensure depends works by [@jdx](https://github.com/jdx) in [68c725d](https://github.com/jdx/hk/commit/68c725dc2886386ce5b18024d19463514e73f417)
+
+### 🔍 Other Changes
+
+- Include `.tfvars` files in Terraform builtin by [@thomasleese](https://github.com/thomasleese) in [#75](https://github.com/jdx/hk/pull/75)
+
+### New Contributors
+
+- @thomasleese made their first contribution in [#75](https://github.com/jdx/hk/pull/75)
+
+## [0.7.5](https://github.com/jdx/hk/compare/v0.7.4..v0.7.5) - 2025-04-11
 
 ### 🐛 Bug Fixes
 

@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.7.5"
+version "0.8.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -19,16 +19,28 @@ cmd cache hide=#true subcommand_required=#true help="Manage hk internal cache" {
 cmd check help="Fixes code" {
     alias c
     flag "-a --all" help="Run on all files instead of just staged files"
-    flag --linter help="Run on specific linter(s)" var=#true {
-        arg <LINTER>
+    flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+    flag "-c --check" help="Run run command instead of fix command"
+    flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+        arg <EXCLUDE>
     }
-    flag --stash help="Force stashing even if it's disabled via HK_STASH"
+    flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+        arg <EXCLUDE_GLOB>
+    }
     flag --from-ref help="Start reference for checking files (requires --to-ref)" {
         arg <FROM_REF>
     }
     flag --to-ref help="End reference for checking files (requires --from-ref)" {
         arg <TO_REF>
     }
+    flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+        arg <GLOB>
+    }
+    flag "-P --plan" help="Print the plan instead of running the hook"
+    flag "-S --step" help="Run specific step(s)" var=#true {
+        arg <STEP>
+    }
+    arg "[FILES]..." help="Run on specific files" required=#false var=#true
 }
 cmd completion help="Generates shell completion scripts" {
     arg <SHELL> help="The shell to generate completion for"
@@ -39,15 +51,28 @@ cmd config help="Generate a default hk.toml configuration file" {
 cmd fix help="Fixes code" {
     alias f
     flag "-a --all" help="Run on all files instead of just staged files"
-    flag --linter help="Run on specific linter(s)" var=#true {
-        arg <LINTER>
+    flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+    flag "-c --check" help="Run run command instead of fix command"
+    flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+        arg <EXCLUDE>
     }
-    flag --from-ref help="Start reference for fixing files (requires --to-ref)" {
+    flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+        arg <EXCLUDE_GLOB>
+    }
+    flag --from-ref help="Start reference for checking files (requires --to-ref)" {
         arg <FROM_REF>
     }
-    flag --to-ref help="End reference for fixing files (requires --from-ref)" {
+    flag --to-ref help="End reference for checking files (requires --from-ref)" {
         arg <TO_REF>
     }
+    flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+        arg <GLOB>
+    }
+    flag "-P --plan" help="Print the plan instead of running the hook"
+    flag "-S --step" help="Run specific step(s)" var=#true {
+        arg <STEP>
+    }
+    arg "[FILES]..." help="Run on specific files" required=#false var=#true
 }
 cmd init help="Generates a new hk.pkl file for a project" {
     alias generate hide=#true
@@ -64,18 +89,67 @@ cmd install help="Sets up git hooks to run hk" {
 }
 cmd run help="Run a hook" {
     alias r
+    flag "-a --all" help="Run on all files instead of just staged files"
+    flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+    flag "-c --check" help="Run run command instead of fix command"
+    flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+        arg <EXCLUDE>
+    }
+    flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+        arg <EXCLUDE_GLOB>
+    }
+    flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+        arg <FROM_REF>
+    }
+    flag --to-ref help="End reference for checking files (requires --from-ref)" {
+        arg <TO_REF>
+    }
+    flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+        arg <GLOB>
+    }
+    flag "-P --plan" help="Print the plan instead of running the hook"
+    flag "-S --step" help="Run specific step(s)" var=#true {
+        arg <STEP>
+    }
     arg "[OTHER]" required=#false hide=#true
+    arg "[FILES]..." help="Run on specific files" required=#false var=#true
     cmd commit-msg {
         alias cm
+        flag "-a --all" help="Run on all files instead of just staged files"
+        flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+        flag "-c --check" help="Run run command instead of fix command"
+        flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+            arg <EXCLUDE>
+        }
+        flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+            arg <EXCLUDE_GLOB>
+        }
+        flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+            arg <FROM_REF>
+        }
+        flag --to-ref help="End reference for checking files (requires --from-ref)" {
+            arg <TO_REF>
+        }
+        flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+            arg <GLOB>
+        }
+        flag "-P --plan" help="Print the plan instead of running the hook"
+        flag "-S --step" help="Run specific step(s)" var=#true {
+            arg <STEP>
+        }
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message"
+        arg "[FILES]..." help="Run on specific files" required=#false var=#true
     }
     cmd pre-commit help="Sets up git hooks to run hk" {
         alias pc
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
         flag "-c --check" help="Run run command instead of fix command"
-        flag --linter help="Run on specific linter(s)" var=#true {
-            arg <LINTER>
+        flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+            arg <EXCLUDE>
+        }
+        flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+            arg <EXCLUDE_GLOB>
         }
         flag --from-ref help="Start reference for checking files (requires --to-ref)" {
             arg <FROM_REF>
@@ -83,34 +157,78 @@ cmd run help="Run a hook" {
         flag --to-ref help="End reference for checking files (requires --from-ref)" {
             arg <TO_REF>
         }
+        flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+            arg <GLOB>
+        }
+        flag "-P --plan" help="Print the plan instead of running the hook"
+        flag "-S --step" help="Run specific step(s)" var=#true {
+            arg <STEP>
+        }
+        arg "[FILES]..." help="Run on specific files" required=#false var=#true
     }
-    cmd pre-push help="Sets up git hooks to run hk" {
-        alias ph
+    cmd pre-push {
+        alias pp
         flag "-a --all" help="Run on all files instead of just staged files"
         flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
-        flag "-c --check" help="Run check command instead of fix command"
-        flag --linter help="Run on specific linter(s)" var=#true {
-            arg <LINTER>
+        flag "-c --check" help="Run run command instead of fix command"
+        flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+            arg <EXCLUDE>
+        }
+        flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+            arg <EXCLUDE_GLOB>
         }
         flag --from-ref help="Start reference for checking files (requires --to-ref)" {
             arg <FROM_REF>
         }
         flag --to-ref help="End reference for checking files (requires --from-ref)" {
             arg <TO_REF>
+        }
+        flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+            arg <GLOB>
+        }
+        flag "-P --plan" help="Print the plan instead of running the hook"
+        flag "-S --step" help="Run specific step(s)" var=#true {
+            arg <STEP>
         }
         arg "[REMOTE]" help="Remote name" required=#false
         arg "[URL]" help="Remote URL" required=#false
+        arg "[FILES]..." help="Run on specific files" required=#false var=#true
     }
     cmd prepare-commit-msg {
         alias pcm
+        flag "-a --all" help="Run on all files instead of just staged files"
+        flag "-f --fix" help="Run fix command instead of run command This is the default behavior unless HK_FIX=0"
+        flag "-c --check" help="Run run command instead of fix command"
+        flag "-e --exclude" help="Exclude files that otherwise would have been selected" var=#true {
+            arg <EXCLUDE>
+        }
+        flag --exclude-glob help="Exclude files that match these glob patterns that otherwise would have been selected" var=#true {
+            arg <EXCLUDE_GLOB>
+        }
+        flag --from-ref help="Start reference for checking files (requires --to-ref)" {
+            arg <FROM_REF>
+        }
+        flag --to-ref help="End reference for checking files (requires --from-ref)" {
+            arg <TO_REF>
+        }
+        flag "-g --glob" help="Run on files that match these glob patterns" var=#true {
+            arg <GLOB>
+        }
+        flag "-P --plan" help="Print the plan instead of running the hook"
+        flag "-S --step" help="Run specific step(s)" var=#true {
+            arg <STEP>
+        }
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message so far"
         arg "[SOURCE]" help="The source of the commit message (e.g., \"message\", \"template\", \"merge\")" required=#false
         arg "[SHA]" help="The SHA of the commit being amended (if applicable)" required=#false
+        arg "[FILES]..." help="Run on specific files" required=#false var=#true
     }
 }
 cmd usage hide=#true help="Generates a usage spec for the CLI" {
     long_help "Generates a usage spec for the CLI\n\nhttps://usage.jdx.dev"
 }
+cmd uninstall help="Removes hk hooks from the current git repository"
+cmd validate
 cmd version help="Print the version of hk"
 
 

@@ -37,9 +37,20 @@
       },
       "check": {
         "full_cmd": ["check"],
-        "usage": "check [FLAGS]",
+        "usage": "check [FLAGS] [FILES]...",
         "subcommands": {},
-        "args": [],
+        "args": [
+          {
+            "name": "FILES",
+            "usage": "[FILES]...",
+            "help": "Run on specific files",
+            "help_first_line": "Run on specific files",
+            "required": false,
+            "double_dash": "Optional",
+            "var": true,
+            "hide": false
+          }
+        ],
         "flags": [
           {
             "name": "all",
@@ -52,32 +63,60 @@
             "global": false
           },
           {
-            "name": "linter",
-            "usage": "--linter... <LINTER>",
-            "help": "Run on specific linter(s)",
-            "help_first_line": "Run on specific linter(s)",
-            "short": [],
-            "long": ["linter"],
+            "name": "fix",
+            "usage": "-f --fix",
+            "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "short": ["f"],
+            "long": ["fix"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "check",
+            "usage": "-c --check",
+            "help": "Run run command instead of fix command",
+            "help_first_line": "Run run command instead of fix command",
+            "short": ["c"],
+            "long": ["check"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "exclude",
+            "usage": "-e --exclude... <EXCLUDE>",
+            "help": "Exclude files that otherwise would have been selected",
+            "help_first_line": "Exclude files that otherwise would have been selected",
+            "short": ["e"],
+            "long": ["exclude"],
             "var": true,
             "hide": false,
             "global": false,
             "arg": {
-              "name": "LINTER",
-              "usage": "<LINTER>",
+              "name": "EXCLUDE",
+              "usage": "<EXCLUDE>",
               "required": true,
               "double_dash": "Optional",
               "hide": false
             }
           },
           {
-            "name": "stash",
-            "usage": "--stash",
-            "help": "Force stashing even if it's disabled via HK_STASH",
-            "help_first_line": "Force stashing even if it's disabled via HK_STASH",
+            "name": "exclude-glob",
+            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+            "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
             "short": [],
-            "long": ["stash"],
+            "long": ["exclude-glob"],
+            "var": true,
             "hide": false,
-            "global": false
+            "global": false,
+            "arg": {
+              "name": "EXCLUDE_GLOB",
+              "usage": "<EXCLUDE_GLOB>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
           },
           {
             "name": "from-ref",
@@ -108,6 +147,52 @@
             "arg": {
               "name": "TO_REF",
               "usage": "<TO_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "glob",
+            "usage": "-g --glob... <GLOB>",
+            "help": "Run on files that match these glob patterns",
+            "help_first_line": "Run on files that match these glob patterns",
+            "short": ["g"],
+            "long": ["glob"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "GLOB",
+              "usage": "<GLOB>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "plan",
+            "usage": "-P --plan",
+            "help": "Print the plan instead of running the hook",
+            "help_first_line": "Print the plan instead of running the hook",
+            "short": ["P"],
+            "long": ["plan"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "step",
+            "usage": "-S --step... <STEP>",
+            "help": "Run specific step(s)",
+            "help_first_line": "Run specific step(s)",
+            "short": ["S"],
+            "long": ["step"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "STEP",
+              "usage": "<STEP>",
               "required": true,
               "double_dash": "Optional",
               "hide": false
@@ -162,9 +247,20 @@
       },
       "fix": {
         "full_cmd": ["fix"],
-        "usage": "fix [FLAGS]",
+        "usage": "fix [FLAGS] [FILES]...",
         "subcommands": {},
-        "args": [],
+        "args": [
+          {
+            "name": "FILES",
+            "usage": "[FILES]...",
+            "help": "Run on specific files",
+            "help_first_line": "Run on specific files",
+            "required": false,
+            "double_dash": "Optional",
+            "var": true,
+            "hide": false
+          }
+        ],
         "flags": [
           {
             "name": "all",
@@ -177,18 +273,56 @@
             "global": false
           },
           {
-            "name": "linter",
-            "usage": "--linter... <LINTER>",
-            "help": "Run on specific linter(s)",
-            "help_first_line": "Run on specific linter(s)",
-            "short": [],
-            "long": ["linter"],
+            "name": "fix",
+            "usage": "-f --fix",
+            "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "short": ["f"],
+            "long": ["fix"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "check",
+            "usage": "-c --check",
+            "help": "Run run command instead of fix command",
+            "help_first_line": "Run run command instead of fix command",
+            "short": ["c"],
+            "long": ["check"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "exclude",
+            "usage": "-e --exclude... <EXCLUDE>",
+            "help": "Exclude files that otherwise would have been selected",
+            "help_first_line": "Exclude files that otherwise would have been selected",
+            "short": ["e"],
+            "long": ["exclude"],
             "var": true,
             "hide": false,
             "global": false,
             "arg": {
-              "name": "LINTER",
-              "usage": "<LINTER>",
+              "name": "EXCLUDE",
+              "usage": "<EXCLUDE>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "exclude-glob",
+            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+            "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+            "short": [],
+            "long": ["exclude-glob"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "EXCLUDE_GLOB",
+              "usage": "<EXCLUDE_GLOB>",
               "required": true,
               "double_dash": "Optional",
               "hide": false
@@ -197,8 +331,8 @@
           {
             "name": "from-ref",
             "usage": "--from-ref <FROM_REF>",
-            "help": "Start reference for fixing files (requires --to-ref)",
-            "help_first_line": "Start reference for fixing files (requires --to-ref)",
+            "help": "Start reference for checking files (requires --to-ref)",
+            "help_first_line": "Start reference for checking files (requires --to-ref)",
             "short": [],
             "long": ["from-ref"],
             "hide": false,
@@ -214,8 +348,8 @@
           {
             "name": "to-ref",
             "usage": "--to-ref <TO_REF>",
-            "help": "End reference for fixing files (requires --from-ref)",
-            "help_first_line": "End reference for fixing files (requires --from-ref)",
+            "help": "End reference for checking files (requires --from-ref)",
+            "help_first_line": "End reference for checking files (requires --from-ref)",
             "short": [],
             "long": ["to-ref"],
             "hide": false,
@@ -223,6 +357,52 @@
             "arg": {
               "name": "TO_REF",
               "usage": "<TO_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "glob",
+            "usage": "-g --glob... <GLOB>",
+            "help": "Run on files that match these glob patterns",
+            "help_first_line": "Run on files that match these glob patterns",
+            "short": ["g"],
+            "long": ["glob"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "GLOB",
+              "usage": "<GLOB>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "plan",
+            "usage": "-P --plan",
+            "help": "Print the plan instead of running the hook",
+            "help_first_line": "Print the plan instead of running the hook",
+            "short": ["P"],
+            "long": ["plan"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "step",
+            "usage": "-S --step... <STEP>",
+            "help": "Run specific step(s)",
+            "help_first_line": "Run specific step(s)",
+            "short": ["S"],
+            "long": ["step"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "STEP",
+              "usage": "<STEP>",
               "required": true,
               "double_dash": "Optional",
               "hide": false
@@ -301,11 +481,11 @@
       },
       "run": {
         "full_cmd": ["run"],
-        "usage": "run <SUBCOMMAND>",
+        "usage": "run [FLAGS] [FILES]... <SUBCOMMAND>",
         "subcommands": {
           "commit-msg": {
             "full_cmd": ["run", "commit-msg"],
-            "usage": "run commit-msg <COMMIT_MSG_FILE>",
+            "usage": "run commit-msg [FLAGS] <COMMIT_MSG_FILE> [FILES]...",
             "subcommands": {},
             "args": [
               {
@@ -316,21 +496,18 @@
                 "required": true,
                 "double_dash": "Optional",
                 "hide": false
+              },
+              {
+                "name": "FILES",
+                "usage": "[FILES]...",
+                "help": "Run on specific files",
+                "help_first_line": "Run on specific files",
+                "required": false,
+                "double_dash": "Optional",
+                "var": true,
+                "hide": false
               }
             ],
-            "flags": [],
-            "mounts": [],
-            "hide": false,
-            "name": "commit-msg",
-            "aliases": ["cm"],
-            "hidden_aliases": [],
-            "examples": []
-          },
-          "pre-commit": {
-            "full_cmd": ["run", "pre-commit"],
-            "usage": "run pre-commit [FLAGS]",
-            "subcommands": {},
-            "args": [],
             "flags": [
               {
                 "name": "all",
@@ -363,18 +540,36 @@
                 "global": false
               },
               {
-                "name": "linter",
-                "usage": "--linter... <LINTER>",
-                "help": "Run on specific linter(s)",
-                "help_first_line": "Run on specific linter(s)",
-                "short": [],
-                "long": ["linter"],
+                "name": "exclude",
+                "usage": "-e --exclude... <EXCLUDE>",
+                "help": "Exclude files that otherwise would have been selected",
+                "help_first_line": "Exclude files that otherwise would have been selected",
+                "short": ["e"],
+                "long": ["exclude"],
                 "var": true,
                 "hide": false,
                 "global": false,
                 "arg": {
-                  "name": "LINTER",
-                  "usage": "<LINTER>",
+                  "name": "EXCLUDE",
+                  "usage": "<EXCLUDE>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "exclude-glob",
+                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "short": [],
+                "long": ["exclude-glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE_GLOB",
+                  "usage": "<EXCLUDE_GLOB>",
                   "required": true,
                   "double_dash": "Optional",
                   "hide": false
@@ -413,37 +608,74 @@
                   "double_dash": "Optional",
                   "hide": false
                 }
+              },
+              {
+                "name": "glob",
+                "usage": "-g --glob... <GLOB>",
+                "help": "Run on files that match these glob patterns",
+                "help_first_line": "Run on files that match these glob patterns",
+                "short": ["g"],
+                "long": ["glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "GLOB",
+                  "usage": "<GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "plan",
+                "usage": "-P --plan",
+                "help": "Print the plan instead of running the hook",
+                "help_first_line": "Print the plan instead of running the hook",
+                "short": ["P"],
+                "long": ["plan"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "step",
+                "usage": "-S --step... <STEP>",
+                "help": "Run specific step(s)",
+                "help_first_line": "Run specific step(s)",
+                "short": ["S"],
+                "long": ["step"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "STEP",
+                  "usage": "<STEP>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
               }
             ],
             "mounts": [],
             "hide": false,
-            "help": "Sets up git hooks to run hk",
-            "name": "pre-commit",
-            "aliases": ["pc"],
+            "name": "commit-msg",
+            "aliases": ["cm"],
             "hidden_aliases": [],
             "examples": []
           },
-          "pre-push": {
-            "full_cmd": ["run", "pre-push"],
-            "usage": "run pre-push [FLAGS] [REMOTE] [URL]",
+          "pre-commit": {
+            "full_cmd": ["run", "pre-commit"],
+            "usage": "run pre-commit [FLAGS] [FILES]...",
             "subcommands": {},
             "args": [
               {
-                "name": "REMOTE",
-                "usage": "[REMOTE]",
-                "help": "Remote name",
-                "help_first_line": "Remote name",
+                "name": "FILES",
+                "usage": "[FILES]...",
+                "help": "Run on specific files",
+                "help_first_line": "Run on specific files",
                 "required": false,
                 "double_dash": "Optional",
-                "hide": false
-              },
-              {
-                "name": "URL",
-                "usage": "[URL]",
-                "help": "Remote URL",
-                "help_first_line": "Remote URL",
-                "required": false,
-                "double_dash": "Optional",
+                "var": true,
                 "hide": false
               }
             ],
@@ -471,26 +703,44 @@
               {
                 "name": "check",
                 "usage": "-c --check",
-                "help": "Run check command instead of fix command",
-                "help_first_line": "Run check command instead of fix command",
+                "help": "Run run command instead of fix command",
+                "help_first_line": "Run run command instead of fix command",
                 "short": ["c"],
                 "long": ["check"],
                 "hide": false,
                 "global": false
               },
               {
-                "name": "linter",
-                "usage": "--linter... <LINTER>",
-                "help": "Run on specific linter(s)",
-                "help_first_line": "Run on specific linter(s)",
-                "short": [],
-                "long": ["linter"],
+                "name": "exclude",
+                "usage": "-e --exclude... <EXCLUDE>",
+                "help": "Exclude files that otherwise would have been selected",
+                "help_first_line": "Exclude files that otherwise would have been selected",
+                "short": ["e"],
+                "long": ["exclude"],
                 "var": true,
                 "hide": false,
                 "global": false,
                 "arg": {
-                  "name": "LINTER",
-                  "usage": "<LINTER>",
+                  "name": "EXCLUDE",
+                  "usage": "<EXCLUDE>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "exclude-glob",
+                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "short": [],
+                "long": ["exclude-glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE_GLOB",
+                  "usage": "<EXCLUDE_GLOB>",
                   "required": true,
                   "double_dash": "Optional",
                   "hide": false
@@ -529,19 +779,254 @@
                   "double_dash": "Optional",
                   "hide": false
                 }
+              },
+              {
+                "name": "glob",
+                "usage": "-g --glob... <GLOB>",
+                "help": "Run on files that match these glob patterns",
+                "help_first_line": "Run on files that match these glob patterns",
+                "short": ["g"],
+                "long": ["glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "GLOB",
+                  "usage": "<GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "plan",
+                "usage": "-P --plan",
+                "help": "Print the plan instead of running the hook",
+                "help_first_line": "Print the plan instead of running the hook",
+                "short": ["P"],
+                "long": ["plan"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "step",
+                "usage": "-S --step... <STEP>",
+                "help": "Run specific step(s)",
+                "help_first_line": "Run specific step(s)",
+                "short": ["S"],
+                "long": ["step"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "STEP",
+                  "usage": "<STEP>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
               }
             ],
             "mounts": [],
             "hide": false,
             "help": "Sets up git hooks to run hk",
+            "name": "pre-commit",
+            "aliases": ["pc"],
+            "hidden_aliases": [],
+            "examples": []
+          },
+          "pre-push": {
+            "full_cmd": ["run", "pre-push"],
+            "usage": "run pre-push [FLAGS] [ARGS]…",
+            "subcommands": {},
+            "args": [
+              {
+                "name": "REMOTE",
+                "usage": "[REMOTE]",
+                "help": "Remote name",
+                "help_first_line": "Remote name",
+                "required": false,
+                "double_dash": "Optional",
+                "hide": false
+              },
+              {
+                "name": "URL",
+                "usage": "[URL]",
+                "help": "Remote URL",
+                "help_first_line": "Remote URL",
+                "required": false,
+                "double_dash": "Optional",
+                "hide": false
+              },
+              {
+                "name": "FILES",
+                "usage": "[FILES]...",
+                "help": "Run on specific files",
+                "help_first_line": "Run on specific files",
+                "required": false,
+                "double_dash": "Optional",
+                "var": true,
+                "hide": false
+              }
+            ],
+            "flags": [
+              {
+                "name": "all",
+                "usage": "-a --all",
+                "help": "Run on all files instead of just staged files",
+                "help_first_line": "Run on all files instead of just staged files",
+                "short": ["a"],
+                "long": ["all"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "fix",
+                "usage": "-f --fix",
+                "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "short": ["f"],
+                "long": ["fix"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "check",
+                "usage": "-c --check",
+                "help": "Run run command instead of fix command",
+                "help_first_line": "Run run command instead of fix command",
+                "short": ["c"],
+                "long": ["check"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "exclude",
+                "usage": "-e --exclude... <EXCLUDE>",
+                "help": "Exclude files that otherwise would have been selected",
+                "help_first_line": "Exclude files that otherwise would have been selected",
+                "short": ["e"],
+                "long": ["exclude"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE",
+                  "usage": "<EXCLUDE>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "exclude-glob",
+                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "short": [],
+                "long": ["exclude-glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE_GLOB",
+                  "usage": "<EXCLUDE_GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "from-ref",
+                "usage": "--from-ref <FROM_REF>",
+                "help": "Start reference for checking files (requires --to-ref)",
+                "help_first_line": "Start reference for checking files (requires --to-ref)",
+                "short": [],
+                "long": ["from-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "FROM_REF",
+                  "usage": "<FROM_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "to-ref",
+                "usage": "--to-ref <TO_REF>",
+                "help": "End reference for checking files (requires --from-ref)",
+                "help_first_line": "End reference for checking files (requires --from-ref)",
+                "short": [],
+                "long": ["to-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "TO_REF",
+                  "usage": "<TO_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "glob",
+                "usage": "-g --glob... <GLOB>",
+                "help": "Run on files that match these glob patterns",
+                "help_first_line": "Run on files that match these glob patterns",
+                "short": ["g"],
+                "long": ["glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "GLOB",
+                  "usage": "<GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "plan",
+                "usage": "-P --plan",
+                "help": "Print the plan instead of running the hook",
+                "help_first_line": "Print the plan instead of running the hook",
+                "short": ["P"],
+                "long": ["plan"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "step",
+                "usage": "-S --step... <STEP>",
+                "help": "Run specific step(s)",
+                "help_first_line": "Run specific step(s)",
+                "short": ["S"],
+                "long": ["step"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "STEP",
+                  "usage": "<STEP>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              }
+            ],
+            "mounts": [],
+            "hide": false,
             "name": "pre-push",
-            "aliases": ["ph"],
+            "aliases": ["pp"],
             "hidden_aliases": [],
             "examples": []
           },
           "prepare-commit-msg": {
             "full_cmd": ["run", "prepare-commit-msg"],
-            "usage": "run prepare-commit-msg <ARGS>…",
+            "usage": "run prepare-commit-msg [FLAGS] <ARGS>…",
             "subcommands": {},
             "args": [
               {
@@ -570,9 +1055,166 @@
                 "required": false,
                 "double_dash": "Optional",
                 "hide": false
+              },
+              {
+                "name": "FILES",
+                "usage": "[FILES]...",
+                "help": "Run on specific files",
+                "help_first_line": "Run on specific files",
+                "required": false,
+                "double_dash": "Optional",
+                "var": true,
+                "hide": false
               }
             ],
-            "flags": [],
+            "flags": [
+              {
+                "name": "all",
+                "usage": "-a --all",
+                "help": "Run on all files instead of just staged files",
+                "help_first_line": "Run on all files instead of just staged files",
+                "short": ["a"],
+                "long": ["all"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "fix",
+                "usage": "-f --fix",
+                "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+                "short": ["f"],
+                "long": ["fix"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "check",
+                "usage": "-c --check",
+                "help": "Run run command instead of fix command",
+                "help_first_line": "Run run command instead of fix command",
+                "short": ["c"],
+                "long": ["check"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "exclude",
+                "usage": "-e --exclude... <EXCLUDE>",
+                "help": "Exclude files that otherwise would have been selected",
+                "help_first_line": "Exclude files that otherwise would have been selected",
+                "short": ["e"],
+                "long": ["exclude"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE",
+                  "usage": "<EXCLUDE>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "exclude-glob",
+                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+                "short": [],
+                "long": ["exclude-glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "EXCLUDE_GLOB",
+                  "usage": "<EXCLUDE_GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "from-ref",
+                "usage": "--from-ref <FROM_REF>",
+                "help": "Start reference for checking files (requires --to-ref)",
+                "help_first_line": "Start reference for checking files (requires --to-ref)",
+                "short": [],
+                "long": ["from-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "FROM_REF",
+                  "usage": "<FROM_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "to-ref",
+                "usage": "--to-ref <TO_REF>",
+                "help": "End reference for checking files (requires --from-ref)",
+                "help_first_line": "End reference for checking files (requires --from-ref)",
+                "short": [],
+                "long": ["to-ref"],
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "TO_REF",
+                  "usage": "<TO_REF>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "glob",
+                "usage": "-g --glob... <GLOB>",
+                "help": "Run on files that match these glob patterns",
+                "help_first_line": "Run on files that match these glob patterns",
+                "short": ["g"],
+                "long": ["glob"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "GLOB",
+                  "usage": "<GLOB>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              },
+              {
+                "name": "plan",
+                "usage": "-P --plan",
+                "help": "Print the plan instead of running the hook",
+                "help_first_line": "Print the plan instead of running the hook",
+                "short": ["P"],
+                "long": ["plan"],
+                "hide": false,
+                "global": false
+              },
+              {
+                "name": "step",
+                "usage": "-S --step... <STEP>",
+                "help": "Run specific step(s)",
+                "help_first_line": "Run specific step(s)",
+                "short": ["S"],
+                "long": ["step"],
+                "var": true,
+                "hide": false,
+                "global": false,
+                "arg": {
+                  "name": "STEP",
+                  "usage": "<STEP>",
+                  "required": true,
+                  "double_dash": "Optional",
+                  "hide": false
+                }
+              }
+            ],
             "mounts": [],
             "hide": false,
             "name": "prepare-commit-msg",
@@ -588,9 +1230,166 @@
             "required": false,
             "double_dash": "Optional",
             "hide": true
+          },
+          {
+            "name": "FILES",
+            "usage": "[FILES]...",
+            "help": "Run on specific files",
+            "help_first_line": "Run on specific files",
+            "required": false,
+            "double_dash": "Optional",
+            "var": true,
+            "hide": false
           }
         ],
-        "flags": [],
+        "flags": [
+          {
+            "name": "all",
+            "usage": "-a --all",
+            "help": "Run on all files instead of just staged files",
+            "help_first_line": "Run on all files instead of just staged files",
+            "short": ["a"],
+            "long": ["all"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "fix",
+            "usage": "-f --fix",
+            "help": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "help_first_line": "Run fix command instead of run command This is the default behavior unless HK_FIX=0",
+            "short": ["f"],
+            "long": ["fix"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "check",
+            "usage": "-c --check",
+            "help": "Run run command instead of fix command",
+            "help_first_line": "Run run command instead of fix command",
+            "short": ["c"],
+            "long": ["check"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "exclude",
+            "usage": "-e --exclude... <EXCLUDE>",
+            "help": "Exclude files that otherwise would have been selected",
+            "help_first_line": "Exclude files that otherwise would have been selected",
+            "short": ["e"],
+            "long": ["exclude"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "EXCLUDE",
+              "usage": "<EXCLUDE>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "exclude-glob",
+            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "help": "Exclude files that match these glob patterns that otherwise would have been selected",
+            "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
+            "short": [],
+            "long": ["exclude-glob"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "EXCLUDE_GLOB",
+              "usage": "<EXCLUDE_GLOB>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "from-ref",
+            "usage": "--from-ref <FROM_REF>",
+            "help": "Start reference for checking files (requires --to-ref)",
+            "help_first_line": "Start reference for checking files (requires --to-ref)",
+            "short": [],
+            "long": ["from-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "FROM_REF",
+              "usage": "<FROM_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "to-ref",
+            "usage": "--to-ref <TO_REF>",
+            "help": "End reference for checking files (requires --from-ref)",
+            "help_first_line": "End reference for checking files (requires --from-ref)",
+            "short": [],
+            "long": ["to-ref"],
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "TO_REF",
+              "usage": "<TO_REF>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "glob",
+            "usage": "-g --glob... <GLOB>",
+            "help": "Run on files that match these glob patterns",
+            "help_first_line": "Run on files that match these glob patterns",
+            "short": ["g"],
+            "long": ["glob"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "GLOB",
+              "usage": "<GLOB>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          },
+          {
+            "name": "plan",
+            "usage": "-P --plan",
+            "help": "Print the plan instead of running the hook",
+            "help_first_line": "Print the plan instead of running the hook",
+            "short": ["P"],
+            "long": ["plan"],
+            "hide": false,
+            "global": false
+          },
+          {
+            "name": "step",
+            "usage": "-S --step... <STEP>",
+            "help": "Run specific step(s)",
+            "help_first_line": "Run specific step(s)",
+            "short": ["S"],
+            "long": ["step"],
+            "var": true,
+            "hide": false,
+            "global": false,
+            "arg": {
+              "name": "STEP",
+              "usage": "<STEP>",
+              "required": true,
+              "double_dash": "Optional",
+              "hide": false
+            }
+          }
+        ],
         "mounts": [],
         "hide": false,
         "help": "Run a hook",
@@ -610,6 +1409,33 @@
         "help": "Generates a usage spec for the CLI",
         "help_long": "Generates a usage spec for the CLI\n\nhttps://usage.jdx.dev",
         "name": "usage",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "uninstall": {
+        "full_cmd": ["uninstall"],
+        "usage": "uninstall",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "help": "Removes hk hooks from the current git repository",
+        "name": "uninstall",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
+      "validate": {
+        "full_cmd": ["validate"],
+        "usage": "validate",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "name": "validate",
         "aliases": [],
         "hidden_aliases": [],
         "examples": []
@@ -719,7 +1545,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.7.5",
+  "version": "0.8.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"
