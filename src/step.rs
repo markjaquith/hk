@@ -10,8 +10,8 @@ use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
-use std::path::PathBuf;
 use std::sync::Arc;
+use std::{collections::HashSet, path::PathBuf};
 use std::{fmt, process::Stdio};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
@@ -181,6 +181,63 @@ impl Step {
             }
         }
         Ok(Some(workspaces))
+    }
+
+    fn filter_files(&self, files: &[PathBuf]) -> Result<Vec<PathBuf>> {
+        let mut files = files.to_vec();
+        if let Some(dir) = &self.dir {
+            files.retain(|f| f.starts_with(dir));
+            if files.is_empty() {
+                debug!("{self}: no matches for step in {dir}");
+            }
+            for f in files.iter_mut() {
+                // strip the dir prefix from the file path
+                *f = f.strip_prefix(dir).unwrap_or(f).to_path_buf();
+            }
+        }
+        if let Some(glob) = &self.glob {
+            files = glob::get_matches(glob, &files)?;
+        }
+        if let Some(exclude) = &self.exclude {
+            let excluded = glob::get_matches(exclude, &files)?
+                .into_iter()
+                .collect::<HashSet<_>>();
+            files.retain(|f| !excluded.contains(f));
+        }
+        Ok(files)
+    }
+
+    pub(crate) fn build_step_jobs(
+        &self,
+        files: &[PathBuf],
+        run_type: RunType,
+    ) -> Result<Option<Vec<StepJob>>> {
+        let files = self.filter_files(files)?;
+        if files.is_empty() {
+            debug!("{self}: no matches for step");
+            return Ok(None);
+        }
+        let jobs = if let Some(workspace_indicators) = self.workspaces_for_files(&files)? {
+            let job = StepJob::new(Arc::new((*self).clone()), files.clone(), run_type);
+            workspace_indicators
+                .into_iter()
+                .map(|workspace_indicator| {
+                    job.clone().with_workspace_indicator(workspace_indicator)
+                })
+                .collect()
+        } else if self.batch {
+            files
+                .chunks((files.len() / Settings::get().jobs().get()).max(1))
+                .map(|chunk| StepJob::new(Arc::new((*self).clone()), chunk.to_vec(), run_type))
+                .collect()
+        } else {
+            vec![StepJob::new(
+                Arc::new((*self).clone()),
+                files.clone(),
+                run_type,
+            )]
+        };
+        Ok(Some(jobs))
     }
 
     pub(crate) async fn run(&self, ctx: &StepContext, job: &StepJob) -> Result<StepResponse> {

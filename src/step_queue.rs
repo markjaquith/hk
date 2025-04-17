@@ -1,9 +1,8 @@
 use crate::step::Step;
 use crate::step_job::StepJob;
 
-use crate::{Result, settings::Settings};
+use crate::Result;
 use std::{
-    cell::LazyCell,
     collections::{HashMap, HashSet},
     path::{Path, PathBuf},
     sync::Arc,
@@ -60,7 +59,6 @@ impl StepQueueBuilder {
     }
 
     fn build_queue_for_group(&self, steps: &[&Arc<Step>]) -> Result<Vec<StepJob>> {
-        let jobs = LazyCell::new(|| Settings::get().jobs().get());
         let mut queue = vec![];
         for step in steps {
             let Some(run_type) = step.available_run_type(self.run_type) else {
@@ -76,48 +74,10 @@ impl StepQueueBuilder {
                 debug!("{step}: skipping step due to profile not being enabled");
                 continue;
             }
-            let mut files = self.files.clone();
-            if let Some(dir) = &step.dir {
-                files.retain(|f| f.starts_with(dir));
-                if files.is_empty() {
-                    debug!("{step}: no matches for step in {dir}");
-                    continue;
-                }
-                for f in files.iter_mut() {
-                    // strip the dir prefix from the file path
-                    *f = f.strip_prefix(dir).unwrap_or(f).to_path_buf();
-                }
-            }
-            if let Some(glob) = &step.glob {
-                files = glob::get_matches(glob, &files)?;
-                if files.is_empty() {
-                    debug!("{step}: no matches for step");
-                    continue;
-                }
-            }
-            if let Some(exclude) = &step.exclude {
-                let excluded = glob::get_matches(exclude, &files)?
-                    .into_iter()
-                    .collect::<HashSet<_>>();
-                files.retain(|f| !excluded.contains(f));
-            }
-            let jobs = if let Some(workspace_indicators) = step.workspaces_for_files(&files)? {
-                let job = StepJob::new((*step).clone(), files.clone(), run_type);
-                workspace_indicators
-                    .into_iter()
-                    .map(|workspace_indicator| {
-                        job.clone().with_workspace_indicator(workspace_indicator)
-                    })
-                    .collect()
-            } else if step.batch {
-                files
-                    .chunks((files.len() / *jobs).max(1))
-                    .map(|chunk| StepJob::new((*step).clone(), chunk.to_vec(), run_type))
-                    .collect()
-            } else {
-                vec![StepJob::new((*step).clone(), files.clone(), run_type)]
-            };
-            queue.push(jobs);
+            queue.push(
+                step.build_step_jobs(&self.files, run_type)?
+                    .unwrap_or_default(),
+            );
         }
         let mut q = vec![];
         // round robin through the steps to avoid just 1 step running
