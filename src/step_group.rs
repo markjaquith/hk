@@ -120,6 +120,7 @@ impl StepGroup {
             });
         }
         while let Some(res) = set.join_next().await {
+            ctx.hook_ctx.inc_completed_jobs(1);
             match res {
                 Ok(Ok(())) => {}
                 Ok(Err(err)) => {

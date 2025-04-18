@@ -268,19 +268,18 @@ impl Step {
         if let Some(job) = jobs.first_mut() {
             job.semaphore = Some(semaphore);
         } else {
-            ctx.hook_ctx.dec_total_jobs(1);
             ctx.depends.mark_done(&self.name)?;
             debug!("{self}: no jobs to run");
             return Ok(());
         }
         ctx.set_jobs_total(jobs.len());
-        ctx.hook_ctx.inc_total_jobs(jobs.len() - 1);
         let mut set = tokio::task::JoinSet::new();
         for job in jobs {
             let ctx = ctx.clone();
             let step = self.clone();
             let mut job = job;
             set.spawn(async move {
+                ctx.hook_ctx.inc_total_jobs(1);
                 if job.check_first {
                     let prev_run_type = job.run_type;
                     job.run_type = RunType::Check(step.check_type());
@@ -331,6 +330,7 @@ impl Step {
             });
         }
         while let Some(res) = set.join_next().await {
+            ctx.hook_ctx.inc_completed_jobs(1);
             match res {
                 Ok(Ok(())) => {}
                 Ok(Err(err)) => {
@@ -504,7 +504,6 @@ impl Step {
             clx::progress::resume();
         }
         ctx.decrement_job_count();
-        ctx.hook_ctx.inc_completed_jobs(1);
         job.status_finished()?;
         Ok(())
     }

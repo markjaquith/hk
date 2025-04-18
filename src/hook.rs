@@ -111,22 +111,13 @@ impl HookContext {
         self.semaphore.clone().try_acquire_owned().ok()
     }
 
-    pub fn dec_total_jobs(&self, n: usize) {
-        if n > 0 {
-            let mut total_jobs = self.total_jobs.lock().unwrap();
-            *total_jobs -= n;
-            if let Some(hk_progress) = &self.hk_progress {
-                hk_progress.progress_total(*total_jobs);
-            }
-        }
-    }
-
     pub fn inc_total_jobs(&self, n: usize) {
         if n > 0 {
             let mut total_jobs = self.total_jobs.lock().unwrap();
             *total_jobs += n;
+            let total_jobs = *total_jobs;
             if let Some(hk_progress) = &self.hk_progress {
-                hk_progress.progress_total(*total_jobs);
+                hk_progress.progress_total(total_jobs);
             }
         }
     }
@@ -135,8 +126,9 @@ impl HookContext {
         if n > 0 {
             let mut completed_jobs = self.completed_jobs.lock().unwrap();
             *completed_jobs += n;
+            let completed_jobs = *completed_jobs;
             if let Some(hk_progress) = &self.hk_progress {
-                hk_progress.progress_current(*completed_jobs);
+                hk_progress.progress_current(completed_jobs);
             }
         }
     }
