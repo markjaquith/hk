@@ -1546,7 +1546,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.8.1",
+  "version": "0.8.2",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

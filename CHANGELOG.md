@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.8.1](https://github.com/jdx/hk/compare/v0.8.0..0.8.1) - 2025-04-18
+## [0.8.2](https://github.com/jdx/hk/compare/v0.8.1..0.8.2) - 2025-04-18
+
+### 🐛 Bug Fixes
+
+- bug by [@jdx](https://github.com/jdx) in [7a94c4a](https://github.com/jdx/hk/commit/7a94c4ab456ec25a0916ad9217f41f0d7758c89f)
+
+## [0.8.1](https://github.com/jdx/hk/compare/v0.8.0..v0.8.1) - 2025-04-18
 
 ### 🐛 Bug Fixes
 
