@@ -1435,6 +1435,7 @@
         "flags": [],
         "mounts": [],
         "hide": false,
+        "help": "Validate the config file",
         "name": "validate",
         "aliases": [],
         "hidden_aliases": [],
@@ -1545,7 +1546,7 @@
   "config": {
     "props": {}
   },
-  "version": "0.8.0",
+  "version": "0.8.1",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

@@ -1,6 +1,20 @@
 # Changelog
 
-## [0.8.0](https://github.com/jdx/hk/compare/v0.7.5..0.8.0) - 2025-04-17
+## [0.8.1](https://github.com/jdx/hk/compare/v0.8.0..0.8.1) - 2025-04-18
+
+### 🐛 Bug Fixes
+
+- progress bar completion by [@jdx](https://github.com/jdx) in [f250f04](https://github.com/jdx/hk/commit/f250f04fd7a52ecf5757c1070e904947fde922a6)
+
+### 📚 Documentation
+
+- cli docs and completions by [@jdx](https://github.com/jdx) in [0ca531d](https://github.com/jdx/hk/commit/0ca531da41f772397a17e93b4f633010d46c6d22)
+
+### 🔍 Other Changes
+
+- bump clx by [@jdx](https://github.com/jdx) in [34664a8](https://github.com/jdx/hk/commit/34664a812d0686aaf49e7670e051b290d4683976)
+
+## [0.8.0](https://github.com/jdx/hk/compare/v0.7.5..v0.8.0) - 2025-04-17
 
 ### 🚀 Features
 
@@ -43,6 +57,7 @@
 ### 🔍 Other Changes
 
 - Include `.tfvars` files in Terraform builtin by [@thomasleese](https://github.com/thomasleese) in [#75](https://github.com/jdx/hk/pull/75)
+- use ubuntu-latest in GHA by [@jdx](https://github.com/jdx) in [7fea380](https://github.com/jdx/hk/commit/7fea380ea585f02d4051cacca063f933ba849e93)
 
 ### New Contributors
 
