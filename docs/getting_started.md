@@ -34,7 +34,7 @@ Other installation methods:
 
 ## Project Setup
 
-Use `hk generate` to generate a `hk.pkl` file:
+Use [`hk generate`](/cli/generate) to generate a `hk.pkl` file:
 
 ```sh
 hk generate
@@ -88,7 +88,7 @@ See [configuration](/configuration) for more information on the `hk.pkl` file.
 
 ## Usage
 
-Inside a git repository with a `hk.pkl` file, run:
+Inside a git repository with a `hk.pkl` file, run [`hk install`](/cli/install) to configure git to use the hooks defined in `hk.pkl`:
 
 ```sh
 hk install
@@ -96,31 +96,19 @@ hk install
 
 This will install the hooks for the repository like `pre-commit` and `pre-push` if they are defined in `hk.pkl`. Running `git commit` would now run the linters defined above in our example through the pre-commit hook.
 
-### `core.hooksPath`
+## Checking and Fixing Code
 
-As an alternative to using `hk install`, you can run `git config --local core.hooksPath .hooks` to use the hooks defined in the `.hooks` directory of the repository:
+You can check or fix code with [`hk check`](/cli/check) or [`hk fix`](/cli/fix)—by convention, "check" means files should not be modified and "fix"
+should verify everything "check" does but also modify files to fix any issues. By default, `hk check|fix` run against any modified files in the repo.
 
-```sh
-#!/bin/sh
-hk run pre-commit
-```
+:::tip
+Use `hk check --all` in CI to lint all the files in the repo or `hk check --from-ref main` to lint files that have changed since the `main` branch.
+:::
 
 ## Running Hooks
 
-To explicitly run the hooks without going through git, use the `hk run` command.
+To explicitly run a hook without going through git, use the [`hk run`](/cli/run) command. This is generally useful for testing hooks locally.
 
 ```sh
 hk run pre-commit
-```
-
-This will run the `pre-commit` hook for the repository. This will run against all files that are staged for commit. To run against all files in the repository, use the `--all` flag.
-
-```sh
-hk run pre-commit --all
-```
-
-To run a specific linter, use the `--linter` flag.
-
-```sh
-hk run pre-commit --linter eslint
 ```
