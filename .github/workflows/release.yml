@@ -40,7 +40,7 @@ jobs:
             build-tool: cross
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            build-tool: cargo
+            build-tool: cross
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             build-tool: cargo
