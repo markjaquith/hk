@@ -19,6 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: taiki-e/create-gh-release-action@v1
+        if: github.event_name != 'workflow_dispatch'
         with:
           # changelog: CHANGELOG.md not working for some reason
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -70,6 +71,7 @@ jobs:
           profile: serious
           codesign: "Developer ID Application: Jeffrey Dickey (4993Y37DX6)"
           codesign_prefix: dev.jdx.
+          dry-run: ${{ github.event_name == 'workflow_dispatch' }}
 
   pkl:
     needs: create-release
@@ -81,12 +83,14 @@ jobs:
         env:
           VERSION: ${{ github.ref_name }}
       - uses: softprops/action-gh-release@v2
+        if: github.event_name != 'workflow_dispatch'
         with:
           files: .out/**
           draft: true
 
   publish-release:
     needs: [upload-assets, pkl]
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }}
