@@ -1,6 +1,15 @@
 # Changelog
 
-## [0.8.2](https://github.com/jdx/hk/compare/v0.8.1..0.8.2) - 2025-04-18
+## [0.8.3](https://github.com/jdx/hk/compare/v0.8.2..0.8.3) - 2025-04-22
+
+### 🔍 Other Changes
+
+- enable cross for building by [@jdx](https://github.com/jdx) in [69fbac1](https://github.com/jdx/hk/commit/69fbac1ae892b26aea967f38192f65cf43ae53c3)
+- setup GHA for dry run releases by [@jdx](https://github.com/jdx) in [3660565](https://github.com/jdx/hk/commit/366056564d5648e409a505915fe9545ac4cabd04)
+- default pkl version in release dry run by [@jdx](https://github.com/jdx) in [e65881b](https://github.com/jdx/hk/commit/e65881b30459cba9aff7aba27cbe24678ba44aba)
+- use cross for linux-arm64 by [@jdx](https://github.com/jdx) in [12acb99](https://github.com/jdx/hk/commit/12acb99869813d001b6e50526811e044cefc6499)
+
+## [0.8.2](https://github.com/jdx/hk/compare/v0.8.1..v0.8.2) - 2025-04-18
 
 ### 🐛 Bug Fixes
 
