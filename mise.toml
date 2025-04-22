@@ -55,7 +55,7 @@ run = "cargo test"
 [tasks.test-bats]
 alias = "tb"
 depends = ["build"]
-run = "bats test"
+run = "bats test && HK_LIBGIT2=0 bats test"
 
 [tasks.dist]
 run = "pkl project package pkl --output-path docs/public/pkl"

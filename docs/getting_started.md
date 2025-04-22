@@ -34,10 +34,10 @@ Other installation methods:
 
 ## Project Setup
 
-Use [`hk generate`](/cli/generate) to generate a `hk.pkl` file:
+Use [`hk init`](/cli/init) to generate a `hk.pkl` file:
 
 ```sh
-hk generate
+hk init
 ```
 
 ## `hk.pkl`

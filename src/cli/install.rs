@@ -44,10 +44,7 @@ impl Install {
 fn git_hook_content(hk: &str, hook: &str) -> String {
     format!(
         r#"#!/bin/sh
-if [ "$HK" = "0" ] || [ "$HK" = "false" ]; then
-    exit 0
-fi
-exec {hk} run {hook} "$@"
+test "${{HK:-1}}" = "0" || exec {hk} run {hook} "$@"
 "#
     )
 }
