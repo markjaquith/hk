@@ -7,6 +7,7 @@ on:
   push:
     tags:
       - v[0-9]+.*
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -32,14 +33,19 @@ jobs:
         include:
           - target: aarch64-apple-darwin
             os: macos-latest
+            build-tool: cargo
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            build-tool: cross
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
+            build-tool: cargo
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            build-tool: cargo
           - target: aarch64-pc-windows-msvc
             os: windows-latest
+            build-tool: cargo
     steps:
       - uses: actions/checkout@v4
       - name: Install cross-compilation tools
@@ -58,6 +64,7 @@ jobs:
         with:
           bin: hk
           target: ${{ matrix.target }}
+          build-tool: ${{ matrix.build-tool }}
           token: ${{ secrets.GITHUB_TOKEN }}
           features: git2/vendored-libgit2,git2/vendored-openssl
           profile: serious
