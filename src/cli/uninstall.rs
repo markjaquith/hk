@@ -17,9 +17,7 @@ impl Uninstall {
                     continue;
                 }
             };
-            let is_hk_hook = content.trim_end().lines().last().is_some_and(|line| {
-                line.starts_with("exec hk run") || line.starts_with("exec mise x -- hk run")
-            });
+            let is_hk_hook = content.contains("hk run");
             if is_hk_hook {
                 xx::file::remove_file(&p)?;
                 info!("removed hook: {}", xx::file::display_path(&p));
