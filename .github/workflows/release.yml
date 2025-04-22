@@ -81,7 +81,7 @@ jobs:
       - uses: jdx/mise-action@v2
       - run: VERSION=${VERSION#v} mise run package-pkl
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ github.ref_name || 'dev' }}
       - uses: softprops/action-gh-release@v2
         if: github.event_name != 'workflow_dispatch'
         with:
