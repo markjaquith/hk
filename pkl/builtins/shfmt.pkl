@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 shfmt = new Config.Step {
-    glob = List("**/*.{sh,bash}")
+    glob = "*.{sh,bash}"
+    stage = "*.{sh,bash}"
     check_list_files = "shfmt -l {{ files }}"
     fix = "shfmt -w {{ files }}"
 } 

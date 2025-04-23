@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 nixpkgs_format = new Config.Step {
-    glob = List("**/*.nix")
+    glob = "*.nix"
+    stage = "*.nix"
     check = "nixpkgs-fmt --check {{ files }}"
     fix = "nixpkgs-fmt {{ files }}"
 } 

@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 ktlint = new Config.Step {
-    glob = List("**/*.kt")
+    glob = "*.kt"
+    stage = "*.kt"
     check = "ktlint {{ files }}"
     fix = "ktlint -F {{ files }}"
 } 

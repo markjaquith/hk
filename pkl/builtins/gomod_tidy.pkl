@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 gomod_tidy = new Config.Step {
-    glob = List("**/go.mod")
+    glob = "**/go.mod"
+    stage = "**/go.mod"
     check_diff = "go mod tidy -diff"
     fix = "go mod tidy"
 } 

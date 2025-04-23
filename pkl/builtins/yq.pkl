@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 yq = new Config.Step {
-    glob = List("**/*.yaml")
+    glob = "*.yaml"
+    stage = "*.yaml"
     check = "yq {{ files }}"
     fix = "yq -iP {{ files }}"
 } 

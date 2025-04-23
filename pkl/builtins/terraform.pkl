@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 terraform = new Config.Step {
-    glob = List("**/*.{tf,tfvars}")
+    glob = "*.{tf,tfvars}"
+    stage = "*.{tf,tfvars}"
     check_list_files = "terraform fmt -check {{ files }}"
     fix = "terraform fmt {{ files }}"
 } 

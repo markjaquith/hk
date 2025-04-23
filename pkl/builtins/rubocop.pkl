@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 rubocop = new Config.Step {
-    glob = List("**/*.rb")
+    glob = "*.rb"
+    stage = "*.rb"
     check = "rubocop {{ files }}"
     fix = "rubocop --fix {{ files }}"
 } 

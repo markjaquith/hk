@@ -1,7 +1,8 @@
 import "../Config.pkl"
 
 swift_lint = new Config.Step {
-    glob = List("**/*.swift")
+    glob = "*.swift"
+    stage = "*.swift"
     check = "swiftlint lint {{ files }}"
     fix = "swiftlint --fix {{ files }}"
 } 
