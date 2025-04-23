@@ -510,7 +510,8 @@ impl Git {
         }
     }
 
-    pub fn files_between_refs(&self, from_ref: &str, to_ref: &str) -> Result<Vec<PathBuf>> {
+    pub fn files_between_refs(&self, from_ref: &str, to_ref: Option<&str>) -> Result<Vec<PathBuf>> {
+        let to_ref = to_ref.unwrap_or("HEAD");
         if let Some(repo) = &self.repo {
             let from_obj = repo
                 .revparse_single(from_ref)
