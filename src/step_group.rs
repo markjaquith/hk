@@ -1,6 +1,10 @@
 use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
+use eyre::Context;
 
-use crate::{Result, glob, step::RunType, step_context::StepContext, step_depends::StepDepends};
+use crate::{
+    Result, glob, settings::Settings, step::RunType, step_context::StepContext,
+    step_depends::StepDepends,
+};
 use crate::{hook::HookContext, step::Step};
 
 use std::{
@@ -60,6 +64,7 @@ impl StepGroup {
     }
 
     pub async fn run(self, ctx: StepGroupContext) -> Result<()> {
+        let settings = Settings::get();
         let depends = Arc::new(StepDepends::new(
             &self
                 .steps
@@ -119,13 +124,20 @@ impl StepGroup {
                 }
             });
         }
+        let mut result = Ok(());
         while let Some(res) = set.join_next().await {
             ctx.hook_ctx.inc_completed_jobs(1);
             match res {
                 Ok(Ok(())) => {}
                 Ok(Err(err)) => {
-                    ctx.hook_ctx.failed.cancel();
-                    return Err(err);
+                    if settings.fail_fast {
+                        ctx.hook_ctx.failed.cancel();
+                        return Err(err);
+                    } else if result.is_ok() {
+                        result = Err(err);
+                    } else {
+                        result = result.wrap_err(err);
+                    }
                 }
                 Err(e) => {
                     std::panic::resume_unwind(e.into_panic());
@@ -133,9 +145,13 @@ impl StepGroup {
             }
         }
         if let Some(progress) = ctx.progress {
-            progress.set_status(ProgressStatus::Done);
+            if result.is_ok() {
+                progress.set_status(ProgressStatus::Done);
+            } else {
+                progress.set_status(ProgressStatus::Failed);
+            }
         }
-        Ok(())
+        result
     }
 
     fn files_in_contention(&self, ctx: &StepGroupContext) -> Result<HashSet<PathBuf>> {

@@ -235,7 +235,7 @@ impl Step {
                 .collect()
         } else if self.batch {
             files
-                .chunks((files.len() / Settings::get().jobs().get()).max(1))
+                .chunks((files.len() / Settings::get().jobs.get()).max(1))
                 .map(|chunk| StepJob::new(Arc::new((*self).clone()), chunk.to_vec(), run_type))
                 .collect()
         } else {
@@ -515,18 +515,29 @@ fn is_profile_enabled(
     disabled: Option<IndexSet<String>>,
 ) -> bool {
     let settings = Settings::get();
-    let enabled_profiles = settings.enabled_profiles();
     if let Some(enabled) = enabled {
-        let missing_profiles = enabled.difference(&enabled_profiles).collect::<Vec<_>>();
+        let missing_profiles = enabled
+            .difference(&settings.enabled_profiles)
+            .collect::<Vec<_>>();
         if !missing_profiles.is_empty() {
             let missing_profiles = missing_profiles.iter().join(", ");
             debug!("{name}: skipping step due to missing profile: {missing_profiles}");
             return false;
         }
+        let disabled_profiles = settings
+            .disabled_profiles
+            .intersection(&enabled)
+            .collect_vec();
+        if !disabled_profiles.is_empty() {
+            let disabled_profiles = disabled_profiles.iter().join(", ");
+            debug!("{name}: skipping step due to disabled profile: {disabled_profiles}");
+            return false;
+        }
     }
     if let Some(disabled) = disabled {
-        let enabled_profiles = settings.enabled_profiles();
-        let disabled_profiles = disabled.intersection(&enabled_profiles).collect::<Vec<_>>();
+        let disabled_profiles = disabled
+            .intersection(&settings.enabled_profiles)
+            .collect::<Vec<_>>();
         if !disabled_profiles.is_empty() {
             let disabled_profiles = disabled_profiles.iter().join(", ");
             debug!("{name}: skipping step due to disabled profile: {disabled_profiles}");

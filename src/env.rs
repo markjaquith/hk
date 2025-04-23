@@ -72,6 +72,7 @@ pub static HK_JOBS: LazyLock<NonZero<usize>> = LazyLock::new(|| {
         .or(thread::available_parallelism().ok())
         .unwrap_or(NonZero::new(4).unwrap())
 });
+pub static HK_FAIL_FAST: LazyLock<bool> = LazyLock::new(|| !var_false("HK_FAIL_FAST"));
 
 pub static GIT_INDEX_FILE: LazyLock<Option<PathBuf>> = LazyLock::new(|| var_path("GIT_INDEX_FILE"));
 

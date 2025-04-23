@@ -84,15 +84,14 @@ pub async fn run() -> Result<()> {
         level = Some(log::LevelFilter::Error);
     }
     logger::init(level);
-    let settings = Settings::get();
     if let Some(jobs) = args.jobs {
-        settings.set_jobs(jobs);
+        Settings::set_jobs(jobs);
     }
     if !args.profile.is_empty() {
-        settings.with_profiles(&args.profile);
+        Settings::with_profiles(&args.profile);
     }
     if args.slow {
-        settings.with_profiles(&["slow".to_string()]);
+        Settings::with_profiles(&["slow".to_string()]);
     }
     match args.command {
         Commands::Cache(cmd) => cmd.run().await,

@@ -77,7 +77,7 @@ impl HookContext {
             run_type,
             step_contexts: std::sync::Mutex::new(Default::default()),
             files_in_contention: std::sync::Mutex::new(Default::default()),
-            semaphore: Arc::new(Semaphore::new(settings.jobs().get())),
+            semaphore: Arc::new(Semaphore::new(settings.jobs.get())),
             failed: CancellationToken::new(),
             expr_ctx: std::sync::Mutex::new(expr_ctx),
         }
@@ -143,6 +143,7 @@ impl Hook {
     }
 
     pub async fn run(&self, opts: HookOptions) -> Result<()> {
+        let settings = Settings::get();
         if env::HK_SKIP_HOOK.contains(&self.name) {
             warn!("{}: skipping hook due to HK_SKIP_HOOK", &self.name);
             return Ok(());
@@ -237,12 +238,16 @@ impl Hook {
                 }
             }
             result = result.and(group.run(ctx).await);
-            if result.is_err() {
+            if settings.fail_fast && result.is_err() {
                 break;
             }
         }
         if let Some(hk_progress) = hook_ctx.hk_progress.as_ref() {
-            hk_progress.set_status(ProgressStatus::Done);
+            if result.is_ok() {
+                hk_progress.set_status(ProgressStatus::Done);
+            } else {
+                hk_progress.set_status(ProgressStatus::Failed);
+            }
         }
 
         if let Err(err) = repo.lock().await.pop_stash() {

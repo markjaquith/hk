@@ -85,6 +85,9 @@ impl Config {
         for (name, hook) in self.hooks.iter_mut() {
             hook.init(name);
         }
+        for (key, value) in self.env.iter() {
+            unsafe { std::env::set_var(key, value) };
+        }
         Ok(())
     }
 }
@@ -104,6 +107,8 @@ pub struct Config {
     #[serde(skip)]
     #[serde(default)]
     pub path: PathBuf,
+    #[serde(default)]
+    pub env: IndexMap<String, String>,
 }
 
 impl std::fmt::Display for Config {

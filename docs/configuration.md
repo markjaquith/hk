@@ -279,6 +279,17 @@ hooks {
 }
 ```
 
+### `env: Mapping<String, String>`
+
+Environment variables can be set in hk.pkl for configuring hk or the linters.
+
+```pkl
+env {
+    ["HK_FAIL_FAST"] = "0"
+    ["NODE_ENV"] = "production"
+}
+```
+
 ### Alternative Syntax
 
 You can also write `hk.json|hk.yaml|hk.toml` as an alternative to pkl, however builtins will not be available.
@@ -400,6 +411,13 @@ Default: `false`
 If set to `true`, hk will not use `git stash` to stash unstaged changed and instead stash with internal diff logic. This gets around
 `index is locked` errors when using `git stash` however it also means
 that if hk crashes it will lose unstaged changes.
+
+### `HK_FAIL_FAST`
+
+Type: `bool`
+Default: `true`
+
+If `true`, hk will abort running steps after the first one fails.
 
 ### `HK_STATE_DIR`
 

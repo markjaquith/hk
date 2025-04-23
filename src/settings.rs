@@ -9,10 +9,17 @@ use crate::env;
 
 #[derive(Debug)]
 pub struct Settings {
-    jobs: Mutex<NonZero<usize>>,
-    enabled_profiles: Mutex<IndexSet<String>>,
-    disabled_profiles: Mutex<IndexSet<String>>,
+    pub jobs: NonZero<usize>,
+    pub enabled_profiles: IndexSet<String>,
+    pub disabled_profiles: IndexSet<String>,
+    pub fail_fast: bool,
 }
+
+static JOBS: LazyLock<Mutex<Option<NonZero<usize>>>> = LazyLock::new(Default::default);
+static ENABLED_PROFILES: LazyLock<Mutex<Option<IndexSet<String>>>> =
+    LazyLock::new(Default::default);
+static DISABLED_PROFILES: LazyLock<Mutex<Option<IndexSet<String>>>> =
+    LazyLock::new(Default::default);
 
 impl Settings {
     pub fn get() -> &'static Self {
@@ -20,56 +27,59 @@ impl Settings {
         &SETTINGS
     }
 
-    pub fn with_profiles(&self, profiles: &[String]) -> &Self {
+    pub fn with_profiles(profiles: &[String]) {
         for profile in profiles {
             if profile.starts_with('!') {
                 let profile = profile.strip_prefix('!').unwrap();
-                self.disabled_profiles
-                    .lock()
-                    .unwrap()
+                let mut disabled_profiles = DISABLED_PROFILES.lock().unwrap();
+                disabled_profiles
+                    .get_or_insert_default()
                     .insert(profile.to_string());
-                self.enabled_profiles.lock().unwrap().shift_remove(profile);
             } else {
-                self.enabled_profiles
-                    .lock()
-                    .unwrap()
+                let mut enabled_profiles = ENABLED_PROFILES.lock().unwrap();
+                enabled_profiles
+                    .get_or_insert_default()
                     .insert(profile.to_string());
-                self.disabled_profiles.lock().unwrap().shift_remove(profile);
+                let mut disabled_profiles = DISABLED_PROFILES.lock().unwrap();
+                disabled_profiles
+                    .get_or_insert_default()
+                    .shift_remove(profile);
             }
         }
-        self
     }
 
-    pub fn enabled_profiles(&self) -> IndexSet<String> {
-        self.enabled_profiles.lock().unwrap().clone()
-    }
-
-    pub fn set_jobs(&self, jobs: NonZero<usize>) {
-        *self.jobs.lock().unwrap() = jobs;
-    }
-
-    pub fn jobs(&self) -> NonZero<usize> {
-        *self.jobs.lock().unwrap()
+    pub fn set_jobs(jobs: NonZero<usize>) {
+        *JOBS.lock().unwrap() = Some(jobs);
     }
 }
 
 impl Default for Settings {
     fn default() -> Self {
-        let disabled_profiles: IndexSet<String> = env::HK_PROFILE
-            .iter()
-            .filter(|p| p.starts_with('!'))
-            .map(|p| p.strip_prefix('!').unwrap().to_string())
-            .collect();
-        let enabled_profiles: IndexSet<String> = env::HK_PROFILE
-            .iter()
-            .filter(|p| !disabled_profiles.contains(*p))
-            .filter(|p| !p.starts_with('!'))
-            .map(|p| p.to_string())
-            .collect();
+        let disabled_profiles: IndexSet<String> = DISABLED_PROFILES
+            .lock()
+            .unwrap()
+            .clone()
+            .unwrap_or_else(|| {
+                env::HK_PROFILE
+                    .iter()
+                    .filter(|p| p.starts_with('!'))
+                    .map(|p| p.strip_prefix('!').unwrap().to_string())
+                    .collect()
+            });
+        let enabled_profiles: IndexSet<String> =
+            ENABLED_PROFILES.lock().unwrap().clone().unwrap_or_else(|| {
+                env::HK_PROFILE
+                    .iter()
+                    .filter(|p| !disabled_profiles.contains(*p))
+                    .filter(|p| !p.starts_with('!'))
+                    .map(|p| p.to_string())
+                    .collect()
+            });
         Self {
-            jobs: Mutex::new(*env::HK_JOBS),
-            enabled_profiles: Mutex::new(enabled_profiles),
-            disabled_profiles: Mutex::new(disabled_profiles),
+            jobs: JOBS.lock().unwrap().unwrap_or(*env::HK_JOBS),
+            enabled_profiles,
+            disabled_profiles,
+            fail_fast: *env::HK_FAIL_FAST,
         }
     }
 }
