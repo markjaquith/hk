@@ -16,6 +16,7 @@ use std::{
 };
 use std::{fmt, process::Stdio};
 use tokio::sync::OwnedSemaphorePermit;
+use xx::file::display_path;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -295,24 +296,12 @@ impl Step {
                             {
                                 debug!("{step}: failed check step first: {source}");
                                 let filtered_files: HashSet<PathBuf> =
-                                    stdout.lines().map(|p| match PathBuf::from(p).canonicalize() {
-                                        Ok(p) => p,
-                                        Err(e) => {
-                                            warn!("{step}: failed to canonicalize file: {e}");
-                                            PathBuf::from(p)
-                                        }
-                                    }).collect();
+                                    stdout.lines().map(|p| try_canonicalize(&PathBuf::from(p))).collect();
                                 let files: IndexSet<PathBuf> = job.files.into_iter().filter(|f| {
-                                    let f = match f.canonicalize() {
-                                        Ok(p) => p,
-                                        Err(e) => {
-                                            warn!("{step}: failed to canonicalize file: {e}");
-                                            f.to_path_buf()
-                                        }
-                                    };
-                                    filtered_files.contains(&f)
+                                    filtered_files.contains(&try_canonicalize(f))
                                 }).collect();
-                                for f in filtered_files.into_iter().filter(|f| !files.contains(f)) {
+                                let canonicalized_files: IndexSet<PathBuf> = files.iter().map(try_canonicalize).collect();
+                                for f in filtered_files.into_iter().filter(|f| !canonicalized_files.contains(f)) {
                                     warn!("{step}: file in check_list_files not found in original files: {}", f.display());
                                 }
                                 job.files = files.into_iter().collect();
@@ -560,3 +549,13 @@ pub static EXPR_ENV: LazyLock<expr::Environment> = LazyLock::new(|| {
 
     env
 });
+
+fn try_canonicalize(path: &PathBuf) -> PathBuf {
+    match path.canonicalize() {
+        Ok(p) => p,
+        Err(err) => {
+            warn!("failed to canonicalize file: {} {err}", display_path(path));
+            path.to_path_buf()
+        }
+    }
+}
