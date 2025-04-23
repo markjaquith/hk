@@ -47,7 +47,7 @@ Runs when `git commit` is run before the commit message is created. Useful for r
 hooks = new {
     ["prepare-commit-msg"] {
         ["render-commit-msg"] {
-            run = "echo 'default commit message' > {{commit_msg_file}}"
+            check = "echo 'default commit message' > {{commit_msg_file}}"
         }
     }
 }
@@ -62,7 +62,7 @@ Runs when `git commit` is run after the commit message is created. Useful for va
 hooks = new {
     ["commit-msg"] {
         ["validate-commit-msg"] {
-            run = "grep -q '^(fix|feat|chore):' {{commit_msg_file}} || exit 1"
+            check = "grep -q '^(fix|feat|chore):' {{commit_msg_file}} || exit 1"
         }
     }
 }

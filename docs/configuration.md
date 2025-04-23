@@ -267,12 +267,12 @@ hooks {
         steps {
             ["prelint"] {
                 exclusive = true // blocks other steps from starting until this one finishes
-                run = "mise run prelint"
+                check = "mise run prelint"
             }
             // ... other steps will run in parallel ...
             ["postlint"] {
                 exclusive = true // wait for all previous steps to finish before starting
-                run = "mise run postlint"
+                check = "mise run postlint"
             }
         }
     }

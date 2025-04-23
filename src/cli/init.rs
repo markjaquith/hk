@@ -42,12 +42,12 @@ hooks {
             // "prelint" here is simply a name to define the step
             ["prelint"] {
                 // if a step has a "check" script it will execute that
-                run = "mise run prelint"
+                check = "mise run prelint"
                 exclusive = true // ensures that the step runs in isolation
             }
             ...linters // add all linters defined above
             ["postlint"] {
-                run = "mise run postlint"
+                check = "mise run postlint"
                 exclusive = true
             }
         }
