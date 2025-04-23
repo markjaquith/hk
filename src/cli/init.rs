@@ -29,7 +29,7 @@ local linters = new Mapping<String, Step> {
 
     // uses custom pkl linter config
     ["pkl"] {
-        glob = List("*.pkl")
+        glob = "*.pkl"
         check = "pkl eval {{files}} >/dev/null"
     }
 }
