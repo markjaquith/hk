@@ -1,6 +1,26 @@
 # Changelog
 
-## [0.8.3](https://github.com/jdx/hk/compare/v0.8.2..0.8.3) - 2025-04-22
+## [0.8.4](https://github.com/jdx/hk/compare/v0.8.3..0.8.4) - 2025-04-23
+
+### 🚀 Features
+
+- added `HK_FAIL_FAST` by [@jdx](https://github.com/jdx) in [4ba0047](https://github.com/jdx/hk/commit/4ba00473efa924e99221cb9c17ae7b176e55bfe9)
+- allow --from-ref without --to-ref by [@jdx](https://github.com/jdx) in [be42e50](https://github.com/jdx/hk/commit/be42e500b976deefedfa2c222070a5b41e1d7b9d)
+
+### 🐛 Bug Fixes
+
+- correct run/check syntax by [@jdx](https://github.com/jdx) in [18e4a2c](https://github.com/jdx/hk/commit/18e4a2c73c507521c9c5b3919af0f072ade8743f)
+- simplify init syntax by [@jdx](https://github.com/jdx) in [89987ab](https://github.com/jdx/hk/commit/89987ab1471934b782361a3efc29c8e280839879)
+- set stage property on builtins by [@jdx](https://github.com/jdx) in [bfc94a9](https://github.com/jdx/hk/commit/bfc94a9d8f9f109fe6bd8b6489ad35b53571adfb)
+- canonicalize warning by [@jdx](https://github.com/jdx) in [8fa9095](https://github.com/jdx/hk/commit/8fa9095ce4fd2add90d94e494265048d93fef85d)
+
+### 📚 Documentation
+
+- docs by [@jdx](https://github.com/jdx) in [f6fe107](https://github.com/jdx/hk/commit/f6fe1076c9223629386a41422bc87395920e6a64)
+- docs by [@jdx](https://github.com/jdx) in [b22cedf](https://github.com/jdx/hk/commit/b22cedf27128737f3c749727e4e9ec6d29ff868c)
+- docs by [@jdx](https://github.com/jdx) in [2d909dc](https://github.com/jdx/hk/commit/2d909dc2fbdc87d27f7dece402825451523ef2bf)
+
+## [0.8.3](https://github.com/jdx/hk/compare/v0.8.2..v0.8.3) - 2025-04-22
 
 ### 🔍 Other Changes
 
