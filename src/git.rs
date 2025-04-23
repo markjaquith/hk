@@ -340,7 +340,7 @@ impl Git {
                     .wrap_err("failed to reset to head")?;
             } else {
                 if !status.modified_files.is_empty() {
-                    let args = vec!["restore", "--staged", "--worktree", "--"]
+                    let args = vec!["restore", "--worktree", "--"]
                         .into_iter()
                         .chain(status.modified_files.iter().map(|p| p.to_str().unwrap()))
                         .collect::<Vec<_>>();
