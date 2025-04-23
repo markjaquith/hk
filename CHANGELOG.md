@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.8.4](https://github.com/jdx/hk/compare/v0.8.3..0.8.4) - 2025-04-23
+## [0.8.5](https://github.com/jdx/hk/compare/v0.8.4..0.8.5) - 2025-04-23
+
+### 🐛 Bug Fixes
+
+- non-libgit2 restore fix by [@jdx](https://github.com/jdx) in [600fe48](https://github.com/jdx/hk/commit/600fe488f5f2795573cfd55838cc540f8610cb64)
+
+## [0.8.4](https://github.com/jdx/hk/compare/v0.8.3..v0.8.4) - 2025-04-23
 
 ### 🚀 Features
 
