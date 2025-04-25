@@ -46,7 +46,11 @@ impl HookOptions {
         let config = Config::get()?;
         match config.hooks.get(name) {
             Some(hook) => {
-                hook.run(self).await?;
+                if self.plan {
+                    hook.plan(self).await?;
+                } else {
+                    hook.run(self).await?;
+                }
                 Ok(())
             }
             None => Err(eyre::eyre!("Hook {} not found", name)),

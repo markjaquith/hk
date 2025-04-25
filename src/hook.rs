@@ -142,6 +142,10 @@ impl Hook {
         }
     }
 
+    pub async fn plan(&self, _opts: HookOptions) -> Result<()> {
+        unimplemented!("--plan is not implemented yet");
+    }
+
     pub async fn run(&self, opts: HookOptions) -> Result<()> {
         let settings = Settings::get();
         if env::HK_SKIP_HOOK.contains(&self.name) {
