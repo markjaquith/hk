@@ -231,7 +231,7 @@ impl Git {
                 args.push("--".into());
                 args.extend(pathspec.iter().map(|p| p.into()))
             }
-            let output = duct::cmd("git", args).read()?;
+            let output = xx::process::cmd("git", args).read()?;
             let mut staged_files = BTreeSet::new();
             let mut unstaged_files = BTreeSet::new();
             let mut untracked_files = BTreeSet::new();
@@ -344,7 +344,7 @@ impl Git {
                         .into_iter()
                         .chain(status.modified_files.iter().map(|p| p.to_str().unwrap()))
                         .collect::<Vec<_>>();
-                    duct::cmd("git", &args).run()?;
+                    xx::process::cmd("git", &args).run()?;
                 }
                 for file in status.untracked_files.iter() {
                     if let Err(err) = xx::file::remove_file(file) {
@@ -393,7 +393,7 @@ impl Git {
                     .into_iter()
                     .chain(status.unstaged_files.iter().map(|p| p.to_str().unwrap()))
                     .collect::<Vec<_>>();
-                duct::cmd("git", &args).run()?;
+                xx::process::cmd("git", &args).run()?;
             }
             let output =
                 xx::process::sh("git diff --no-color --no-ext-diff --binary --ignore-submodules")?;
@@ -402,7 +402,7 @@ impl Git {
                     .into_iter()
                     .chain(status.unstaged_files.iter().map(|p| p.to_str().unwrap()))
                     .collect::<Vec<_>>();
-                duct::cmd("git", &args).run()?;
+                xx::process::cmd("git", &args).run()?;
             }
             output
         };
@@ -500,12 +500,10 @@ impl Git {
             index.write().wrap_err("failed to write index")?;
             Ok(())
         } else {
-            let args = vec!["add", "--"]
-                .into_iter()
-                .map(OsString::from)
-                .chain(pathspecs.iter().map(|p| p.into()))
-                .collect::<Vec<_>>();
-            duct::cmd("git", &args).stdout_capture().run()?;
+            xx::process::cmd("git", ["add", "--"])
+                .args(pathspecs)
+                .stdout_capture()
+                .run()?;
             Ok(())
         }
     }
@@ -550,11 +548,18 @@ impl Git {
 
             Ok(files.into_iter().collect())
         } else {
-            let output = xx::process::sh(&format!(
-                "git diff --name-only --diff-filter=ACRMT {}..{}",
-                from_ref, to_ref
-            ))?;
-            Ok(output.lines().map(PathBuf::from).collect())
+            let output = xx::process::cmd(
+                "git",
+                &[
+                    "diff",
+                    "-z",
+                    "--name-only",
+                    "--diff-filter=ACMRTUXB",
+                    format!("{}..{}", from_ref, to_ref).as_str(),
+                ],
+            )
+            .read()?;
+            Ok(output.split('\0').map(PathBuf::from).collect())
         }
     }
 }

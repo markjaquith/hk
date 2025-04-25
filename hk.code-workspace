@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../clx"
+		},
+		{
+			"path": "../xx"
 		}
 	],
 	"settings": {}

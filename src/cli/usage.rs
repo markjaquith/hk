@@ -12,8 +12,10 @@ pub struct Usage {}
 impl Usage {
     pub async fn run(&self) -> Result<()> {
         let mut cmd = Cli::command();
-        clap_usage::generate(&mut cmd, "hk", &mut std::io::stdout());
-        println!("{}", include_str!("../hk-extras.usage.kdl"));
+        let mut buf = vec![];
+        clap_usage::generate(&mut cmd, "hk", &mut buf);
+        let usage = String::from_utf8(buf).unwrap() + "\n" + include_str!("../hk-extras.usage.kdl");
+        println!("{}", usage.trim());
         Ok(())
     }
 }

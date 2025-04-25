@@ -291,7 +291,7 @@ EOF
     git commit -m "init"
     touch test.sh
     git add test.sh
-    run hk run pre-commit -v
+    run hk run pre-commit
     assert_success
 
     # runs b to completion without a
