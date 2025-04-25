@@ -142,33 +142,21 @@ impl Hook {
         }
     }
 
-    pub async fn plan(&self, _opts: HookOptions) -> Result<()> {
-        unimplemented!("--plan is not implemented yet");
-    }
-
-    pub async fn run(&self, opts: HookOptions) -> Result<()> {
-        let settings = Settings::get();
-        if env::HK_SKIP_HOOK.contains(&self.name) {
-            warn!("{}: skipping hook due to HK_SKIP_HOOK", &self.name);
-            return Ok(());
-        }
+    fn run_type(&self, opts: &HookOptions) -> RunType {
         let fix = self.fix.unwrap_or(self.name == "fix");
-        let run_type = if (*env::HK_FIX && fix) || opts.fix {
+        if (*env::HK_FIX && fix) || opts.fix {
             RunType::Fix
         } else {
             RunType::Check(CheckType::Check)
-        };
-        if opts.to_ref.is_some() {
-            // TODO: implement to_ref
         }
-        let repo = Arc::new(Mutex::new(Git::new()?));
-        let git_status = OnceCell::new();
-        let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
+    }
+
+    fn get_steps(&self, run_type: RunType, opts: &HookOptions) -> Vec<Arc<Step>> {
         let mut steps = self.steps.values().collect_vec();
         if !opts.step.is_empty() {
             steps.retain(|s| opts.step.contains(&s.name));
         }
-        let steps = steps
+        steps
             .into_iter()
             .filter(|step| {
                 if step.run_cmd(run_type).is_none() {
@@ -182,7 +170,46 @@ impl Hook {
                 }
             })
             .map(|s| Arc::new(s.clone()))
-            .collect_vec();
+            .collect()
+    }
+
+    pub async fn plan(&self, opts: HookOptions) -> Result<()> {
+        let run_type = self.run_type(&opts);
+        let steps = self.get_steps(run_type, &opts);
+        let repo = Arc::new(Mutex::new(Git::new()?));
+        let git_status = OnceCell::new();
+        let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
+        let progress = ProgressJobBuilder::new()
+            .status(ProgressStatus::Hide)
+            .build();
+        let files = self
+            .file_list(&opts, repo.clone(), &git_status, stash_method, &progress)
+            .await?;
+        if files.is_empty() && can_exit_early(&steps, &files, run_type) {
+            info!("no files to run");
+            return Ok(());
+        }
+        if stash_method != StashMethod::None {
+            info!("stashing unstaged changes");
+        }
+        let groups = StepGroup::build_all(&steps);
+        for group in groups {
+            group.plan().await?;
+        }
+        Ok(())
+    }
+
+    pub async fn run(&self, opts: HookOptions) -> Result<()> {
+        let settings = Settings::get();
+        if env::HK_SKIP_HOOK.contains(&self.name) {
+            warn!("{}: skipping hook due to HK_SKIP_HOOK", &self.name);
+            return Ok(());
+        }
+        let run_type = self.run_type(&opts);
+        let repo = Arc::new(Mutex::new(Git::new()?));
+        let git_status = OnceCell::new();
+        let steps = self.get_steps(run_type, &opts);
+        let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
         let hk_progress = self.start_hk_progress(run_type, steps.len());
         let file_progress = ProgressJobBuilder::new().body(
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}"

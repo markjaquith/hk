@@ -63,6 +63,14 @@ impl StepGroup {
             .start()
     }
 
+    pub async fn plan(self) -> Result<()> {
+        for step in self.steps {
+            info!("step: {} – ", step.name);
+            todo!("list files and run types like check-first");
+        }
+        Ok(())
+    }
+
     pub async fn run(self, ctx: StepGroupContext) -> Result<()> {
         let settings = Settings::get();
         let depends = Arc::new(StepDepends::new(
