@@ -23,6 +23,8 @@ use xx::file::display_path;
 #[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 #[serde_as]
 pub struct Step {
+    #[serde(default = "default_step_type")]
+    pub _type: String,
     #[serde(default)]
     pub name: String,
     pub profiles: Option<Vec<String>>,
@@ -558,4 +560,8 @@ fn try_canonicalize(path: &PathBuf) -> PathBuf {
             path.to_path_buf()
         }
     }
+}
+
+fn default_step_type() -> String {
+    "step".to_string()
 }

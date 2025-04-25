@@ -277,6 +277,37 @@ hooks {
         }
     }
 }
+
+### `hooks.<HOOK>.steps.<GROUP>`
+
+```pkl
+hooks {
+    ["pre-commit"] {
+        steps {
+            ["build"] = new Group {
+                steps = new Mapping<String, Step> {
+                    ["ts"] = new Step {
+                        fix = "tsc -b"
+                    }
+                    ["rs"] = new Step {
+                        fix = "cargo build"
+                    }
+                }
+            }
+            // these steps will run in parallel after the build group finishes
+            ["lint"] = new Group {
+                steps = new Mapping<String, Step> {
+                    ["prettier"] = new Step {
+                        check = "prettier --check {{files}}"
+                    }
+                    ["eslint"] = new Step {
+                        check = "eslint {{files}}"
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 ### `env: Mapping<String, String>`

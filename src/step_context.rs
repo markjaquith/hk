@@ -4,7 +4,7 @@ use std::{path::PathBuf, sync::Arc};
 
 /// Stores all the information/mutexes needed to run a StepJob
 pub struct StepContext {
-    pub step: Arc<Step>,
+    pub step: Step,
     pub hook_ctx: Arc<HookContext>,
     pub depends: Arc<StepDepends>,
     pub progress: Arc<ProgressJob>,

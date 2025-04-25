@@ -3,6 +3,7 @@ module hk.Config
 min_hk_version = "{{version | truncate(length=1)}}.0.0"
 
 class Step {
+    _type = "step"
     /// Which profiles (HK_PROFILES) need to be active for the step to run
     profiles: List<String>?
     
@@ -65,10 +66,15 @@ class Step {
 
 typealias StashMethod = Boolean | "git" | "patch-file" | "none"
 
+class Group {
+    _type = "group"
+    steps: Mapping<String, Step> = new Mapping<String, Step>{}
+}
+
 class Hook {
     fix: Boolean?
     stash: StashMethod?
-    steps: Mapping<String, Step> = new Mapping<String, Step>{}
+    steps: Mapping<String, Step | Group> = new Mapping<String, Step>{}
 }
 
 hooks: Mapping<String, Hook> = new Mapping<String, Hook>{}

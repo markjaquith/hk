@@ -34,15 +34,30 @@ pub struct Hook {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
-    pub steps: IndexMap<String, Step>,
+    pub steps: IndexMap<String, StepOrGroup>,
     pub fix: Option<bool>,
     pub stash: Option<StashMethod>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, Eq, PartialEq)]
+#[serde(tag = "_type", rename_all = "snake_case")]
+pub enum StepOrGroup {
+    Step(Box<Step>),
+    Group(Box<StepGroup>),
+}
+
+impl StepOrGroup {
+    pub fn init(&mut self, name: &str) {
+        match self {
+            StepOrGroup::Step(step) => step.init(name),
+            StepOrGroup::Group(group) => group.init(name),
+        }
+    }
+}
 pub struct HookContext {
     pub file_locks: FileRwLocks,
     pub git: Arc<Mutex<Git>>,
-    pub steps: Vec<Arc<Step>>,
+    pub groups: Vec<StepGroup>,
     pub tctx: crate::tera::Context,
     pub run_type: RunType,
     semaphore: Arc<Semaphore>,
@@ -59,7 +74,7 @@ impl HookContext {
     pub fn new(
         files: impl IntoIterator<Item = PathBuf>,
         git: Arc<Mutex<Git>>,
-        steps: Vec<Arc<Step>>,
+        groups: Vec<StepGroup>,
         tctx: crate::tera::Context,
         run_type: RunType,
         hk_progress: Option<Arc<ProgressJob>>,
@@ -70,9 +85,9 @@ impl HookContext {
             file_locks: FileRwLocks::new(files),
             git,
             hk_progress,
-            total_jobs: std::sync::Mutex::new(steps.len()),
+            total_jobs: std::sync::Mutex::new(groups.iter().map(|g| g.steps.len()).sum()),
             completed_jobs: std::sync::Mutex::new(0),
-            steps,
+            groups,
             tctx,
             run_type,
             step_contexts: std::sync::Mutex::new(Default::default()),
@@ -151,31 +166,47 @@ impl Hook {
         }
     }
 
-    fn get_steps(&self, run_type: RunType, opts: &HookOptions) -> Vec<Arc<Step>> {
-        let mut steps = self.steps.values().collect_vec();
+    fn get_step_groups(&self, run_type: RunType, opts: &HookOptions) -> Vec<StepGroup> {
+        let mut steps = self.steps.values().cloned().collect_vec();
         if !opts.step.is_empty() {
-            steps.retain(|s| opts.step.contains(&s.name));
+            steps = steps
+                .into_iter()
+                .filter_map(|s| match s {
+                    StepOrGroup::Step(ref step) => opts.step.contains(&step.name).then_some(s),
+                    StepOrGroup::Group(mut group) => {
+                        group.steps.retain(|s, _| opts.step.contains(s));
+                        Some(StepOrGroup::Group(group))
+                    }
+                })
+                .collect_vec();
         }
-        steps
+        let step_ok = |step: &Step| {
+            if step.run_cmd(run_type).is_none() {
+                debug!("{step}: skipping step due to no available run type");
+                false
+            } else if env::HK_SKIP_STEPS.contains(&step.name) {
+                debug!("{step}: skipping step due to HK_SKIP_STEPS");
+                false
+            } else {
+                step.is_profile_enabled()
+            }
+        };
+        let steps = steps
             .into_iter()
-            .filter(|step| {
-                if step.run_cmd(run_type).is_none() {
-                    debug!("{step}: skipping step due to no available run type");
-                    false
-                } else if env::HK_SKIP_STEPS.contains(&step.name) {
-                    debug!("{step}: skipping step due to HK_SKIP_STEPS");
-                    false
-                } else {
-                    step.is_profile_enabled()
+            .filter_map(|s| match s {
+                StepOrGroup::Step(ref step) => step_ok(step).then_some(s),
+                StepOrGroup::Group(mut group) => {
+                    group.steps.retain(|_, s| step_ok(s));
+                    Some(StepOrGroup::Group(group))
                 }
             })
-            .map(|s| Arc::new(s.clone()))
-            .collect()
+            .collect_vec();
+        StepGroup::build_all(steps)
     }
 
     pub async fn plan(&self, opts: HookOptions) -> Result<()> {
         let run_type = self.run_type(&opts);
-        let steps = self.get_steps(run_type, &opts);
+        let groups = self.get_step_groups(run_type, &opts);
         let repo = Arc::new(Mutex::new(Git::new()?));
         let git_status = OnceCell::new();
         let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
@@ -185,14 +216,13 @@ impl Hook {
         let files = self
             .file_list(&opts, repo.clone(), &git_status, stash_method, &progress)
             .await?;
-        if files.is_empty() && can_exit_early(&steps, &files, run_type) {
+        if files.is_empty() && can_exit_early(&groups, &files, run_type) {
             info!("no files to run");
             return Ok(());
         }
         if stash_method != StashMethod::None {
             info!("stashing unstaged changes");
         }
-        let groups = StepGroup::build_all(&steps);
         for group in groups {
             group.plan().await?;
         }
@@ -208,9 +238,9 @@ impl Hook {
         let run_type = self.run_type(&opts);
         let repo = Arc::new(Mutex::new(Git::new()?));
         let git_status = OnceCell::new();
-        let steps = self.get_steps(run_type, &opts);
+        let groups = self.get_step_groups(run_type, &opts);
         let stash_method = env::HK_STASH.or(self.stash).unwrap_or(StashMethod::None);
-        let hk_progress = self.start_hk_progress(run_type, steps.len());
+        let hk_progress = self.start_hk_progress(run_type, groups.len());
         let file_progress = ProgressJobBuilder::new().body(
             "{{spinner()}} files - {{message}}{% if files is defined %} ({{files}} file{{files|pluralize}}){% endif %}"
         )
@@ -226,7 +256,7 @@ impl Hook {
             )
             .await?;
 
-        if files.is_empty() && can_exit_early(&steps, &files, run_type) {
+        if files.is_empty() && can_exit_early(&groups, &files, run_type) {
             info!("no files to run");
             if let Some(hk_progress) = &hk_progress {
                 hk_progress.set_status(ProgressStatus::Hide);
@@ -236,7 +266,7 @@ impl Hook {
         let hook_ctx = Arc::new(HookContext::new(
             files,
             repo.clone(),
-            steps,
+            groups,
             opts.tctx,
             run_type,
             hk_progress,
@@ -253,14 +283,13 @@ impl Hook {
                 .stash_unstaged(&file_progress, stash_method, git_status)?;
         }
 
-        let groups = StepGroup::build_all(&hook_ctx.steps);
-        if groups.is_empty() {
+        if hook_ctx.groups.is_empty() {
             info!("no steps to run");
             return Ok(());
         }
         let mut result = Ok(());
-        let multiple_groups = groups.len() > 1;
-        for (i, group) in groups.into_iter().enumerate() {
+        let multiple_groups = hook_ctx.groups.len() > 1;
+        for (i, group) in hook_ctx.groups.iter().enumerate() {
             debug!("running group: {i}");
             let mut ctx = StepGroupContext::new(hook_ctx.clone());
             if multiple_groups {
@@ -430,10 +459,12 @@ fn all_files_in_dir(dir: &Path) -> Result<Vec<PathBuf>> {
     Ok(files)
 }
 
-fn can_exit_early(steps: &[Arc<Step>], files: &BTreeSet<PathBuf>, run_type: RunType) -> bool {
+fn can_exit_early(groups: &[StepGroup], files: &BTreeSet<PathBuf>, run_type: RunType) -> bool {
     let files = files.iter().cloned().collect::<Vec<_>>();
-    steps.iter().all(|s| {
-        s.build_step_jobs(&files, run_type, &Default::default())
-            .is_ok_and(|jobs| jobs.is_empty())
+    groups.iter().all(|g| {
+        g.steps.iter().all(|(_, s)| {
+            s.build_step_jobs(&files, run_type, &Default::default())
+                .is_ok_and(|jobs| jobs.is_empty())
+        })
     })
 }

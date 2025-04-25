@@ -3,8 +3,13 @@ amends "pkl/Config.pkl"
 import "pkl/Builtins.pkl"
 
 // defines what happens during git pre-commit hook
-local linters = new Mapping<String, Step> {
-    ["actionlint"] = Builtins.actionlint
+local linters = new Mapping<String, Step | Group> {
+    ["group1"] = new Group {
+        steps = new Mapping<String, Step> {
+            ["actionlint"] = Builtins.actionlint
+            ["cargo-fmt"] = Builtins.cargo_fmt
+        }
+    }
     // TODO: fails on releases with hk-example.pkl
     // ["pkl"] {
     //     glob = new { "*.pkl" }
@@ -18,8 +23,7 @@ local linters = new Mapping<String, Step> {
      ["cargo-check"] = (Builtins.cargo_check) {
          profiles = List("!slow")
      }
-     ["cargo-fmt"] = Builtins.cargo_fmt
-     ["dbg"] {
+     ["dbg"] = new Step {
          // ensure no dbg! macros are used
          glob = "**/*.rs"
          check = "! rg -e 'dbg!' {{files}}"

@@ -1,8 +1,10 @@
 use clx::progress::{ProgressJob, ProgressJobBuilder, ProgressStatus};
 use eyre::Context;
+use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 use crate::{
-    Result, glob, settings::Settings, step::RunType, step_context::StepContext,
+    Result, glob, hook::StepOrGroup, settings::Settings, step::RunType, step_context::StepContext,
     step_depends::StepDepends,
 };
 use crate::{hook::HookContext, step::Step};
@@ -13,9 +15,12 @@ use std::{
     sync::Arc,
 };
 
+#[derive(Debug, Clone, Default, Deserialize, Serialize, Eq, PartialEq)]
 pub struct StepGroup {
+    #[serde(default = "default_step_group_type")]
+    pub _type: String,
     pub name: Option<String>,
-    pub steps: Vec<Arc<Step>>,
+    pub steps: IndexMap<String, Step>,
 }
 
 pub struct StepGroupContext {
@@ -37,22 +42,41 @@ impl StepGroupContext {
 }
 
 impl StepGroup {
-    pub fn build_all(steps: &[Arc<Step>]) -> Vec<Self> {
+    pub fn init(&mut self, name: &str) {
+        self.name = Some(name.to_string());
+        for (step_name, step) in self.steps.iter_mut() {
+            step.init(step_name);
+        }
+    }
+
+    pub fn build_all(steps: Vec<StepOrGroup>) -> Vec<Self> {
         steps
-            .iter()
+            .into_iter()
             .fold(vec![], |mut groups, step| {
-                if step.exclusive || groups.is_empty() {
-                    groups.push(vec![]);
-                }
-                groups.last_mut().unwrap().push(step.clone());
-                if step.exclusive {
-                    groups.push(vec![]);
+                match step {
+                    StepOrGroup::Group(group) => {
+                        groups.push(group.steps);
+                    }
+                    StepOrGroup::Step(step) => {
+                        if step.exclusive || groups.is_empty() {
+                            groups.push(IndexMap::new());
+                        }
+                        let exclusive = step.exclusive;
+                        groups.last_mut().unwrap().insert(step.name.clone(), *step);
+                        if exclusive {
+                            groups.push(IndexMap::new());
+                        }
+                    }
                 }
                 groups
             })
             .into_iter()
             .filter(|steps| !steps.is_empty())
-            .map(|steps| Self { name: None, steps })
+            .map(|steps| Self {
+                _type: "group".to_string(),
+                name: None,
+                steps,
+            })
             .collect()
     }
 
@@ -64,26 +88,26 @@ impl StepGroup {
     }
 
     pub async fn plan(self) -> Result<()> {
-        for step in self.steps {
-            info!("step: {} – ", step.name);
+        for step_name in self.steps.keys() {
+            info!("step: {} –", step_name);
             todo!("list files and run types like check-first");
         }
         Ok(())
     }
 
-    pub async fn run(self, ctx: StepGroupContext) -> Result<()> {
+    pub async fn run(&self, ctx: StepGroupContext) -> Result<()> {
         let settings = Settings::get();
         let depends = Arc::new(StepDepends::new(
             &self
                 .steps
-                .iter()
+                .values()
                 .map(|s| s.name.as_str())
                 .collect::<Vec<_>>(),
         ));
         let mut set = tokio::task::JoinSet::new();
         *ctx.hook_ctx.step_contexts.lock().unwrap() = self
             .steps
-            .iter()
+            .values()
             .map(|s| {
                 (
                     s.name.clone(),
@@ -101,11 +125,11 @@ impl StepGroup {
             })
             .collect();
         *ctx.hook_ctx.files_in_contention.lock().unwrap() = self.files_in_contention(&ctx)?;
-        if self.steps.iter().any(|j| j.check_first) {
+        if self.steps.values().any(|j| j.check_first) {
         } else {
             *ctx.hook_ctx.files_in_contention.lock().unwrap() = Default::default();
         }
-        for step in self.steps {
+        for (_, step) in self.steps.clone() {
             let semaphore = ctx.hook_ctx.try_semaphore();
             let step_ctx = ctx
                 .hook_ctx
@@ -163,18 +187,18 @@ impl StepGroup {
     }
 
     fn files_in_contention(&self, ctx: &StepGroupContext) -> Result<HashSet<PathBuf>> {
-        if ctx.hook_ctx.run_type != RunType::Fix || !self.steps.iter().any(|j| j.check_first) {
+        if ctx.hook_ctx.run_type != RunType::Fix || !self.steps.values().any(|j| j.check_first) {
             return Ok(Default::default());
         }
         let files = ctx.hook_ctx.files();
         let step_map: HashMap<&str, &Step> = self
             .steps
-            .iter()
-            .map(|step| (step.name.as_str(), &**step))
+            .values()
+            .map(|step| (step.name.as_str(), step))
             .collect();
         let files_by_step: HashMap<&str, Vec<PathBuf>> = self
             .steps
-            .iter()
+            .values()
             .map(|step| {
                 let files = glob::get_matches(step.glob.as_ref().unwrap_or(&vec![]), &files)?;
                 Ok((step.name.as_str(), files))
@@ -197,4 +221,8 @@ impl StepGroup {
 
         Ok(files_in_contention)
     }
+}
+
+fn default_step_group_type() -> String {
+    "group".to_string()
 }
