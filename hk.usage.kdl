@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "0.8.5"
+version "1.0.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -230,5 +230,3 @@ cmd usage hide=#true help="Generates a usage spec for the CLI" {
 cmd uninstall help="Removes hk hooks from the current git repository"
 cmd validate help="Validate the config file"
 cmd version help="Print the version of hk"
-
-

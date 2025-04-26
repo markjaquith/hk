@@ -1,6 +1,33 @@
 # Changelog
 
-## [0.8.5](https://github.com/jdx/hk/compare/v0.8.4..0.8.5) - 2025-04-23
+## [1.0.0](https://github.com/jdx/hk/compare/v0.8.5..1.0.0) - 2025-04-26
+
+### 🚀 Features
+
+- groups by [@jdx](https://github.com/jdx) in [c445773](https://github.com/jdx/hk/commit/c44577332aa24e481845833038877c01295520a4)
+- newlines builtin by [@jdx](https://github.com/jdx) in [5ec47a1](https://github.com/jdx/hk/commit/5ec47a1e45f84845962328d892332cad2d9a6dd7)
+
+### 🐛 Bug Fixes
+
+- git tweaks by [@jdx](https://github.com/jdx) in [e4ee0ec](https://github.com/jdx/hk/commit/e4ee0ec6c24ca9b301d4e740e9cb443d7fa1885e)
+
+### 📚 Documentation
+
+- about improvements by [@jdx](https://github.com/jdx) in [1793831](https://github.com/jdx/hk/commit/1793831d33fc8e6b878d5d8316bb03bf0c85ffe3)
+- docs by [@jdx](https://github.com/jdx) in [b334019](https://github.com/jdx/hk/commit/b3340195f4e527c36a48fcd0b863567a149f4fbb)
+- remove logo by [@jdx](https://github.com/jdx) in [e3ce01b](https://github.com/jdx/hk/commit/e3ce01b8404ebf26d77732d0859fb66e6a808b96)
+- hk init by [@jdx](https://github.com/jdx) in [94c5557](https://github.com/jdx/hk/commit/94c555717048314178deb9eeed46492c3635d6ab)
+- configuration by [@jdx](https://github.com/jdx) in [1624bbd](https://github.com/jdx/hk/commit/1624bbdab0f561412e38db75703d4fdc69c285ec)
+- configuration by [@jdx](https://github.com/jdx) in [3935756](https://github.com/jdx/hk/commit/3935756f84e506f496bcd1902da97dc0bb3f2498)
+
+### 🔍 Other Changes
+
+- --plan stub by [@jdx](https://github.com/jdx) in [5d4184c](https://github.com/jdx/hk/commit/5d4184cbee22b4ff9587e69b07f0a03d2ff65f63)
+- implemented more of --plan by [@jdx](https://github.com/jdx) in [5074e0d](https://github.com/jdx/hk/commit/5074e0dc27378ea48b60a7a5b47b103e1042e636)
+- add release notes by [@jdx](https://github.com/jdx) in [6e6fc22](https://github.com/jdx/hk/commit/6e6fc2203b7ee2d709ce3f22c9067f744908b6b0)
+- add brew bump by [@jdx](https://github.com/jdx) in [3e5bce8](https://github.com/jdx/hk/commit/3e5bce85e3e960ec739083a22216013ba5a81a29)
+
+## [0.8.5](https://github.com/jdx/hk/compare/v0.8.4..v0.8.5) - 2025-04-23
 
 ### 🐛 Bug Fixes
 
