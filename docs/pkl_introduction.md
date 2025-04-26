@@ -72,7 +72,7 @@ concepts we use in hk.
 my_string = "hello"
 my_number = 1
 my_boolean = true
-list_of_strings = List("a"; "b"; "c")
+list_of_strings = List("a", "b", "c")
 ```
 
 ### Mapping
@@ -90,7 +90,7 @@ my_mapping = new Mapping<String, String> {
 Lists are for basic ordered collections:
 
 ```pkl
-my_list = List("a"; "b"; "c")
+my_list = List("a", "b", "c")
 ```
 
 Listings are for more complex ordered collections:
