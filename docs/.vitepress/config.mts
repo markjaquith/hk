@@ -32,17 +32,16 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
+      { text: 'Getting Started', link: '/getting_started' },
+      { text: 'Configuration', link: '/configuration' },
+      { text: 'CLI Reference', link: '/cli/' },
+    ],
+    sidebar: [
       { text: 'About', link: '/about' },
       { text: 'Getting Started', link: '/getting_started' },
       { text: 'Configuration', link: '/configuration' },
       { text: 'Environment Variables', link: '/environment_variables' },
       { text: 'Hooks', link: '/hooks' },
-      { text: 'CLI Reference', link: '/cli/' },
-    ],
-    sidebar: [
-      { text: 'Getting Started', link: '/getting_started' },
-      { text: 'Hooks', link: '/hooks' },
-      { text: 'Configuration', link: '/configuration' },
       { text: 'Introduction to pkl', link: '/pkl_introduction' },
       { text: 'mise-en-place Integration', link: '/mise_integration' },
       { text: 'CLI Reference', link: '/cli', items: commands.map(cmd => ({ text: cmd.join(' '), link: `/cli/${cmd.join('/')}` })) },
