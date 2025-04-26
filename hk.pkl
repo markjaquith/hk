@@ -32,6 +32,7 @@ local linters = new Mapping<String, Step | Group> {
          dir = "docs"
          prefix = "bun run"
      }
+     ["newlines"] = Builtins.newlines
      ["prettier"] = (Builtins.prettier) {
          glob = List("*.js", "*.ts", "*.yml", "*.yaml") // override the default globs
      }

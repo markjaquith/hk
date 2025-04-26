@@ -90,7 +90,7 @@ Steps are the individual linters that make up a hook. They are executed in the o
 
 Files the step should run on. By default this will only run this step if at least 1 staged file matches the glob patterns. If no patterns are provided, the step will always run.
 
-### `<STEP>.check: String`
+### `<STEP>.check: (String | Script)`
 
 A command to run that does not modify files. This typically is a "check" command like `eslint` or `prettier --check` that returns a non-zero exit code if there are errors.
 Parallelization works better with check commands than fix commands as no files are being modified.
@@ -105,11 +105,28 @@ hooks {
 }
 ```
 
+If you want to use a different check command for different operating systems, you can define a Script instead of a String:
+
+```pkl
+hooks {
+    ["pre-commit"] {
+        ["prettier"] {
+            check = new Script {
+                linux = "prettier --check {{files}}"
+                macos = "prettier --check {{files}}"
+                windows = "prettier --check {{files}}"
+                other = "prettier --check {{files}}"
+            }
+        }
+    }
+}
+```
+
 Template variables:
 
 - <code v-pre>{{files}}</code>: A list of files to run the linter on.
 
-### `<STEP>.check_list_files: String`
+### `<STEP>.check_list_files: (String | Script)`
 
 A command that returns a list of files that need fixing. This is used to optimize the fix step when `check_first` is enabled. Instead of running the fix command on all files, it will only run on files that need fixing.
 
@@ -123,11 +140,11 @@ hooks {
 }
 ```
 
-### `<STEP>.check_diff: String`
+### `<STEP>.check_diff: (String | Script)`
 
 A command that shows the diff of what would be changed. This is an alternative to `check` that can provide more detailed information about what would be changed.
 
-### `<STEP>.fix: String`
+### `<STEP>.fix: (String | Script)`
 
 A command to run that modifies files. This typically is a "fix" command like `eslint --fix` or `prettier --write`. Templates variables are the same as for `check`.
 

@@ -8,8 +8,8 @@ use eyre::{WrapErr, eyre};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
-use std::{collections::HashSet, path::PathBuf};
+use serde_with::{DisplayFromStr, OneOrMany, PickFirst, serde_as};
+use std::{collections::HashSet, fmt::Display, path::PathBuf, str::FromStr};
 use std::{
     ffi::OsString,
     sync::{Arc, LazyLock},
@@ -18,10 +18,10 @@ use std::{fmt, process::Stdio};
 use tokio::sync::OwnedSemaphorePermit;
 use xx::file::display_path;
 
+#[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
-#[serde_as]
 pub struct Step {
     #[serde(default = "default_step_type")]
     pub _type: String,
@@ -34,10 +34,14 @@ pub struct Step {
     #[serde(default)]
     pub interactive: bool,
     pub depends: Vec<String>,
-    pub check: Option<String>,
-    pub check_list_files: Option<String>,
-    pub check_diff: Option<String>,
-    pub fix: Option<String>,
+    #[serde_as(as = "Option<PickFirst<(_, DisplayFromStr)>>")]
+    pub check: Option<Script>,
+    #[serde_as(as = "Option<PickFirst<(_, DisplayFromStr)>>")]
+    pub check_list_files: Option<Script>,
+    #[serde_as(as = "Option<PickFirst<(_, DisplayFromStr)>>")]
+    pub check_diff: Option<Script>,
+    #[serde_as(as = "Option<PickFirst<(_, DisplayFromStr)>>")]
+    pub fix: Option<Script>,
     pub workspace_indicator: Option<String>,
     pub prefix: Option<String>,
     pub dir: Option<String>,
@@ -96,19 +100,19 @@ impl Step {
         }
     }
 
-    pub fn run_cmd(&self, run_type: RunType) -> Option<&str> {
+    pub fn run_cmd(&self, run_type: RunType) -> Option<&Script> {
         match run_type {
             RunType::Check(c) => match c {
-                CheckType::Check => self.check.as_deref(),
-                CheckType::Diff => self.check_diff.as_deref(),
-                CheckType::ListFiles => self.check_list_files.as_deref(),
+                CheckType::Check => self.check.as_ref(),
+                CheckType::Diff => self.check_diff.as_ref(),
+                CheckType::ListFiles => self.check_list_files.as_ref(),
             }
-            .or(self.check.as_deref())
-            .or(self.check_list_files.as_deref())
-            .or(self.check_diff.as_deref()),
+            .or(self.check.as_ref())
+            .or(self.check_list_files.as_ref())
+            .or(self.check_diff.as_ref()),
             RunType::Fix => self
                 .fix
-                .as_deref()
+                .as_ref()
                 .or_else(|| self.run_cmd(RunType::Check(CheckType::Check))),
         }
     }
@@ -564,4 +568,41 @@ fn try_canonicalize(path: &PathBuf) -> PathBuf {
 
 fn default_step_type() -> String {
     "step".to_string()
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde_as]
+pub struct Script {
+    pub linux: Option<String>,
+    pub macos: Option<String>,
+    pub windows: Option<String>,
+    pub other: Option<String>,
+}
+
+impl FromStr for Script {
+    type Err = eyre::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            linux: None,
+            macos: None,
+            windows: None,
+            other: Some(s.to_string()),
+        })
+    }
+}
+
+impl Display for Script {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let other = self.other.as_deref().unwrap_or_default();
+        if cfg!(target_os = "macos") {
+            write!(f, "{}", self.macos.as_deref().unwrap_or(other))
+        } else if cfg!(target_os = "linux") {
+            write!(f, "{}", self.linux.as_deref().unwrap_or(other))
+        } else if cfg!(target_os = "windows") {
+            write!(f, "{}", self.windows.as_deref().unwrap_or(other))
+        } else {
+            write!(f, "{}", other)
+        }
+    }
 }

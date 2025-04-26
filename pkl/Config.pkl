@@ -2,6 +2,13 @@
 module hk.Config
 min_hk_version = "{{version | truncate(length=1)}}.0.0"
 
+class Script {
+    linux: String?
+    macos: String?
+    windows: String?
+    other: String?
+}
+
 class Step {
     _type = "step"
     /// Which profiles (HK_PROFILES) need to be active for the step to run
@@ -26,12 +33,12 @@ class Step {
     depends: (String | List<String>) = List()
     
     /// a shell command to check. Any edits will be ignored.
-    check: String?
-    check_list_files: String?
-    check_diff: String?
+    check: (String | Script)?
+    check_list_files: (String | Script)?
+    check_diff: (String | Script)?
 
     /// a shell command that checks and edits files. Edits will be automatically added to the index.
-    fix: String?
+    fix: (String | Script)?
 
     /// if set, run the linter on workspaces only which are parent directories containing this filename
     workspace_indicator: String?
