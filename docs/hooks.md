@@ -82,3 +82,7 @@ hooks {
     }
 }
 ```
+
+## Other Hooks
+
+Other git hooks are also supported. See <https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks>.
