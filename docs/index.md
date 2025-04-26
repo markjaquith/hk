@@ -21,5 +21,3 @@ hero:
       text: Discord
       link: https://discord.gg/UBa7pJUN7Z
 ---
-
-<img src="/logo.png" alt="hk" width="200" />

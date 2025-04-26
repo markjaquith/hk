@@ -5,5 +5,3 @@ git hook managers, hk has tighter integration with linters and is able to make u
 file locks in order to maximize concurrency while also preventing race conditions.
 
 See docs: https://hk.jdx.dev/
-
-![hk](/docs/public/logo.png)
