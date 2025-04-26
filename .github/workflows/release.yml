@@ -90,10 +90,10 @@ jobs:
 
   publish-release:
     needs: [upload-assets, pkl]
-    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-      - run: git cliff --current > release-notes.md && cat release-notes.md
-      - run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }} -F release-notes.md
+      - run: git cliff --latest > release-notes.md && cat release-notes.md
+      - if: github.event_name != 'workflow_dispatch'
+        run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }} -F release-notes.md
