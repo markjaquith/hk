@@ -299,40 +299,6 @@ hooks {
 }
 ```
 
-### `<GROUP>`
-
-A group is a collection of steps that are executed in parallel, waiting for previous steps/groups to finish and blocking other steps/groups from starting until it finishes. This is a naive way to ensure the order of execution. It's better to make use of read/write locks and depends.
-
-```pkl
-hooks {
-    ["pre-commit"] {
-        steps {
-            ["build"] = new Group {
-                steps = new Mapping<String, Step> {
-                    ["ts"] = new Step {
-                        fix = "tsc -b"
-                    }
-                    ["rs"] = new Step {
-                        fix = "cargo build"
-                    }
-                }
-            }
-            // these steps will run in parallel after the build group finishes
-            ["lint"] = new Group {
-                steps = new Mapping<String, Step> {
-                    ["prettier"] = new Step {
-                        check = "prettier --check {{files}}"
-                    }
-                    ["eslint"] = new Step {
-                        check = "eslint {{files}}"
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
 ### `<STEP>.exclude: (String | List<String>)`
 
 A list of glob patterns to exclude from the step. Files matching these patterns will be skipped.
@@ -400,5 +366,36 @@ local linters {
 }
 ```
 
-You can also write `hk.json|hk.yaml|hk.toml` as an alternative to pkl, however builtins will not be available.
-This may go away in the future so let me know if you rely on it.
+### `<GROUP>`
+
+A group is a collection of steps that are executed in parallel, waiting for previous steps/groups to finish and blocking other steps/groups from starting until it finishes. This is a naive way to ensure the order of execution. It's better to make use of read/write locks and depends.
+
+```pkl
+hooks {
+    ["pre-commit"] {
+        steps {
+            ["build"] = new Group {
+                steps = new Mapping<String, Step> {
+                    ["ts"] = new Step {
+                        fix = "tsc -b"
+                    }
+                    ["rs"] = new Step {
+                        fix = "cargo build"
+                    }
+                }
+            }
+            // these steps will run in parallel after the build group finishes
+            ["lint"] = new Group {
+                steps = new Mapping<String, Step> {
+                    ["prettier"] = new Step {
+                        check = "prettier --check {{files}}"
+                    }
+                    ["eslint"] = new Step {
+                        check = "eslint {{files}}"
+                    }
+                }
+            }
+        }
+    }
+}
+```
