@@ -93,4 +93,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }}
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - run: git cliff --current > release-notes.md && cat release-notes.md
+      - run: gh release edit ${{ github.ref_name }} --draft=false -R ${{ github.repository }} -F release-notes.md
