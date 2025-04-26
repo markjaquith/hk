@@ -42,10 +42,10 @@ async fn main() -> Result<()> {
     handle_panic();
     let result = cli::run().await;
     clx::progress::flush();
-    if result.is_err() && !log::log_enabled!(log::Level::Debug) {
-        return friendly_error(result.unwrap_err());
+    match result {
+        Err(e) if !log::log_enabled!(log::Level::Debug) => friendly_error(e),
+        r => r,
     }
-    result
 }
 
 fn friendly_error(e: eyre::Report) -> Result<()> {

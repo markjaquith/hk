@@ -27,7 +27,7 @@ local linters = new Mapping<String, Step> {
     // uses builtin prettier linter config
     ["prettier"] = Builtins.prettier
 
-    // uses custom pkl linter config
+    // define a custom linter
     ["pkl"] {
         glob = "*.pkl"
         check = "pkl eval {{files}} >/dev/null"
@@ -68,7 +68,7 @@ hooks {
 "#;
         if !hk_file.exists() || self.force {
             xx::file::write(hk_file, hook_content.trim_start())?;
-        } else if !self.force {
+        } else if hk_file.exists() {
             warn!("hk.pkl already exists, run with --force to overwrite");
         }
 
