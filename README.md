@@ -1,14 +1,9 @@
 # hk
 
-The fastest git hook manager on the planet.
-
-> [!CAUTION]
-> hk is in an early beta stage. You may encounter bugs and breaking changes until 1.x.
+A git hook manager and project linting tool with an emphasis on performance. Compared to other
+git hook managers, hk has tighter integration with linters and is able to make use of read/write
+file locks in order to maximize concurrency while also preventing race conditions.
 
 See docs: https://hk.jdx.dev/
 
 ![hk](/docs/public/logo.png)
-
-## Benchmarks
-
-![benchmarks](/docs/public/benchmark.png)

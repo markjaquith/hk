@@ -4,30 +4,22 @@ hk is built by [@jdx](https://github.com/jdx).
 
 ## Why does this exist?
 
-I wanted a git hook manager that was fast and I didn't see any
-existing tools that integrated well enough with linters to actually perform as
-fast as they could.
+git hooks need to be fast above all else or else developers won't use them. Parallelism
+is the best (and likely only) way to achieve acceptable performance at the git hook manager level.
 
-I recognized that in order for git hooks to perform fast, they need to run in parallel. That said, since linters also often (but not always) modify files, it's
-not possible to naively run them in parallel or they could stomp on each other if modifying the same files at the same time. E.g.: you may run eslint and prettier
-on the same `.js` file.
+Existing alternatives to hk such as [lefthook](https://github.com/evilmartians/lefthook) support
+very basic parallel execution of shell script however because linters may edit files—this naive approach
+can break down if multiple linters affect the same file.
 
-That doesn't mean we have to run everything in series though. A lint manager which
-was aware of how linters will behave could grab read/write locks and only grab
-write locks for a short period of time would ultimately enable a lint manager to
-lint a codebase or set of changes very quickly. For this reason, by convention hk
-linters should be defined with box a "check" and "fix" step in order for it to perform
-as fast as possible with minimal write locking.
+I felt that a git hook manager that had tighter integration with the linters would be able to leverage
+read/write file locks to enable more aggressive parallelism while preventing race conditions. This read/write locking is the primary reason
+I built hk, however there are other design decisions worth noting that I think makes hk a better experience than its peers:
 
-To compare with 2 other popular tools in this space: I like that [lefthook](https://github.com/evilmartians/lefthook) is pretty lightweight and fast. I don't like how you need to write all the logic to integrate with
-linters yourself and that it lacks any real locking behavior allowing for the advanced parallelism hk provides. I like how [pre-commit](https://pre-commit.com) has
-a plugin interface for sharing lint configuration but I found the DX pretty lackluster around plugins and it doesn't seem to really support parallelism—it is very
-briefly mentioned in the docs but it explains nothing about it. In hk, parallel execution is basically the entire idea everything else is built around.
-
-Being a Rust CLI, hk is also much faster starting up than other CLIs. This mostly optimizes the no-op use-case—such as running `git commit --amend` with no repo changes or minimal changes which matters in terms of making hk feel very snappy. You likely won't be able to notice hk being used at all if there aren't git changes.
-
-Beyond that, I used my experience building [mise-en-place](https://mise.jdx.dev) incorporating various tricks I've found building that which has resulted in better
-CLI performance such as coding directly to libgit2 rather than shelling out to `git`. Another technique is that hk can split execution of single-threaded linters (such as eslint and prettier) across multiple processes each linting a different set of files with the `batch = true` config.
+- hk has a bunch of [builtins](https://github.com/jdx/hk/tree/main/pkl/builtins) you can use for common linters like `prettier` or `black`.
+- By default, hk uses libgit2 to directly interact with git instead of shelling out many times to `git`.
+  (This generally makes hk much faster but there are situations like `fsmonitor` where it may perform worse)
+- hk is a Rust CLI which gives it great startup performance.
+- hk is designed to work well with my other project [mise-en-place](https://mise.jdx.dev) which makes it easy to manage dependencies for hk linters.
 
 ## Contributing
 

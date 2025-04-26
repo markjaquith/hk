@@ -32,6 +32,7 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
+      { text: 'About', link: '/about' },
       { text: 'Getting Started', link: '/getting_started' },
       { text: 'Hooks', link: '/hooks' },
       { text: 'Configuration', link: '/configuration' },
@@ -43,7 +44,6 @@ export default defineConfig({
       { text: 'Configuration', link: '/configuration' },
       { text: 'Introduction to pkl', link: '/pkl_introduction' },
       { text: 'mise-en-place Integration', link: '/mise_integration' },
-      { text: 'About', link: '/about' },
       { text: 'CLI Reference', link: '/cli', items: commands.map(cmd => ({ text: cmd.join(' '), link: `/cli/${cmd.join('/')}` })) },
     ],
     socialLinks: [

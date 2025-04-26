@@ -2,10 +2,6 @@
 
 A tool for running hooks on files in a git repository.
 
-::: warning
-hk is in an early beta stage. You may encounter bugs and breaking changes until 1.x.
-:::
-
 ## Installation
 
 Use [mise-en-place](https://github.com/jdx/mise) to install hk (you'll also need the `pkl` cli):
