@@ -34,8 +34,9 @@ export default defineConfig({
     nav: [
       { text: 'About', link: '/about' },
       { text: 'Getting Started', link: '/getting_started' },
-      { text: 'Hooks', link: '/hooks' },
       { text: 'Configuration', link: '/configuration' },
+      { text: 'Environment Variables', link: '/environment_variables' },
+      { text: 'Hooks', link: '/hooks' },
       { text: 'CLI Reference', link: '/cli/' },
     ],
     sidebar: [

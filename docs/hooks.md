@@ -4,37 +4,48 @@ The following describes the behavior of git hooks that hk supports. Each linter 
 
 It's the read/write locking behavior that hk makes use of in order to run hooks as fast as possible while still being safe.
 
-A "group" is a collection of hook steps separated by steps with `exclusive = true`.
+## Hook Behavior
 
-## `pre-commit`
+hk hooks perform the following assuming `fix = true`:
 
-Runs when `git commit` is run before the commit is created.
-
-* Stashes any untracked/unstaged changes (disable with [`HK_STASH=0`](/configuration#hk-stash))
+* Stashes any untracked/unstaged changes (disable with [`HK_STASH=none`](/configuration#hk-stash))
 * Gathers list of files with staged changes (or all files if running `hk run pre-commit --all`)
 * Runs linters and hook steps in parallel up to [`HK_JOBS`](/configuration#hk-jobs) at a time, with caveats:
   * `exclusive = true` hook steps will wait until all previous steps finished and block later steps from starting
   * if any hook step has any dependencies, hk will wait for them to complete before starting
-  * hk will create read/write locks for each file to check/fix in the linters
-  * if "fix" is set (default behavior) _and_ multiple linters in the same group are to edit the same file, hk will do one of the following:
-    * if `stomp = true`, hk will grab read locks instead of write locks for the "fix" command. Use this if the tool itself has its own locking
-      behavior or you simply don't care if the files may be written by multiple fix commands at the same time.
-    * if `check_first = true` on the linter, hk will run the "check" command first with a read lock, if that fails, it will run the "fix" command with a write lock
-      * if a `check_list_files` command is available on the linter, hk will use the output of that command to filter the list of files to get write locks for and call "fix" on.
-    * if `check_first = false` on the linter, hk will run the "fix" command with write locks, blocking other linters from running
-    * modified files are added to the git index
-  * if "check" is set (because the linter does not have a "fix" command, [`HK_FIX=0`](/configuration#hk-fix) is set, or `hk check`), hk runs all linters in parallel. They should not be modifying files so this should be safe to do.
-  * untracked/unstaged changes are unstashed
-  * commit is allowed to run if no check/fix commands failed
+  * hk will create read/write locks for each file (according to the linter's glob patterns) to check/fix in the linters unless `stomp = true`
+  * if `check_first = true` on the linter, hk will run the "check" command first with read locks, if that fails, it will run the "fix" command with write locks on all the files
+  * if a `check_list_files` command is available on the linter, hk will use the output of that command to filter the list of files to get write locks for and call "fix" on.
+  * if `check_first = false` on the linter, hk will run the "fix" command after fetching write locks, blocking other linters from running. You
+    should avoid this performance.
+  * if any of the files have been modified and match the `stage` globs, they will be added to the git index
+* untracked/unstaged changes are unstashed
 
-## `pre-push`
+If `fix = false`, hk will just run the `check` steps and won't need to deal with read/write locks as nothing should be making modifications.
 
-Runs when `git push` is run before `git push` sends the changes to the remote repository.
+## `pre-commit`
+
+Runs when `git commit` is run before `git commit` creates the commit.
 
 ```pkl
-hooks = new {
-    ["pre-push"] {
-        ["check"] = new Check {}
+hooks {
+    fix = true
+    ["pre-commit"] {
+        steps {
+            ["cargo-fmt"] {
+                glob = "*.rs"
+                stage = "*.rs"
+                check_first = true
+                check = "cargo fmt --check"
+                fix = "cargo fmt"
+            }
+            ["cargo-clippy"] {
+                glob = "*.rs"
+                check_first = true
+                check = "cargo clippy"
+                fix = "cargo clippy --fix --allow-dirty --allow-staged"
+            }
+        }
     }
 }
 ```
@@ -44,10 +55,12 @@ hooks = new {
 Runs when `git commit` is run before the commit message is created. Useful for rendering a default commit message template.
 
 ```pkl
-hooks = new {
+hooks {
     ["prepare-commit-msg"] {
-        ["render-commit-msg"] {
-            check = "echo 'default commit message' > {{commit_msg_file}}"
+        steps {
+            ["render-commit-msg"] {
+                check = "echo 'default commit message' > {{commit_msg_file}}"
+            }
         }
     }
 }
@@ -59,10 +72,12 @@ hooks = new {
 Runs when `git commit` is run after the commit message is created. Useful for validating the commit message.
 
 ```pkl
-hooks = new {
+hooks {
     ["commit-msg"] {
-        ["validate-commit-msg"] {
-            check = "grep -q '^(fix|feat|chore):' {{commit_msg_file}} || exit 1"
+        steps {
+            ["validate-commit-msg"] {
+                check = "grep -q '^(fix|feat|chore):' {{commit_msg_file}} || exit 1"
+            }
         }
     }
 }
