@@ -88,6 +88,9 @@ run = [
 [tasks.docs]
 dir = "docs"
 run = "bun i && bun run docs:dev"
+[tasks."docs:build"]
+dir = "docs"
+run = "bun i && bun run docs:build"
 
 [tasks.render]
 depends = ["render:*"]

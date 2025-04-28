@@ -192,9 +192,33 @@ If set, run the linter on workspaces only which are parent directories containin
 local linters {
     ["cargo-clippy"] {
         workspace_indicator = "Cargo.toml"
+            glob = "*.rs"
+            workspace_indicator = "Cargo.toml"
+            check = "cargo clippy --manifest-path {{workspace_indicator}}"
     }
 }
 ```
+
+In this example, given a file list like the following:
+
+```
+└── workspaces/
+    ├── proj1/
+    │   ├── Cargo.toml
+    │   └── src/
+    │       ├── lib.rs
+    │       └── main.rs
+    └── proj2/
+        ├── Cargo.toml
+        └── src/
+            ├── lib.rs
+            └── main.rs
+```
+
+hk will run 1 step for each workspace even though multiple rs files are in each workspace:
+
+- `cargo clippy --manifest-path workspaces/proj1/Cargo.toml`
+- `cargo clippy --manifest-path workspaces/proj2/Cargo.toml`
 
 ### `<STEP>.prefix: String`
 

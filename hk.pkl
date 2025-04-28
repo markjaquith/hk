@@ -4,38 +4,38 @@ import "pkl/Builtins.pkl"
 
 // defines what happens during git pre-commit hook
 local linters = new Mapping<String, Step | Group> {
-    ["group1"] = new Group {
-        steps = new Mapping<String, Step> {
-            ["actionlint"] = Builtins.actionlint
-            ["cargo-fmt"] = Builtins.cargo_fmt
-        }
-    }
+    ["actionlint"] = Builtins.actionlint
+    ["cargo-fmt"] = Builtins.cargo_fmt
     // TODO: fails on releases with hk-example.pkl
     // ["pkl"] {
     //     glob = new { "*.pkl" }
     //     check = "pkl eval {{files}} >/dev/null"
     // }
     // predefined formatters+linters
-     ["cargo-clippy"] = (Builtins.cargo_clippy) {
-         profiles = List("slow")
-         check = "cargo clippy --manifest-path {{workspace_indicator}} -- -D warnings"
-     }
-     ["cargo-check"] = (Builtins.cargo_check) {
-         profiles = List("!slow")
-     }
-     ["dbg"] = new Step {
-         // ensure no dbg! macros are used
-         glob = "**/*.rs"
-         check = "! rg -e 'dbg!' {{files}}"
-     }
-     ["eslint"] = (Builtins.eslint) {
-         dir = "docs"
-         prefix = "bun run"
-     }
-     ["newlines"] = Builtins.newlines
-     ["prettier"] = (Builtins.prettier) {
-         glob = List("*.js", "*.ts", "*.yml", "*.yaml") // override the default globs
-     }
+    ["cargo-clippy"] = (Builtins.cargo_clippy) {
+        profiles = List("slow")
+        check = "cargo clippy --manifest-path {{workspace_indicator}} -- -D warnings"
+    }
+    ["cargo-check"] = (Builtins.cargo_check) {
+        profiles = List("!slow")
+    }
+    ["dbg"] = new Step {
+        // ensure no dbg! macros are used
+        glob = "**/*.rs"
+        check = "! rg -e 'dbg!' {{files}}"
+    }
+    ["eslint"] = (Builtins.eslint) {
+        dir = "docs"
+        prefix = "bun run"
+    }
+    ["newlines"] = Builtins.newlines
+    ["prettier"] = (Builtins.prettier) {
+        glob = List("*.js", "*.ts", "*.yml", "*.yaml") // override the default globs
+    }
+    ["docs"] = new Step {
+        glob = "docs/**"
+        check = "mise run docs:build"
+    }
 }
 
 hooks = new {
