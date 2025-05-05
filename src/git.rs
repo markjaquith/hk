@@ -364,7 +364,9 @@ impl Git {
         let patch = if let Some(repo) = &self.repo {
             // essentially: git diff-index --ignore-submodules --binary --exit-code --no-color --no-ext-diff (git write-tree)
             let mut opts = git2::DiffOptions::new();
-            opts.include_untracked(true);
+            if *env::HK_STASH_UNTRACKED {
+                opts.include_untracked(true);
+            }
             opts.show_binary(true);
             opts.show_untracked_content(true);
             let diff = repo
@@ -388,7 +390,7 @@ impl Git {
                 String::from_utf8_lossy(&diff_bytes).to_string()
             }
         } else {
-            if !status.untracked_files.is_empty() {
+            if *env::HK_STASH_UNTRACKED && !status.untracked_files.is_empty() {
                 let args = vec!["add", "--intent-to-add", "--"]
                     .into_iter()
                     .chain(status.unstaged_files.iter().map(|p| p.to_str().unwrap()))
@@ -397,7 +399,7 @@ impl Git {
             }
             let output =
                 xx::process::sh("git diff --no-color --no-ext-diff --binary --ignore-submodules")?;
-            if !status.untracked_files.is_empty() {
+            if *env::HK_STASH_UNTRACKED && !status.untracked_files.is_empty() {
                 let args = vec!["reset", "--"]
                     .into_iter()
                     .chain(status.unstaged_files.iter().map(|p| p.to_str().unwrap()))
@@ -420,13 +422,19 @@ impl Git {
         if let Some(repo) = &mut self.repo {
             let sig = repo.signature()?;
             let mut flags = git2::StashFlags::default();
-            flags.set(git2::StashFlags::INCLUDE_UNTRACKED, true);
+            if *env::HK_STASH_UNTRACKED {
+                flags.set(git2::StashFlags::INCLUDE_UNTRACKED, true);
+            }
             flags.set(git2::StashFlags::KEEP_INDEX, true);
             repo.stash_save(&sig, "hk", Some(flags))
                 .wrap_err("failed to stash")?;
             Ok(Some(StashType::LibGit))
         } else {
-            xx::process::sh("git stash push --keep-index --include-untracked -m hk")?;
+            let mut cmd = xx::process::cmd("git", ["stash", "push", "--keep-index", "-m", "hk"]);
+            if *env::HK_STASH_UNTRACKED {
+                cmd = cmd.arg("--include-untracked");
+            }
+            cmd.run()?;
             Ok(Some(StashType::Git))
         }
     }

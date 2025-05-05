@@ -47,6 +47,7 @@ pub static HK_STASH: LazyLock<Option<StashMethod>> = LazyLock::new(|| {
             .unwrap_or(None)
     }
 });
+pub static HK_STASH_UNTRACKED: LazyLock<bool> = LazyLock::new(|| !var_false("HK_STASH_UNTRACKED"));
 pub static HK_FIX: LazyLock<bool> = LazyLock::new(|| !var_false("HK_FIX"));
 pub static HK_MISE: LazyLock<bool> = LazyLock::new(|| var_true("HK_MISE"));
 pub static HK_PROFILE: LazyLock<IndexSet<String>> = LazyLock::new(|| {

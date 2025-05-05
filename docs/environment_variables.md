@@ -110,6 +110,13 @@ Default: `patch-file`
 - `patch-file`: Use an hk generated patch file to stash unstaged changes before running hooks (typically faster and avoids `index is locked` errors).
 - `none`: Do not stash unstaged changes before running hooks. Much faster but will stage unstaged changes if they are in the same file as staged changes with fix modifications.
 
+## `HK_STASH_UNTRACKED`
+
+Type: `bool`
+Default: `true`
+
+If set to `true`, hk will stash untracked files when stashing before running hooks.
+
 ## `HK_FAIL_FAST`
 
 Type: `bool`
