@@ -456,7 +456,9 @@ impl Git {
                             format!("failed to apply diff {}", display_path(&patch_file))
                         })?;
                 } else {
-                    xx::process::sh(&format!("git apply {}", display_path(&patch_file)))?;
+                    xx::process::cmd("git", ["apply", "--reject"])
+                        .arg(&patch_file)
+                        .run()?;
                 }
                 if let Err(err) = xx::file::remove_file(patch_file) {
                     debug!("failed to remove patch file: {:?}", err);
