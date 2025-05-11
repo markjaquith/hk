@@ -23,7 +23,7 @@ use xx::file::display_path;
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(debug_assertions, serde(deny_unknown_fields))]
 pub struct Step {
-    #[serde(default = "default_step_type")]
+    #[serde(default = "default_step_type", skip_serializing)]
     pub _type: String,
     #[serde(default)]
     pub name: String,

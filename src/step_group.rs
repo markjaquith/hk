@@ -17,7 +17,7 @@ use std::{
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize, Eq, PartialEq)]
 pub struct StepGroup {
-    #[serde(default = "default_step_group_type")]
+    #[serde(default = "default_step_group_type", skip_serializing)]
     pub _type: String,
     pub name: Option<String>,
     pub steps: IndexMap<String, Step>,
