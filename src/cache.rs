@@ -112,6 +112,13 @@ where
                     Ok(val) => return Ok::<_, eyre::Report>(val),
                     Err(err) => {
                         warn!("failed to parse cache file: {} {:#}", path.display(), err);
+                        if let Err(e) = std::fs::remove_file(path) {
+                            warn!(
+                                "failed to delete invalid cache file: {} {:#}",
+                                path.display(),
+                                e
+                            );
+                        }
                     }
                 }
             }
