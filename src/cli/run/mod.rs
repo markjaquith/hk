@@ -8,7 +8,11 @@ mod prepare_commit_msg;
 
 /// Run a hook
 #[derive(clap::Args)]
-#[clap(visible_alias = "r", verbatim_doc_comment)]
+#[clap(
+    arg_required_else_help = true,
+    visible_alias = "r",
+    verbatim_doc_comment
+)]
 pub struct Run {
     #[clap(subcommand)]
     command: Option<Commands>,
@@ -31,11 +35,14 @@ impl Run {
         if let Some(hook) = &self.other {
             return self.hook.run(hook).await;
         }
-        match self.command.unwrap() {
-            Commands::CommitMsg(cmd) => cmd.run().await,
-            Commands::PreCommit(cmd) => cmd.run().await,
-            Commands::PrePush(cmd) => cmd.run().await,
-            Commands::PrepareCommitMsg(cmd) => cmd.run().await,
+        if let Some(cmd) = self.command {
+            return match cmd {
+                Commands::CommitMsg(cmd) => cmd.run().await,
+                Commands::PreCommit(cmd) => cmd.run().await,
+                Commands::PrePush(cmd) => cmd.run().await,
+                Commands::PrepareCommitMsg(cmd) => cmd.run().await,
+            };
         }
+        Ok(())
     }
 }
