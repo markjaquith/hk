@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/jdx/hk"
 documentation = "https://hk.jdx.dev"
 homepage = "https://hk.jdx.dev"
-include = ["/src/**/*", "/Cargo.toml", "/Cargo.lock", "/README.md", "/LICENSE", "/CHANGELOG.md", "/pkl"]
+include = ["/src/**/*", "/Cargo.toml", "/Cargo.lock", "/README.md", "/LICENSE", "/CHANGELOG.md", "/pkl", "/build.rs"]
 rust-version = "1.85"
 build = "build.rs"
 
