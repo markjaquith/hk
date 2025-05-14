@@ -5,6 +5,20 @@
     "full_cmd": [],
     "usage": "[FLAGS] <SUBCOMMAND>",
     "subcommands": {
+      "builtins": {
+        "full_cmd": ["builtins"],
+        "usage": "builtins",
+        "subcommands": {},
+        "args": [],
+        "flags": [],
+        "mounts": [],
+        "hide": false,
+        "help": "Lists all available builtin linters",
+        "name": "builtins",
+        "aliases": [],
+        "hidden_aliases": [],
+        "examples": []
+      },
       "cache": {
         "full_cmd": ["cache"],
         "usage": "cache <SUBCOMMAND>",
@@ -37,12 +51,12 @@
       },
       "check": {
         "full_cmd": ["check"],
-        "usage": "check [FLAGS] [FILES]...",
+        "usage": "check [FLAGS] [FILES]…",
         "subcommands": {},
         "args": [
           {
             "name": "FILES",
-            "usage": "[FILES]...",
+            "usage": "[FILES]…",
             "help": "Run on specific files",
             "help_first_line": "Run on specific files",
             "required": false,
@@ -84,7 +98,7 @@
           },
           {
             "name": "exclude",
-            "usage": "-e --exclude... <EXCLUDE>",
+            "usage": "-e --exclude… <EXCLUDE>",
             "help": "Exclude files that otherwise would have been selected",
             "help_first_line": "Exclude files that otherwise would have been selected",
             "short": ["e"],
@@ -102,7 +116,7 @@
           },
           {
             "name": "exclude-glob",
-            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "usage": "--exclude-glob… <EXCLUDE_GLOB>",
             "help": "Exclude files that match these glob patterns that otherwise would have been selected",
             "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
             "short": [],
@@ -154,7 +168,7 @@
           },
           {
             "name": "glob",
-            "usage": "-g --glob... <GLOB>",
+            "usage": "-g --glob… <GLOB>",
             "help": "Run on files that match these glob patterns",
             "help_first_line": "Run on files that match these glob patterns",
             "short": ["g"],
@@ -182,7 +196,7 @@
           },
           {
             "name": "step",
-            "usage": "-S --step... <STEP>",
+            "usage": "-S --step… <STEP>",
             "help": "Run specific step(s)",
             "help_first_line": "Run specific step(s)",
             "short": ["S"],
@@ -247,12 +261,12 @@
       },
       "fix": {
         "full_cmd": ["fix"],
-        "usage": "fix [FLAGS] [FILES]...",
+        "usage": "fix [FLAGS] [FILES]…",
         "subcommands": {},
         "args": [
           {
             "name": "FILES",
-            "usage": "[FILES]...",
+            "usage": "[FILES]…",
             "help": "Run on specific files",
             "help_first_line": "Run on specific files",
             "required": false,
@@ -294,7 +308,7 @@
           },
           {
             "name": "exclude",
-            "usage": "-e --exclude... <EXCLUDE>",
+            "usage": "-e --exclude… <EXCLUDE>",
             "help": "Exclude files that otherwise would have been selected",
             "help_first_line": "Exclude files that otherwise would have been selected",
             "short": ["e"],
@@ -312,7 +326,7 @@
           },
           {
             "name": "exclude-glob",
-            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "usage": "--exclude-glob… <EXCLUDE_GLOB>",
             "help": "Exclude files that match these glob patterns that otherwise would have been selected",
             "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
             "short": [],
@@ -364,7 +378,7 @@
           },
           {
             "name": "glob",
-            "usage": "-g --glob... <GLOB>",
+            "usage": "-g --glob… <GLOB>",
             "help": "Run on files that match these glob patterns",
             "help_first_line": "Run on files that match these glob patterns",
             "short": ["g"],
@@ -392,7 +406,7 @@
           },
           {
             "name": "step",
-            "usage": "-S --step... <STEP>",
+            "usage": "-S --step… <STEP>",
             "help": "Run specific step(s)",
             "help_first_line": "Run specific step(s)",
             "short": ["S"],
@@ -481,11 +495,11 @@
       },
       "run": {
         "full_cmd": ["run"],
-        "usage": "run [FLAGS] [FILES]... <SUBCOMMAND>",
+        "usage": "run [FLAGS] [FILES]… <SUBCOMMAND>",
         "subcommands": {
           "commit-msg": {
             "full_cmd": ["run", "commit-msg"],
-            "usage": "run commit-msg [FLAGS] <COMMIT_MSG_FILE> [FILES]...",
+            "usage": "run commit-msg [FLAGS] <COMMIT_MSG_FILE> [FILES]…",
             "subcommands": {},
             "args": [
               {
@@ -499,7 +513,7 @@
               },
               {
                 "name": "FILES",
-                "usage": "[FILES]...",
+                "usage": "[FILES]…",
                 "help": "Run on specific files",
                 "help_first_line": "Run on specific files",
                 "required": false,
@@ -541,7 +555,7 @@
               },
               {
                 "name": "exclude",
-                "usage": "-e --exclude... <EXCLUDE>",
+                "usage": "-e --exclude… <EXCLUDE>",
                 "help": "Exclude files that otherwise would have been selected",
                 "help_first_line": "Exclude files that otherwise would have been selected",
                 "short": ["e"],
@@ -559,7 +573,7 @@
               },
               {
                 "name": "exclude-glob",
-                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "usage": "--exclude-glob… <EXCLUDE_GLOB>",
                 "help": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "short": [],
@@ -611,7 +625,7 @@
               },
               {
                 "name": "glob",
-                "usage": "-g --glob... <GLOB>",
+                "usage": "-g --glob… <GLOB>",
                 "help": "Run on files that match these glob patterns",
                 "help_first_line": "Run on files that match these glob patterns",
                 "short": ["g"],
@@ -639,7 +653,7 @@
               },
               {
                 "name": "step",
-                "usage": "-S --step... <STEP>",
+                "usage": "-S --step… <STEP>",
                 "help": "Run specific step(s)",
                 "help_first_line": "Run specific step(s)",
                 "short": ["S"],
@@ -665,12 +679,12 @@
           },
           "pre-commit": {
             "full_cmd": ["run", "pre-commit"],
-            "usage": "run pre-commit [FLAGS] [FILES]...",
+            "usage": "run pre-commit [FLAGS] [FILES]…",
             "subcommands": {},
             "args": [
               {
                 "name": "FILES",
-                "usage": "[FILES]...",
+                "usage": "[FILES]…",
                 "help": "Run on specific files",
                 "help_first_line": "Run on specific files",
                 "required": false,
@@ -712,7 +726,7 @@
               },
               {
                 "name": "exclude",
-                "usage": "-e --exclude... <EXCLUDE>",
+                "usage": "-e --exclude… <EXCLUDE>",
                 "help": "Exclude files that otherwise would have been selected",
                 "help_first_line": "Exclude files that otherwise would have been selected",
                 "short": ["e"],
@@ -730,7 +744,7 @@
               },
               {
                 "name": "exclude-glob",
-                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "usage": "--exclude-glob… <EXCLUDE_GLOB>",
                 "help": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "short": [],
@@ -782,7 +796,7 @@
               },
               {
                 "name": "glob",
-                "usage": "-g --glob... <GLOB>",
+                "usage": "-g --glob… <GLOB>",
                 "help": "Run on files that match these glob patterns",
                 "help_first_line": "Run on files that match these glob patterns",
                 "short": ["g"],
@@ -810,7 +824,7 @@
               },
               {
                 "name": "step",
-                "usage": "-S --step... <STEP>",
+                "usage": "-S --step… <STEP>",
                 "help": "Run specific step(s)",
                 "help_first_line": "Run specific step(s)",
                 "short": ["S"],
@@ -860,7 +874,7 @@
               },
               {
                 "name": "FILES",
-                "usage": "[FILES]...",
+                "usage": "[FILES]…",
                 "help": "Run on specific files",
                 "help_first_line": "Run on specific files",
                 "required": false,
@@ -902,7 +916,7 @@
               },
               {
                 "name": "exclude",
-                "usage": "-e --exclude... <EXCLUDE>",
+                "usage": "-e --exclude… <EXCLUDE>",
                 "help": "Exclude files that otherwise would have been selected",
                 "help_first_line": "Exclude files that otherwise would have been selected",
                 "short": ["e"],
@@ -920,7 +934,7 @@
               },
               {
                 "name": "exclude-glob",
-                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "usage": "--exclude-glob… <EXCLUDE_GLOB>",
                 "help": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "short": [],
@@ -972,7 +986,7 @@
               },
               {
                 "name": "glob",
-                "usage": "-g --glob... <GLOB>",
+                "usage": "-g --glob… <GLOB>",
                 "help": "Run on files that match these glob patterns",
                 "help_first_line": "Run on files that match these glob patterns",
                 "short": ["g"],
@@ -1000,7 +1014,7 @@
               },
               {
                 "name": "step",
-                "usage": "-S --step... <STEP>",
+                "usage": "-S --step… <STEP>",
                 "help": "Run specific step(s)",
                 "help_first_line": "Run specific step(s)",
                 "short": ["S"],
@@ -1058,7 +1072,7 @@
               },
               {
                 "name": "FILES",
-                "usage": "[FILES]...",
+                "usage": "[FILES]…",
                 "help": "Run on specific files",
                 "help_first_line": "Run on specific files",
                 "required": false,
@@ -1100,7 +1114,7 @@
               },
               {
                 "name": "exclude",
-                "usage": "-e --exclude... <EXCLUDE>",
+                "usage": "-e --exclude… <EXCLUDE>",
                 "help": "Exclude files that otherwise would have been selected",
                 "help_first_line": "Exclude files that otherwise would have been selected",
                 "short": ["e"],
@@ -1118,7 +1132,7 @@
               },
               {
                 "name": "exclude-glob",
-                "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+                "usage": "--exclude-glob… <EXCLUDE_GLOB>",
                 "help": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
                 "short": [],
@@ -1170,7 +1184,7 @@
               },
               {
                 "name": "glob",
-                "usage": "-g --glob... <GLOB>",
+                "usage": "-g --glob… <GLOB>",
                 "help": "Run on files that match these glob patterns",
                 "help_first_line": "Run on files that match these glob patterns",
                 "short": ["g"],
@@ -1198,7 +1212,7 @@
               },
               {
                 "name": "step",
-                "usage": "-S --step... <STEP>",
+                "usage": "-S --step… <STEP>",
                 "help": "Run specific step(s)",
                 "help_first_line": "Run specific step(s)",
                 "short": ["S"],
@@ -1233,7 +1247,7 @@
           },
           {
             "name": "FILES",
-            "usage": "[FILES]...",
+            "usage": "[FILES]…",
             "help": "Run on specific files",
             "help_first_line": "Run on specific files",
             "required": false,
@@ -1275,7 +1289,7 @@
           },
           {
             "name": "exclude",
-            "usage": "-e --exclude... <EXCLUDE>",
+            "usage": "-e --exclude… <EXCLUDE>",
             "help": "Exclude files that otherwise would have been selected",
             "help_first_line": "Exclude files that otherwise would have been selected",
             "short": ["e"],
@@ -1293,7 +1307,7 @@
           },
           {
             "name": "exclude-glob",
-            "usage": "--exclude-glob... <EXCLUDE_GLOB>",
+            "usage": "--exclude-glob… <EXCLUDE_GLOB>",
             "help": "Exclude files that match these glob patterns that otherwise would have been selected",
             "help_first_line": "Exclude files that match these glob patterns that otherwise would have been selected",
             "short": [],
@@ -1345,7 +1359,7 @@
           },
           {
             "name": "glob",
-            "usage": "-g --glob... <GLOB>",
+            "usage": "-g --glob… <GLOB>",
             "help": "Run on files that match these glob patterns",
             "help_first_line": "Run on files that match these glob patterns",
             "short": ["g"],
@@ -1373,7 +1387,7 @@
           },
           {
             "name": "step",
-            "usage": "-S --step... <STEP>",
+            "usage": "-S --step… <STEP>",
             "help": "Run specific step(s)",
             "help_first_line": "Run specific step(s)",
             "short": ["S"],
@@ -1477,7 +1491,7 @@
       },
       {
         "name": "profile",
-        "usage": "-p --profile... <PROFILE>",
+        "usage": "-p --profile… <PROFILE>",
         "help": "Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast",
         "help_first_line": "Profiles to enable/disable prefix with ! to disable e.g. --profile slow --profile !fast",
         "short": ["p"],
@@ -1505,7 +1519,7 @@
       },
       {
         "name": "verbose",
-        "usage": "-v --verbose...",
+        "usage": "-v --verbose…",
         "help": "Enables verbose output",
         "help_first_line": "Enables verbose output",
         "short": ["v"],
@@ -1546,7 +1560,7 @@
   "config": {
     "props": {}
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "usage": "Usage: hk [OPTIONS] <COMMAND>",
   "complete": {},
   "about": "A tool for managing git hooks"

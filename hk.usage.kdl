@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "1.0.0"
+version "1.1.0"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -13,6 +13,7 @@ flag "-s --slow" help="Shorthand for --profile=slow" global=#true
 flag "-v --verbose" help="Enables verbose output" var=#true global=#true count=#true
 flag "-q --quiet" help="Suppresses output" global=#true
 flag --silent help="Suppresses all output" global=#true
+cmd builtins help="Lists all available builtin linters"
 cmd cache hide=#true subcommand_required=#true help="Manage hk internal cache" {
     cmd clear help="Clear the cache directory"
 }

@@ -1,6 +1,41 @@
 # Changelog
 
-## [1.0.0](https://github.com/jdx/hk/compare/v0.8.5..1.0.0) - 2025-04-26
+## [1.1.0](https://github.com/jdx/hk/compare/v1.0.0..1.1.0) - 2025-05-14
+
+### 🚀 Features
+
+- added builtins command by [@jdx](https://github.com/jdx) in [#89](https://github.com/jdx/hk/pull/89)
+- add HK_STASH_UNTRACKED option by [@jdx](https://github.com/jdx) in [e47e309](https://github.com/jdx/hk/commit/e47e309cdfd24fc104fa100d8e6d0c0a0b7df8fa)
+- add shell config by [@jdx](https://github.com/jdx) in [#92](https://github.com/jdx/hk/pull/92)
+
+### 🐛 Bug Fixes
+
+- use --reject flag with `git apply` by [@jdx](https://github.com/jdx) in [1cca76d](https://github.com/jdx/hk/commit/1cca76dad3c2fdac0ada4590883844fd2ae660b2)
+- consistently default to git for stashing by [@jdx](https://github.com/jdx) in [494db6c](https://github.com/jdx/hk/commit/494db6ce0d3f42343bc9cceaf608ae28ff8b7f1e)
+
+### 📚 Documentation
+
+- tweak by [@jdx](https://github.com/jdx) in [4f23f61](https://github.com/jdx/hk/commit/4f23f6106e5435a2be413f0d909749bf45d26589)
+- sidebar by [@jdx](https://github.com/jdx) in [48555c9](https://github.com/jdx/hk/commit/48555c96ef5870d7285b39df8104adf3f0951c1c)
+- mention other hooks are supported by [@jdx](https://github.com/jdx) in [a39ce48](https://github.com/jdx/hk/commit/a39ce48ce0f3dc9ddbc52f438937614b53b62406)
+- explain workspace_indicator better by [@jdx](https://github.com/jdx) in [006ee7f](https://github.com/jdx/hk/commit/006ee7f06d8269016472de1c8b14a9d0466f0b2f)
+
+### 🔍 Other Changes
+
+- brew autobump by [@jdx](https://github.com/jdx) in [bb70806](https://github.com/jdx/hk/commit/bb708067620bbe6ada6204171690f0057f1c152f)
+- fix git cliff generation by [@jdx](https://github.com/jdx) in [b244f29](https://github.com/jdx/hk/commit/b244f292e89ff328df60c43fab20a83cf4ebc565)
+- fix git cliff generation by [@jdx](https://github.com/jdx) in [56f8e65](https://github.com/jdx/hk/commit/56f8e65b7ea57d9f0baaa8b61e14a8b9cfc1eed1)
+- clean up cross building by [@jdx](https://github.com/jdx) in [d752e6e](https://github.com/jdx/hk/commit/d752e6e30074397e2ca20e70c1c5ffed4c9e6537)
+- Make `hk run` show `run` help instead of crashing by [@markjaquith](https://github.com/markjaquith) in [#95](https://github.com/jdx/hk/pull/95)
+- added semantic-pr-lintt by [@jdx](https://github.com/jdx) in [#96](https://github.com/jdx/hk/pull/96)
+- define build.rs by [@jdx](https://github.com/jdx) in [bf28f52](https://github.com/jdx/hk/commit/bf28f529499e033e71bc5f63305ca107a1473b53)
+- define build.rs by [@jdx](https://github.com/jdx) in [91576c8](https://github.com/jdx/hk/commit/91576c823884bfe9dca4f4e8d5692a4e7115c9f1)
+
+### New Contributors
+
+- @markjaquith made their first contribution in [#95](https://github.com/jdx/hk/pull/95)
+
+## [1.0.0](https://github.com/jdx/hk/compare/v0.8.5..v1.0.0) - 2025-04-26
 
 ### 🚀 Features
 

@@ -17,7 +17,7 @@ The source of the commit message (e.g., "message", "template", "merge")
 
 The SHA of the commit being amended (if applicable)
 
-### `[FILES]...`
+### `[FILES]…`
 
 Run on specific files
 
@@ -35,11 +35,11 @@ Run fix command instead of run command This is the default behavior unless HK_FI
 
 Run run command instead of fix command
 
-### `-e --exclude... <EXCLUDE>`
+### `-e --exclude… <EXCLUDE>`
 
 Exclude files that otherwise would have been selected
 
-### `--exclude-glob... <EXCLUDE_GLOB>`
+### `--exclude-glob… <EXCLUDE_GLOB>`
 
 Exclude files that match these glob patterns that otherwise would have been selected
 
@@ -51,7 +51,7 @@ Start reference for checking files (requires --to-ref)
 
 End reference for checking files (requires --from-ref)
 
-### `-g --glob... <GLOB>`
+### `-g --glob… <GLOB>`
 
 Run on files that match these glob patterns
 
@@ -59,6 +59,6 @@ Run on files that match these glob patterns
 
 Print the plan instead of running the hook
 
-### `-S --step... <STEP>`
+### `-S --step… <STEP>`
 
 Run specific step(s)
