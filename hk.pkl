@@ -41,7 +41,7 @@ local linters = new Mapping<String, Step | Group> {
 hooks = new {
     ["pre-commit"] {
         fix = true
-        stash = "patch-file"
+        stash = "git"
         steps = new {
             ["prelint"] {
                 check = "mise run prelint"

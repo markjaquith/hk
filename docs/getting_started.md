@@ -64,7 +64,7 @@ local linters {
 hooks {
     ["pre-commit"] {
         fix = true           // runs the "fix" step of linters to modify files
-        stash = "patch-file" // stashes unstaged changes when running fix steps
+        stash = "git" // stashes unstaged changes when running fix steps
         steps {
             ["prelint"] {
                 check = "mise run prelint"

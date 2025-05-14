@@ -100,7 +100,7 @@ output {
                 if ((k == "glob" || k == "exclude" || k == "depends" || k == "stage") && v is String)
                     List(v) // permits "s" instead of List("s")
                 else if (k == "stash" && v is Boolean)
-                    if (v) "patch-file" else "none"
+                    if (v) "git" else "none"
                 else
                     v
             )

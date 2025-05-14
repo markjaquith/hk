@@ -33,8 +33,8 @@ local linters {
 
 hooks {
     ["pre-commit"] {
-        fix = true           // runs the fix step to make modifications
-        stash = "patch-file" // stashes unstaged changes before running fix steps
+        fix = true       // runs the fix step to make modifications
+        stash = "git"    // stashes unstaged changes before running fix steps
         steps = linters
     }
     ["pre-push"] {
@@ -76,10 +76,10 @@ If true, hk will run the fix step to make modifications.
 
 ## `hooks.<HOOK>.stash: String`
 
-Default: `patch-file`
+Default: `git`
 
-- `patch-file`: Use an hk generated patch file to stash unstaged changes before running fix steps—typically faster.
 - `git`: Use `git stash` to stash unstaged changes before running fix steps.
+- `patch-file`: Use an hk generated patch file to stash unstaged changes before running fix steps—typically faster.
 - `none`: Do not stash unstaged changes before running fix steps.
 
 ## `hooks.<HOOK>.steps.<STEP|GROUP>`

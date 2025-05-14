@@ -36,8 +36,8 @@ local linters = new Mapping<String, Step> {
 
 hooks {
     ["pre-commit"] {
-        fix = true           // automatically modify files with available linter fixes
-        stash = "patch-file" // stashes unstaged changes while running fix steps
+        fix = true    // automatically modify files with available linter fixes
+        stash = "git" // stashes unstaged changes while running fix steps
         steps {
             // "prelint" here is simply a name to define the step
             ["prelint"] {
