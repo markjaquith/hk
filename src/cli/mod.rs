@@ -48,19 +48,19 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Commands {
-    Builtins(builtins::Builtins),
-    Cache(cache::Cache),
-    Check(check::Check),
-    Completion(completion::Completion),
-    Config(config::Config),
-    Fix(fix::Fix),
-    Init(init::Init),
-    Install(install::Install),
-    Run(run::Run),
-    Usage(usage::Usage),
-    Uninstall(uninstall::Uninstall),
-    Validate(validate::Validate),
-    Version(version::Version),
+    Builtins(Box<builtins::Builtins>),
+    Cache(Box<cache::Cache>),
+    Check(Box<check::Check>),
+    Completion(Box<completion::Completion>),
+    Config(Box<config::Config>),
+    Fix(Box<fix::Fix>),
+    Init(Box<init::Init>),
+    Install(Box<install::Install>),
+    Run(Box<run::Run>),
+    Usage(Box<usage::Usage>),
+    Uninstall(Box<uninstall::Uninstall>),
+    Validate(Box<validate::Validate>),
+    Version(Box<version::Version>),
 }
 
 pub async fn run() -> Result<()> {
