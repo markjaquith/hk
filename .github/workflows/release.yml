@@ -90,6 +90,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: jdx/mise-action@v2
       - run: git cliff --latest > release-notes.md && cat release-notes.md
       - if: github.event_name != 'workflow_dispatch'
