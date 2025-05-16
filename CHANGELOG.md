@@ -1,6 +1,18 @@
 # Changelog
 
-## [1.1.0](https://github.com/jdx/hk/compare/v1.0.0..1.1.0) - 2025-05-14
+## [1.1.1](https://github.com/jdx/hk/compare/v1.1.0..1.1.1) - 2025-05-16
+
+### 🐛 Bug Fixes
+
+- _duplicate type json cache warning by [@jdx](https://github.com/jdx) in [#99](https://github.com/jdx/hk/pull/99)
+- ensure unstaged/untracked changed are used with --all by [@jdx](https://github.com/jdx) in [#100](https://github.com/jdx/hk/pull/100)
+
+### 🔍 Other Changes
+
+- clippy by [@jdx](https://github.com/jdx) in [5823c5a](https://github.com/jdx/hk/commit/5823c5ac76cb6e8b71d5312c212f2b8a7e9ef04c)
+- clippy by [@jdx](https://github.com/jdx) in [a5df810](https://github.com/jdx/hk/commit/a5df81085304e2fb25fac2f6261fe74fda5e12c1)
+
+## [1.1.0](https://github.com/jdx/hk/compare/v1.0.0..v1.1.0) - 2025-05-14
 
 ### 🚀 Features
 

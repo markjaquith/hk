@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "1.1.0"
+version "1.1.1"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
