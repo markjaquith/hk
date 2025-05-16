@@ -89,7 +89,7 @@ impl StepGroup {
 
     pub async fn plan(self) -> Result<()> {
         for step_name in self.steps.keys() {
-            info!("step: {} –", step_name);
+            info!("step: {step_name} –");
             todo!("list files and run types like check-first");
         }
         Ok(())

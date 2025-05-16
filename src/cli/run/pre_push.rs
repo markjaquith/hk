@@ -49,7 +49,7 @@ impl PrePush {
                 })
                 .collect::<Vec<_>>()
         };
-        trace!("to_be_updated_refs: {:?}", to_be_updated_refs);
+        trace!("to_be_updated_refs: {to_be_updated_refs:?}");
 
         self.hook.from_ref = Some(match &self.hook.from_ref {
             Some(to_ref) => to_ref.clone(),

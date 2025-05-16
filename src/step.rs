@@ -433,7 +433,7 @@ impl Step {
             eyre::bail!("{}: no run command", self);
         };
         if let Some(prefix) = &self.prefix {
-            run = format!("{} {}", prefix, run);
+            run = format!("{prefix} {run}");
         }
         let run = tera::render(&run, &tctx).unwrap();
         job.progress.as_ref().unwrap().prop(
@@ -612,7 +612,7 @@ impl Display for Script {
         } else if cfg!(target_os = "windows") {
             write!(f, "{}", self.windows.as_deref().unwrap_or(other))
         } else {
-            write!(f, "{}", other)
+            write!(f, "{other}")
         }
     }
 }

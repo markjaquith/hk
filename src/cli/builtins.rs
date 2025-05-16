@@ -8,7 +8,7 @@ include!(concat!(env!("OUT_DIR"), "/builtins.rs"));
 impl Builtins {
     pub async fn run(&self) -> Result<()> {
         for builtin in BUILTINS {
-            println!("{}", builtin);
+            println!("{builtin}");
         }
 
         Ok(())

@@ -314,7 +314,7 @@ impl Hook {
             if result.is_ok() {
                 result = Err(err);
             } else {
-                warn!("Failed to pop stash: {}", err);
+                warn!("Failed to pop stash: {err}");
             }
         }
         result
@@ -350,9 +350,9 @@ impl Hook {
             file_progress.prop(
                 "message",
                 &if let Some(to) = &opts.to_ref {
-                    format!("Fetching files between {} and {}", from, to)
+                    format!("Fetching files between {from} and {to}")
                 } else {
-                    format!("Fetching files from {}", from)
+                    format!("Fetching files from {from}")
                 },
             );
             repo.lock()
@@ -436,7 +436,7 @@ impl Hook {
 fn watch_for_ctrl_c(cancel: CancellationToken) {
     tokio::spawn(async move {
         if let Err(err) = signal::ctrl_c().await {
-            warn!("Failed to watch for ctrl-c: {}", err);
+            warn!("Failed to watch for ctrl-c: {err}");
         }
         tokio::spawn(async move {
             // exit immediately on second ctrl-c

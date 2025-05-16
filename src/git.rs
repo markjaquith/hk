@@ -348,7 +348,7 @@ impl Git {
                 }
                 for file in status.untracked_files.iter() {
                     if let Err(err) = xx::file::remove_file(file) {
-                        warn!("failed to remove untracked file: {:?}", err);
+                        warn!("failed to remove untracked file: {err:?}");
                     }
                 }
             }
@@ -410,7 +410,7 @@ impl Git {
         };
         let patch_file = self.patch_file();
         if let Err(err) = xx::file::write(patch_file, &patch) {
-            warn!("failed to write patch file: {:?}", err);
+            warn!("failed to write patch file: {err:?}");
         }
         Ok(Some(StashType::PatchFile(patch, patch_file.to_path_buf())))
     }
@@ -469,7 +469,7 @@ impl Git {
                         .run()?;
                 }
                 if let Err(err) = xx::file::remove_file(patch_file) {
-                    debug!("failed to remove patch file: {:?}", err);
+                    debug!("failed to remove patch file: {err:?}");
                 }
             }
             // TODO: this does not work with untracked files
@@ -523,17 +523,17 @@ impl Git {
         if let Some(repo) = &self.repo {
             let from_obj = repo
                 .revparse_single(from_ref)
-                .wrap_err(format!("Failed to parse reference: {}", from_ref))?;
+                .wrap_err(format!("Failed to parse reference: {from_ref}"))?;
             let to_obj = repo
                 .revparse_single(to_ref)
-                .wrap_err(format!("Failed to parse reference: {}", to_ref))?;
+                .wrap_err(format!("Failed to parse reference: {to_ref}"))?;
 
             let from_tree = from_obj
                 .peel_to_tree()
-                .wrap_err(format!("Failed to get tree for reference: {}", from_ref))?;
+                .wrap_err(format!("Failed to get tree for reference: {from_ref}"))?;
             let to_tree = to_obj
                 .peel_to_tree()
-                .wrap_err(format!("Failed to get tree for reference: {}", to_ref))?;
+                .wrap_err(format!("Failed to get tree for reference: {to_ref}"))?;
 
             let diff = repo
                 .diff_tree_to_tree(Some(&from_tree), Some(&to_tree), None)
@@ -565,7 +565,7 @@ impl Git {
                     "-z",
                     "--name-only",
                     "--diff-filter=ACMRTUXB",
-                    format!("{}..{}", from_ref, to_ref).as_str(),
+                    format!("{from_ref}..{to_ref}").as_str(),
                 ],
             )
             .read()?;

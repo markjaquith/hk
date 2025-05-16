@@ -39,7 +39,7 @@ impl log::Log for Logger {
             let out = self.render(record, self.term_level);
             if !out.is_empty() {
                 progress::pause();
-                eprintln!("{}", out);
+                eprintln!("{out}");
                 progress::resume();
             }
         }

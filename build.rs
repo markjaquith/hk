@@ -21,7 +21,7 @@ fn builtins(out_dir: &Path) -> Result<(), std::io::Error> {
         "pub const BUILTINS: &[&str] = &[{}];",
         builtins
             .iter()
-            .map(|b| format!("\"{}\"", b))
+            .map(|b| format!("\"{b}\""))
             .collect::<Vec<String>>()
             .join(", ")
     );
