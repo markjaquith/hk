@@ -1,6 +1,6 @@
 name hk
 bin hk
-version "1.1.1"
+version "1.1.2"
 about "A tool for managing git hooks"
 usage "Usage: hk [OPTIONS] <COMMAND>"
 flag "-j --jobs" help="Number of jobs to run in parallel" global=#true {
@@ -41,7 +41,7 @@ cmd check help="Fixes code" {
     flag "-S --step" help="Run specific step(s)" var=#true {
         arg <STEP>
     }
-    arg "[FILES]..." help="Run on specific files" required=#false var=#true
+    arg "[FILES]…" help="Run on specific files" required=#false var=#true
 }
 cmd completion help="Generates shell completion scripts" {
     arg <SHELL> help="The shell to generate completion for"
@@ -73,7 +73,7 @@ cmd fix help="Fixes code" {
     flag "-S --step" help="Run specific step(s)" var=#true {
         arg <STEP>
     }
-    arg "[FILES]..." help="Run on specific files" required=#false var=#true
+    arg "[FILES]…" help="Run on specific files" required=#false var=#true
 }
 cmd init help="Generates a new hk.pkl file for a project" {
     alias generate hide=#true
@@ -113,7 +113,7 @@ cmd run help="Run a hook" {
         arg <STEP>
     }
     arg "[OTHER]" required=#false hide=#true
-    arg "[FILES]..." help="Run on specific files" required=#false var=#true
+    arg "[FILES]…" help="Run on specific files" required=#false var=#true
     cmd commit-msg {
         alias cm
         flag "-a --all" help="Run on all files instead of just staged files"
@@ -139,7 +139,7 @@ cmd run help="Run a hook" {
             arg <STEP>
         }
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message"
-        arg "[FILES]..." help="Run on specific files" required=#false var=#true
+        arg "[FILES]…" help="Run on specific files" required=#false var=#true
     }
     cmd pre-commit help="Sets up git hooks to run hk" {
         alias pc
@@ -165,7 +165,7 @@ cmd run help="Run a hook" {
         flag "-S --step" help="Run specific step(s)" var=#true {
             arg <STEP>
         }
-        arg "[FILES]..." help="Run on specific files" required=#false var=#true
+        arg "[FILES]…" help="Run on specific files" required=#false var=#true
     }
     cmd pre-push {
         alias pp
@@ -193,7 +193,7 @@ cmd run help="Run a hook" {
         }
         arg "[REMOTE]" help="Remote name" required=#false
         arg "[URL]" help="Remote URL" required=#false
-        arg "[FILES]..." help="Run on specific files" required=#false var=#true
+        arg "[FILES]…" help="Run on specific files" required=#false var=#true
     }
     cmd prepare-commit-msg {
         alias pcm
@@ -222,7 +222,7 @@ cmd run help="Run a hook" {
         arg <COMMIT_MSG_FILE> help="The path to the file that contains the commit message so far"
         arg "[SOURCE]" help="The source of the commit message (e.g., \"message\", \"template\", \"merge\")" required=#false
         arg "[SHA]" help="The SHA of the commit being amended (if applicable)" required=#false
-        arg "[FILES]..." help="Run on specific files" required=#false var=#true
+        arg "[FILES]…" help="Run on specific files" required=#false var=#true
     }
 }
 cmd usage hide=#true help="Generates a usage spec for the CLI" {

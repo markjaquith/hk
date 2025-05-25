@@ -1,6 +1,31 @@
 # Changelog
 
-## [1.1.1](https://github.com/jdx/hk/compare/v1.1.0..1.1.1) - 2025-05-16
+## [1.1.2](https://github.com/jdx/hk/compare/v1.1.1..1.1.2) - 2025-05-25
+
+### 🐛 Bug Fixes
+
+- filename escaping by [@jdx](https://github.com/jdx) in [#103](https://github.com/jdx/hk/pull/103)
+- use git merge-base to find common ancestor by [@jdx](https://github.com/jdx) in [#108](https://github.com/jdx/hk/pull/108)
+- batch process shfmt by [@jdx](https://github.com/jdx) in [a802506](https://github.com/jdx/hk/commit/a802506631db1304388b8ffda3166a632a39a49a)
+- shfmt check_list_files by [@jdx](https://github.com/jdx) in [e8aca63](https://github.com/jdx/hk/commit/e8aca6309d459a92aadf299798551cb2334f3c8b)
+- Add missing node dependency to mise.toml by [@matiashf](https://github.com/matiashf) in [#104](https://github.com/jdx/hk/pull/104)
+
+### 🧪 Testing
+
+- test for deleted files by [@jdx](https://github.com/jdx) in [4a854ca](https://github.com/jdx/hk/commit/4a854ca44b3905d2d5ceaaf3ec6c0c9ee67a8c87)
+
+### 🔍 Other Changes
+
+- check out full repo for changelog generation by [@jdx](https://github.com/jdx) in [bdef823](https://github.com/jdx/hk/commit/bdef823cbea14837fc03f8a8b42b5d99d2b71dda)
+- bump deps by [@jdx](https://github.com/jdx) in [e857656](https://github.com/jdx/hk/commit/e8576567b4e8199796befe47972cf60b2948049c)
+- bump deps by [@jdx](https://github.com/jdx) in [1e0d870](https://github.com/jdx/hk/commit/1e0d87085b96f5497225c9ea5c33a50acaaf140f)
+- Update shellcheck.pkl by [@jdx](https://github.com/jdx) in [e67de40](https://github.com/jdx/hk/commit/e67de4099539ad25a283effb74e6fa09898a9d5b)
+
+### New Contributors
+
+- @matiashf made their first contribution in [#104](https://github.com/jdx/hk/pull/104)
+
+## [1.1.1](https://github.com/jdx/hk/compare/v1.1.0..v1.1.1) - 2025-05-16
 
 ### 🐛 Bug Fixes
 
