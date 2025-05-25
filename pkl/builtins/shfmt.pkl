@@ -4,6 +4,12 @@ shfmt = new Config.Step {
     batch = true
     glob = "*.{sh,bash}"
     stage = "*.{sh,bash}"
-    check_list_files = "shfmt -l {{ files }}"
+    check_list_files = """
+files=$(shfmt -l -s {{ files }})
+if [ -n "$files" ]; then
+  echo "$files"
+  exit 1
+fi
+"""
     fix = "shfmt -w {{ files }}"
 } 
