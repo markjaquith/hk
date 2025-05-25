@@ -1,6 +1,7 @@
 import "../Config.pkl"
 
 shellcheck = new Config.Step {
+    batch = true
     glob = "*.{sh,bash}"
     stage = "*.{sh,bash}"
     check = "shellcheck {{ files }}"
