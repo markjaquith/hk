@@ -48,6 +48,7 @@ impl Git {
             .ok_or(eyre!("failed to find git repository"))?;
         std::env::set_current_dir(&root)?;
         let repo = if *env::HK_LIBGIT2 {
+            debug!("libgit2: true");
             let repo = Repository::open(".").wrap_err("failed to open repository")?;
             if let Some(index_file) = &*env::GIT_INDEX_FILE {
                 // sets index to .git/index.lock which is used in the case of `git commit -a`
@@ -56,6 +57,7 @@ impl Git {
             }
             Some(repo)
         } else {
+            debug!("libgit2: false");
             None
         };
         Ok(Self {

@@ -122,3 +122,34 @@ EOF
     assert_output --partial "print-files – 1 file –  – echo 'main.txt'"
     assert_output --partial "print-files – main.txt"
 }
+
+@test "files staged for deletion are not included with --all" {
+    cat <<EOF > hk.pkl
+amends "$PKL_PATH/Config.pkl"
+hooks {
+    ["check"] {
+        steps {
+            ["foo"] {
+                check = "echo 'foo: {{files}}'"
+            }
+        }
+    }
+}
+EOF
+    mkdir -p src
+    touch src/foo.rs
+    git add hk.pkl src/foo.rs
+    git commit -m "initial commit"
+    hk install
+
+    # Stage the file for deletion
+    git rm src/foo.rs
+    
+    # Try to commit with --all
+    run hk check --all
+    assert_success
+    assert_output --partial "foo: "
+    # Verify the file is not in the output
+    refute_output --partial "foo: hk.pkl
+"
+}
