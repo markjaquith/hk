@@ -1,6 +1,7 @@
 import "../Config.pkl"
 
 shfmt = new Config.Step {
+    batch = true
     glob = "*.{sh,bash}"
     stage = "*.{sh,bash}"
     check_list_files = "shfmt -l {{ files }}"
