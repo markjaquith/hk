@@ -36,6 +36,9 @@ struct Cli {
     /// Enables verbose output
     #[clap(short, long, global = true, action = clap::ArgAction::Count, overrides_with_all = ["quiet", "silent"])]
     verbose: u8,
+    /// Disables progress output
+    #[clap(short, long, global = true)]
+    no_progress: bool,
     /// Suppresses output
     #[clap(short, long, global = true, overrides_with_all = ["verbose", "silent"])]
     quiet: bool,
@@ -66,7 +69,7 @@ enum Commands {
 pub async fn run() -> Result<()> {
     let args = Cli::parse();
     let mut level = None;
-    if !console::user_attended_stderr() {
+    if !console::user_attended_stderr() || args.no_progress {
         clx::progress::set_output(ProgressOutput::Text);
     }
     if args.verbose > 1 || log::log_enabled!(log::Level::Trace) {
