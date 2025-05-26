@@ -7,4 +7,7 @@ cargo_clippy = new Config.Step {
     check = "cargo clippy --manifest-path {{workspace_indicator}}"
     fix = "cargo clippy --manifest-path {{workspace_indicator}} --fix --allow-dirty --allow-staged"
     check_first = false
+    env {
+      ["CARGO_TERM_PROGRESS_WHEN"] = "never"
+    }
 } 
