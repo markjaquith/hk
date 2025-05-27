@@ -329,6 +329,7 @@ impl Hook {
         stash_method: StashMethod,
         file_progress: &ProgressJob,
     ) -> Result<BTreeSet<PathBuf>> {
+        const EMPTY_REF: &str = "0000000000000000000000000000000000000000";
         let stash = stash_method != StashMethod::None;
         let mut files = if let Some(files) = &opts.files {
             files
@@ -356,19 +357,24 @@ impl Hook {
             let all_files = all_files.into_iter().collect_vec();
             glob::get_matches(glob, &all_files)?.into_iter().collect()
         } else if let Some(from) = &opts.from_ref {
-            file_progress.prop(
-                "message",
-                &if let Some(to) = &opts.to_ref {
-                    format!("Fetching files between {from} and {to}")
-                } else {
-                    format!("Fetching files from {from}")
-                },
-            );
-            repo.lock()
-                .await
-                .files_between_refs(from, opts.to_ref.as_deref())?
-                .into_iter()
-                .collect()
+            if opts.to_ref.as_deref() == Some(EMPTY_REF) {
+                file_progress.prop("message", "No files to compare for remote branch deletion");
+                BTreeSet::new()
+            } else {
+                file_progress.prop(
+                    "message",
+                    &if let Some(to) = &opts.to_ref {
+                        format!("Fetching files between {} and {}", from, to)
+                    } else {
+                        format!("Fetching files changed since {}", from)
+                    },
+                );
+                repo.lock()
+                    .await
+                    .files_between_refs(from, opts.to_ref.as_deref())?
+                    .into_iter()
+                    .collect()
+            }
         } else if opts.all {
             file_progress.prop("message", "Fetching all files in repo");
             let mut all_files = repo.lock().await.all_files(None)?;
