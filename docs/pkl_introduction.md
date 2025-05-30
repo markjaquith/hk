@@ -5,12 +5,12 @@ it and work with it for hk configuration.
 
 ## Dependencies
 
-You'll need the pkl cli as well as a java runtime to use hk. This is because the rust library currently shells out to the pkl cli to parse the configuration. I'm sure someday we'll have a native pkl parser in rust (maybe you could write it?) but for now, you'll need pkl and java.
+You'll need the pkl cli to use hk. This is because the rust library currently shells out to the pkl cli to parse the configuration. I'm sure someday we'll have a native pkl parser in rust (maybe you could write it?) but for now, you'll need pkl.
 
 These are easily installed with mise though:
 
 ```sh
-mise use -g pkl java
+mise use -g pkl
 ```
 
 ## Why pkl?
@@ -22,7 +22,6 @@ mise use -g pkl java
 
 ## Downsides?
 
-* Requires a java runtime and pkl cli (for now)
 * Editor/syntax highlighting support is young—though being a project driven by Apple I suspect this will improve quicker than most languages
 * Some of the behavior with the "amends" line and how `hk.pkl` files are used in hk I wish was a little more streamlined—but this is more of an issue with hk than pkl.
 * It's more complex than simple formats like yaml or toml and there is more to learn, however:
